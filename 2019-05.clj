@@ -1,14 +1,26 @@
+(ns aoc.day5)
+
 ;; 2019-5
+(require
+ '[clojure.java.io :as io]
+ '[clojure.string :refer [split split-lines]])
 
-(def input [1,0,0,3,1,1,2,3,1,3,4,3,1,5,0,3,2,9,1,19,1,19,6,23,2,6,23,27,2,27,9,31,1,5,31,35,1,35,10,39,2,39,9,43,1,5,43,47,2,47,10,51,1,51,6,55,1,5,55,59,2,6,59,63,2,63,6,67,1,5,67,71,1,71,9,75,2,75,10,79,1,79,5,83,1,10,83,87,1,5,87,91,2,13,91,95,1,95,10,99,2,99,13,103,1,103,5,107,1,107,13,111,2,111,9,115,1,6,115,119,2,119,6,123,1,123,6,127,1,127,9,131,1,6,131,135,1,135,2,139,1,139,10,0,99,2,0,14,0])
+(defn parse-string [str]
+  (vec
+   (map
+    #(Long/parseLong %)
+    (split str #","))))
 
-(defn run-op [opcodes ip]
-  (let [target (get opcodes (+ ip 3))
-        op1 (get opcodes (get opcodes (+ ip 1)))
-        op2 (get opcodes (get opcodes (+ ip 2)))]
-    (case (get opcodes ip)
-      1 (assoc opcodes target (+ op1 op2))
-      2 (assoc opcodes target (* op1 op2)))))
+(defn parse-input [resource]
+  (vec
+   (map
+    #(Long/parseLong %)
+    (mapcat
+     #(split % #",")
+     (split-lines
+      (slurp (io/resource resource)))))))
+
+(def puzzle-input (parse-input "2019-05.txt"))
 
 (defn get-digit [n pos]
   (mod (reduce quot n (repeat (dec pos) 10)) 10))
@@ -21,11 +33,14 @@
 
 (def debug? false)
 
+(defn set-debug [val]
+  (def debug? val))
+
 (defn debug [& args]
   (if debug?
     (apply println args)))
 
-(defn run-op [memory ip in out]
+(defn run-instr [ip memory in out]
   (let [instr (memory ip)
         op-code (op-code instr)
         imm (fn [n] (memory (+ ip n)))
@@ -37,7 +52,7 @@
     (debug "instr:" instr "op-code:" op-code)
     (case op-code
       ;; + *
-      (1 2) (let [op ({1 + 2 *} op-code)]
+      (1 2) (let [op ({1 +' 2 *'} op-code)]
               (debug op (arg 1) (arg 2) "→" (imm 3))
               [(+ ip 4)
                (assoc memory
@@ -47,38 +62,57 @@
                        (arg 2)))
                in
                out])
-      ;; input
-      3 [(+ ip 1)
-         (assoc memory (arg 1) (first in))
+      ;; input → [1]
+      3 (let [input-value (first in)]
+          (debug "input" input-value "→" (imm 1))
+          [(+ ip 2)
+           (assoc memory (imm 1) (first in))
          (rest in)
-         out]
-      ;; output
-      4 [(+ ip 1)
+           out])
+      ;; output ← [1]
+      4 [(+ ip 2)
          memory
          in
          (conj out (arg 1))]
+      ;; jump-if-true
+      5 (do
+          (debug "jump-if-true" (arg 1))
+          (if (not= 0 (arg 1))
+            [(arg 2) memory in out]
+            [(+ ip 3) memory in out]))
+      ;; jump-if-false
+      6 (do
+          (debug "jump-if-false" (arg 1))
+          (if (= 0 (arg 1))
+            [(arg 2) memory in out]
+            [(+ ip 3) memory in out]))
+      ;; less than
+      7 (do
+          (debug "less than" (arg 1) "<" (arg 2) "→" (imm 3))
+          [(+ ip 4)
+           (assoc memory (imm 3) (if (< (arg 1) (arg 2)) 1 0))
+           in
+           out])
+      ;; equals
+      8 (do
+          (debug "equals" (arg 1) "=" (arg 2) "→" (imm 3))
+          [(+ ip 4)
+           (assoc memory (imm 3) (if (= (arg 1) (arg 2)) 1 0))
+           in
+           out])
       )
     ))
 
 (defn run [memory in]
-  (loop [memory memory
-         ip 0
+  (loop [ip 0
+         memory memory
          in in
          out []]
-    (if (= (get opcodes ip) 99)
-      (get opcodes 0)
-      (recur (run-op opcodes ip) (+ ip 4)))
-  ))
+    (if (= (op-code (memory ip)) 99)
+      out
+      (let [[ip memory in out] (run-instr ip memory in out)]
+        (debug "new ip:" ip)
+        (recur ip memory in out)))))
 
-(defn cartesian-poduct [coll]
-    (for [x coll
-          y coll]
-      [x y]))
-
-(defn find-noun-and-verb [expected]
-  (loop [nouns-and-verbs (cartesian-poduct (range 0 100))]
-    (let [[noun verb] (first nouns-and-verbs)
-          result (run input noun verb)]
-      (if (= expected result)
-        (+ (* 100 noun) verb)
-        (recur (rest nouns-and-verbs))))))
+(defn part2 [input]
+  (run input [5]))
