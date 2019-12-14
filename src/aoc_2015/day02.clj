@@ -2,19 +2,15 @@
   (:require [aoc.core :refer :all]
             [clojure.string :refer [split]]))
 
-(defn parse-input [lines]
-       (map #(map parse-int (split % #"x")) lines))
-
 (def puzzle-input
-  (-> *ns*
-      puzzle-input-lines
-      parse-input))
+  (puzzle-input-parse-lines #(map parse-int (split % #"x"))))
 
 (defn surface [[w h l]]
   (let [s1 (* w h)
         s2 (* w l)
         s3 (* h l)]
-    (+ (* 2 (+ s1 s2 s3)) (min s1 s2 s3))))
+    (+ (* 2 (+ s1 s2 s3))
+       (min s1 s2 s3))))
 
 (defn part1 [input]
   (reduce + (map surface input)))

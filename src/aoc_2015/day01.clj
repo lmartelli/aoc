@@ -1,7 +1,7 @@
 (ns aoc-2015.day01
   (:require [aoc.core :refer :all]))
 
-(def puzzle-input (puzzle-input-string *ns*))
+(def puzzle-input (puzzle-input-string))
 
 (defn part1 [input]
   (reduce + (map {\( 1, \) -1} input)))
