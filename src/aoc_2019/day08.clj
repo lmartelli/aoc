@@ -1,8 +1,7 @@
-(ns aoc.day8)
-
-(require
- '[clojure.java.io :as io]
- '[clojure.string :refer [join]])
+(ns aoc-2019.day08
+  (:require
+   [clojure.java.io :as io]
+   [clojure.string :refer [join]]))
 
 (def puzzle-input-8
   (->>

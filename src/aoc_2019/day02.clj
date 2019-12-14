@@ -1,4 +1,5 @@
-;; 2019-2
+(ns aoc-2019.day02)
+
 (defn parse-input [input]
   (vec
    (map (fn [str] (Integer/parseInt str))

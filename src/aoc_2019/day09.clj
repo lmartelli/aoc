@@ -1,9 +1,8 @@
-(ns aoc.day9)
-
-(require
- '[aoc.day5 :refer [parse-string parse-input param-mode op-code debug set-debug]]
- '[aoc.day7 :refer [terminated? cur-instr] :exclude [run]]
- '[clojure.pprint :refer [pprint]])
+(ns aoc-2019.day09
+  (:require
+   [aoc-2019.day05 :refer [parse-string parse-input param-mode op-code debug set-debug]]
+   [aoc-2019.day07 :refer [terminated? cur-instr] :exclude [run]]
+   [clojure.pprint :refer [pprint]]))
 
 (def puzzle-input-9 (parse-input "2019-09.txt"))
 
@@ -19,7 +18,7 @@
                       (assoc (-> memory (concat (repeat (- addr (count memory)) 0)) vec) addr value))))
         arg-out (fn [n]
                  (let [value (mem-get (+ ip n))]
-                (case (param-mode instr n)
+                   (case (param-mode instr n)
                      0 value
                      2 (+ base value)
                      )))
@@ -29,7 +28,7 @@
                      0 (mem-get value)
                      1 value
                      2 (mem-get (+ base value))
-                  )))]
+                     )))]
     (debug "instr:" instr "op-code:" op-code)
     (merge
      state

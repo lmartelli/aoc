@@ -1,13 +1,14 @@
-(require
- '[clojure.java.io :as io]
- '[clojure.string :refer [split-lines]])
+(ns aoc-2019.day06
+  (:require
+   [clojure.java.io :as io]
+   [clojure.string :refer [split-lines]]))
 
 (def puzzle-input
   (line-seq (io/reader (io/resource "2019-06.txt"))))
 
 ;; → ((obj satelite) ...)
 (defn parse-input [input]
-  (map 
+  (map
    #(rest (re-matches #"(.*)\)(.*)" %)) ;; A ) B aka B orbits A
    input))
 

@@ -1,9 +1,7 @@
-(ns aoc.day5)
-
-;; 2019-5
-(require
- '[clojure.java.io :as io]
- '[clojure.string :refer [split split-lines]])
+(ns aoc-2019.day05
+  (:require
+   [clojure.java.io :as io]
+   [clojure.string :refer [split split-lines]]))
 
 (defn parse-string [str]
   (vec
@@ -67,7 +65,7 @@
           (debug "input" input-value "→" (imm 1))
           [(+ ip 2)
            (assoc memory (imm 1) (first in))
-         (rest in)
+           (rest in)
            out])
       ;; output ← [1]
       4 [(+ ip 2)

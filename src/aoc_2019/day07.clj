@@ -1,8 +1,7 @@
-(ns aoc.day7)
-
-(require
- '[aoc.day5 :refer [parse-string parse-input set-debug]]
- '[clojure.pprint :refer [pprint]])
+(ns aoc-2019.day07
+  (:require
+   [aoc-2019.day05 :refer [parse-string parse-input op-code param-mode debug set-debug]]
+   [clojure.pprint :refer [pprint]]))
 
 (def puzzle-input-7 (parse-input "2019-07.txt"))
 
@@ -48,7 +47,7 @@
                :ip (+ ip 2)
                :out (conj out (arg 1)))
       ;; jump-if-true
-      5 (do (debug "jump-if-true" (arg 1))          
+      5 (do (debug "jump-if-true" (arg 1))
             (assoc state
                    :ip (if (not= 0 (arg 1)) (arg 2) (+ ip 3))))
       ;; jump-if-false
@@ -108,9 +107,9 @@
              (-> amps
                  (assoc n (assoc new-amp :out []))
                  (update-in [(mod (inc n) nb-amps) :in] concat ret-value))))))))))
-  
+
 (defn init-amps [mem phases]
-  (update-in 
+  (update-in
    (vec (map #(hash-map :ip 0 :mem mem :in [%] :out [])  phases))
    [0 :in] conj 0))
 
