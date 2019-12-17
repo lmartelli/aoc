@@ -3,6 +3,7 @@
    [clojure.string :as str :refer [split]]
    [aoc.core :refer :all]
    [clojure.algo.generic.functor :refer [fmap]]
+   [clojure.math.numeric-tower :refer [ceil]]
    [clojure.test :refer :all]))
 
 (defn parse-element [s]
@@ -64,9 +65,24 @@
         (recur (substitute-all elements reactions))))))
 
 
-(defn part1 [input] (mine 1))
+(defn part1 [input] (mine 1 input))
 
 ;; part 2
+
+(defn part2 [input]
+  (let [ore-qty 1000000000000
+        mine (fn [qty] (mine qty input))]
+    (loop [cur (quot ore-qty (mine 1))]
+      (let [mine-cur (mine cur)]
+        (println "cur" cur "(mine cur)" mine-cur)
+        (cond (and (<= mine-cur ore-qty)
+                   (> (mine (inc cur)) ore-qty))
+              cur
+              (< mine-cur ore-qty)
+              (recur (-> (* (/ ore-qty mine-cur) cur) ceil long))
+              :else
+              (recur (dec cur))
+      )))))
 
 ;; tests
 
