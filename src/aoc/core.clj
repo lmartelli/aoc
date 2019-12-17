@@ -72,4 +72,23 @@
 (defmacro puzzle-input-parse-lines [f]
   `(map ~f ($puzzle-input-lines *ns*)))
 
-(defn parse-int [s] (Integer/parseInt s))
+(defn parse-int [s] (Long/parseLong s))
+
+(defn parse-int-array [input]
+  (vec
+   (map
+    #(Long/parseLong %)
+    (str/split input #","))))
+
+(defmacro puzzle-input-int-array []
+  `(parse-int-array ($puzzle-input-string *ns*)))
+
+(defn remove-nil [& colls]
+  (apply map #(remove nil? %) colls))
+
+(defn add [a & rest]
+  (vec (apply map + a rest)))
+
+(defn sub [a & rest]
+  (vec (apply map - a rest)))
+
