@@ -4,7 +4,7 @@
    [aoc-2019.day07 :refer [terminated? cur-instr] :exclude [run]]
    [clojure.pprint :refer [pprint]]))
 
-(def puzzle-input-9 (parse-input "2019-09.txt"))
+(def puzzle-input (parse-input "2019-09.txt"))
 
 (defn run-instr [state]
   (let [instr (cur-instr state)
@@ -80,4 +80,10 @@
 (defn run-prog [mem]
   (run {:ip 0, :base 0, :mem mem, :in [], :out []}))
 
+(defn part1 [input]
+  (run {:mem input :in [1] }))
+
 ;; part 2
+
+(defn part2 [input]
+  (run {:mem input :in [2] }))
