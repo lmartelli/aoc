@@ -43,7 +43,7 @@
               :mem (mem-set (arg-out 3) (*' (arg-in 1) (arg-in 2)))})
        ;; input → [1]
        3 (let [input-value (first in)]
-           (debug "input" input-value "→" (arg-in 1))
+           (debug "input" input-value "→" (arg-out 1))
            {:ip (+ ip 2)
             :mem (mem-set (arg-out 1) input-value)
             :in (rest in)})
