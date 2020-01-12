@@ -2,7 +2,8 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
-   [clj-http.client :as http]))
+   [clj-http.client :as http]
+   [clojure.core.async :as async :refer [poll!]]))
 
 (defn system-get-property [p]
   (System/getProperty p))
@@ -86,9 +87,17 @@
 (defn remove-nil [& colls]
   (apply map #(remove nil? %) colls))
 
-(defn add [a & rest]
+(defn add "Vector addition"
+  [a & rest]
   (vec (apply map + a rest)))
 
-(defn sub [a & rest]
+(defn sub "Vector subtraction"
+  [a & rest]
   (vec (apply map - a rest)))
 
+(defn read-all [channel]
+  (loop [v []]
+    (if-let [val (poll! channel)]
+      (recur (conj v val))
+      v))
+  )
