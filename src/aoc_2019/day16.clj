@@ -29,7 +29,7 @@
 (defn phases [digits n]
   (reduce (fn [input _] (phase input)) digits (range n)))
 
-(defn part1 [input]
+(defpart part1 [input]
   (->> (phases input 100)
        (take 8)
        (apply str)))

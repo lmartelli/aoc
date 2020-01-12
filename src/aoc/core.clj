@@ -110,3 +110,8 @@
       (recur (conj v val))
       v))
   )
+(defmacro defpart [name args body]
+  `(def ~name
+     (fn
+       ([] (~name ~'puzzle-input))
+       (~args ~body))))
