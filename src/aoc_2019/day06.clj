@@ -1,16 +1,10 @@
 (ns aoc-2019.day06
   (:require
-   [clojure.java.io :as io]
-   [clojure.string :refer [split-lines]]))
+   [aoc.core :refer :all]))
 
-(def puzzle-input
-  (line-seq (io/reader (io/resource "2019-06.txt"))))
+(puzzle-input-parse-lines #(rest (re-matches #"(.*)\)(.*)" %)))
 
-;; → ((obj satelite) ...)
-(defn parse-input [input]
-  (map
-   #(rest (re-matches #"(.*)\)(.*)" %)) ;; A ) B aka B orbits A
-   input))
+;; part 1
 
 ;; → {obj (sat ...), ...}
 (defn build-map [orbits]
@@ -28,14 +22,16 @@
                (inc hops)
                satelites)))))
 
-(defn part1 [input]
-  (checksum (build-map (parse-input input))))
+(defpart part1 [input]
+  (checksum (build-map input)))
+
+;; part 2
 
 (defn build-orbit-map [input]
   (reduce
    #(let [[obj sat] %2] (assoc %1 sat obj))
    {}
-   (parse-input input)))
+   input))
 
 (defn path [orbit-map start]
   (loop [path '(), cur start]
@@ -55,5 +51,5 @@
    (path orbit-map a)
    (path orbit-map b)))
 
-(defn part2 [input]
+(defpart part2 [input]
   (dist (build-orbit-map input) "YOU" "SAN"))

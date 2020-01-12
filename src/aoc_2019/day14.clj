@@ -19,7 +19,7 @@
         output-element (parse-element output)]
     {:in input-elements :out output-element}))
 
-(def puzzle-input (puzzle-input-parse-lines parse-reaction))
+(puzzle-input-parse-lines parse-reaction)
 
 ;; part 1
 
@@ -65,16 +65,16 @@
         (recur (substitute-all elements reactions))))))
 
 
-(defn part1 [input] (mine 1 input))
+(defpart part1 [input]
+  (mine 1 input))
 
 ;; part 2
 
-(defn part2 [input]
+(defpart part2 [input]
   (let [ore-qty 1000000000000
         mine (fn [qty] (mine qty input))]
     (loop [cur (quot ore-qty (mine 1))]
       (let [mine-cur (mine cur)]
-        (println "cur" cur "(mine cur)" mine-cur)
         (cond (and (<= mine-cur ore-qty)
                    (> (mine (inc cur)) ore-qty))
               cur

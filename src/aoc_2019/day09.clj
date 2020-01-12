@@ -1,10 +1,13 @@
 (ns aoc-2019.day09
   (:require
-   [aoc-2019.day05 :refer [parse-string parse-input param-mode op-code debug set-debug]]
+   [aoc.core :refer :all]
+   [aoc-2019.day05 :refer [param-mode op-code debug set-debug]]
    [aoc-2019.day07 :refer [terminated? cur-instr] :exclude [run]]
    [clojure.pprint :refer [pprint]]))
 
-(def puzzle-input (parse-input "2019-09.txt"))
+(puzzle-input-int-array)
+
+;; part 1
 
 (defn run-instr [state]
   (let [instr (cur-instr state)
@@ -80,10 +83,15 @@
 (defn run-prog [mem]
   (run {:ip 0, :base 0, :mem mem, :in [], :out []}))
 
-(defn part1 [input]
-  (run {:mem input :in [1] }))
+(defn run-and-get-output [mem input]
+    (-> (run {:mem mem :in [input] })
+      :out
+      first))
+
+(defpart part1 [input]
+  (run-and-get-output input 1))
 
 ;; part 2
 
-(defn part2 [input]
-  (run {:mem input :in [2] }))
+(defpart part2 [input]
+  (run-and-get-output input 2))

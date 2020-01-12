@@ -6,7 +6,7 @@
    [clojure.set :refer [intersection union difference]]
    [clojure.test :refer :all]))
 
-(def puzzle-input (puzzle-input-int-array))
+(puzzle-input-int-array)
 
 ;; part 1
 
@@ -51,7 +51,7 @@
                         [0 0]
                         {[0 0] :empty})))
 
-(defn part1 [input]
+(defpart part1 [input]
   (count (second (discover-area input))))
 
 ;; part 2
@@ -65,11 +65,11 @@
 (defn select [area type]
   (into #{} (map first) (filter (fn [[k v]] (= v type)) area)))
 
-(defn part2 [input]
+(defpart part2 [input]
   (let [[area path] (discover-area input)]
     (loop [time 0
            frontier #{(path-to-coord path)}
-           oxygen #{(path-to-coord path)}
+           oxygen frontier
            empty (select area :empty)]
       (if (empty? empty)
         time

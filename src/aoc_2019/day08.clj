@@ -1,15 +1,12 @@
 (ns aoc-2019.day08
   (:require
+   [aoc.core :refer :all]
    [clojure.java.io :as io]
    [clojure.string :refer [join]]))
 
-(def puzzle-input-8
-  (->>
-   (-> "2019-08.txt"
-       io/resource
-       io/reader
-       line-seq)
-   (mapcat #(seq %))))
+(puzzle-input-parse seq)
+
+;; part 1
 
 (def width 25)
 (def height 6)
@@ -33,7 +30,8 @@
     (* (count-digit layer \1)
        (count-digit layer \2))))
 
-(checksum puzzle-input-8)
+(defpart part1 [input]
+  (checksum input))
 
 ;; part 2
 
@@ -49,4 +47,5 @@
 (defn decode-image [data width height]
   (-> data (layers width height) combine-layers (display-image width)))
 
-(decode-image puzzle-input-8 width height)
+(defpart part2 [input]
+  (decode-image input width height))

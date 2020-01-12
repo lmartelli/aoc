@@ -1,19 +1,14 @@
 (ns aoc-2019.day11
   (:require
-   [clojure.string :refer [split]]
    [aoc.core :refer :all]
    [aoc-2019.day05 :refer [debug set-debug]]
    [aoc-2019.day07 :refer [terminated?]]
    [aoc-2019.day09 :refer [run-instr]]
    [clojure.test :refer :all]))
 
-(defn parse-input [input]
-  (vec
-   (map
-    #(Long/parseLong %)
-    (split input #","))))
+(puzzle-input-int-array)
 
-(def puzzle-input (parse-input (puzzle-input-string)))
+;; part 1
 
 (defn run [state halt-condition]
   (loop [state (merge {:ip 0, :base 0, :mem [], :in [], :out []} state)]
@@ -64,7 +59,7 @@
         )
     )))
 
-(defn part1 [input]
+(defpart part1 [input]
   (-> (run-robot input 0)
       :painted-panels
       count))
@@ -109,7 +104,7 @@
      (map #(update % 0 sub origin) painted-panels))
     ))
 
-(defn part2 [input]
+(defpart part2 [input]
   (-> (run-robot input 1)
       :painted-panels
       paint-panels

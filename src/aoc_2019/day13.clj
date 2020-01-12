@@ -6,7 +6,7 @@
    [clojure.core.async :as async :refer [>!! poll! close! chan]]
    [clojure.test :refer :all]))
 
-(def puzzle-input (puzzle-input-int-array))
+(puzzle-input-int-array)
 
 ;; part 1
 
@@ -83,14 +83,7 @@
       state
       (recur (run-instr state in out)))))
 
-(defn read-all [channel]
-  (loop [v []]
-    (if-let [val (poll! channel)]
-      (recur (conj v val))
-      v))
-  )
-
-(defn part1 [input]
+(defpart part1 [input]
   (let [out (chan 10000 (comp (partition-all 3)
                               (map last)
                               (map tile-types)))]
@@ -109,7 +102,7 @@
             n
             [x y (tile-types n)])))))
 
-(defn part2 [input]
+(defpart part2 [input]
   (let [out (chan 10000 adapt-screen-cmds)
         score (atom 0)
         paddle-x (atom nil)

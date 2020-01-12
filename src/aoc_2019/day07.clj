@@ -1,10 +1,12 @@
 (ns aoc-2019.day07
   (:require
-   [aoc-2019.day05 :refer [parse-string parse-input op-code param-mode debug set-debug]]
+   [aoc.core :refer :all]
+   [aoc-2019.day05 :refer [op-code param-mode debug set-debug]]
    [clojure.pprint :refer [pprint]]))
 
-(def puzzle-input-7 (parse-input "2019-07.txt"))
+(puzzle-input-int-array)
 
+;; part 1
 
 (defn cur-instr [state]
   ((state :mem) (state :ip)))
@@ -92,16 +94,12 @@
   (let [nb-amps (count amp-states)]
     (loop [n 0
            amps amp-states]
-      ;(println nb-amps "amps:" amps)
       (let [amp (get amps n)]
         (if (nil? amp)
           amps
           (do
-          (println "Running Amp" n "in:" (amp :in) "out:" (amp :out))
           (let [new-amp (run amp)
                 ret-value (new-amp :out)]
-            (println "      → Amp" n "in:" (new-amp :in) "out:" (new-amp :out))
-            ;(println "Amp" n "=" new-amp)
             (recur
              (inc n)
              (-> amps
@@ -124,22 +122,23 @@
          (map #(loop-value (run-amps (init-amps mem %)))
               (permutations (range 5)))))
 
+(defpart part1 [input]
+  (find-max-thrust input))
+
 ;; part 2
 
 (defn run-amps-loop [mem phases]
-  (println "phases" phases)
   (loop [amps (init-amps mem phases)
          thrust nil]
-;;    (println (count amps) "amps")
-    ;;    (println amps)
     (let [new-thrust (loop-value amps)]
-      (println "thrust" thrust "→" new-thrust)
       (if (= thrust new-thrust)
-        (do (println "→" (loop-value amps))
-            amps)
+        amps
         (recur (run-amps amps) new-thrust)))))
 
 (defn find-max-thrust-loop [mem]
   (apply max
          (map #(loop-value (run-amps-loop mem %))
               (permutations (range 5 10)))))
+
+(defpart part2 [input]
+  (find-max-thrust-loop input))

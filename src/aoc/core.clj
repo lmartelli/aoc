@@ -60,18 +60,21 @@
       (apply str)))
 
 (defmacro puzzle-input-string []
-  '($puzzle-input-string *ns*))
+  '(def ~'puzzle-input ($puzzle-input-string *ns*)))
 
 (defn $puzzle-input-lines [ns]
   (->> ($puzzle-input-stream ns)
        io/reader
        line-seq))
 
+(defmacro puzzle-input-parse-stream [f]
+  `(def ~'puzzle-input (~f ($puzzle-input-stream *ns*))))
+
 (defmacro puzzle-input-lines []
-  '($puzzle-input-lines *ns*))
+  `(def ~'puzzle-input ($puzzle-input-lines *ns*)))
 
 (defmacro puzzle-input-parse-lines [f]
-  `(map ~f ($puzzle-input-lines *ns*)))
+  `(def ~'puzzle-input (map ~f ($puzzle-input-lines *ns*))))
 
 (defn parse-int [s] (Long/parseLong s))
 
@@ -82,7 +85,7 @@
     (str/split input #","))))
 
 (defmacro puzzle-input-int-array []
-  `(parse-int-array ($puzzle-input-string *ns*)))
+  `(def ~'puzzle-input (parse-int-array ($puzzle-input-string *ns*))))
 
 (defn digit-seq
   "Parses s as a sequence of digits.
@@ -91,7 +94,7 @@
   (map #(Character/digit % 10) s))
 
 (defmacro puzzle-input-parse [f]
-  `(~f ($puzzle-input-string *ns*)))
+  `(def ~'puzzle-input (~f ($puzzle-input-string *ns*))))
 
 (defn remove-nil [& colls]
   (apply map #(remove nil? %) colls))

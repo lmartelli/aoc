@@ -1,24 +1,8 @@
 (ns aoc-2019.day05
   (:require
-   [clojure.java.io :as io]
-   [clojure.string :refer [split split-lines]]))
+   [aoc.core :refer :all]))
 
-(defn parse-string [str]
-  (vec
-   (map
-    #(Long/parseLong %)
-    (split str #","))))
-
-(defn parse-input [resource]
-  (vec
-   (map
-    #(Long/parseLong %)
-    (mapcat
-     #(split % #",")
-     (split-lines
-      (slurp (io/resource resource)))))))
-
-(def puzzle-input (parse-input "2019-05.txt"))
+(puzzle-input-int-array)
 
 (defn get-digit [n pos]
   (mod (reduce quot n (repeat (dec pos) 10)) 10))
@@ -112,5 +96,8 @@
         (debug "new ip:" ip)
         (recur ip memory in out)))))
 
-(defn part2 [input]
-  (run input [5]))
+(defpart part1 [input]
+  (-> (run input [1]) last))
+
+(defpart part2 [input]
+  (-> (run input [5]) last))

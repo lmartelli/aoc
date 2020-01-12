@@ -3,7 +3,7 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(def puzzle-input (puzzle-input-parse-lines parse-int))
+(puzzle-input-parse-lines parse-int)
 
 ;; part 1
 

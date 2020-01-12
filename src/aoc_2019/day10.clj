@@ -1,5 +1,6 @@
 (ns aoc-2019.day10
   (:require
+   [aoc.core :refer :all]
    [clojure.java.io :as io]
    [clojure.test :refer :all]
    [clojure.algo.generic.math-functions :refer [atan2]]
@@ -13,15 +14,12 @@
 (defn read-lines [lines]
   (mapcat read-line lines (range)))
 
-(defn read-map [resource]
-  (-> resource
-      io/resource
-      io/reader
+(defn read-map [reader]
+  (-> reader
       line-seq
       read-lines))
 
-(def puzzle-input
-  (read-map "2019-10.txt"))
+(puzzle-input-parse-stream read-map)
 
 ;; part 1
 
@@ -66,6 +64,9 @@
 (defn find-best [all]
   (apply max-key second (count-detected all)))
 
+(defpart part1 [input]
+  (-> input find-best last))
+
 ;; part 2
 
 (defn phase
@@ -105,9 +106,10 @@
          #(count-detected-2 % all)
          all))
 
-(defn part2 [all]
-  (nth (vaporization-order all (find-best-station all))
-   199))
+(defpart part2 [input]
+  (let [[x y] (nth (vaporization-order input (find-best-station input))
+                   199)]
+    (str x (format "%02d" y))))
 
 ;; tests
 
