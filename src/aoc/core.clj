@@ -84,6 +84,15 @@
 (defmacro puzzle-input-int-array []
   `(parse-int-array ($puzzle-input-string *ns*)))
 
+(defn digit-seq
+  "Parses s as a sequence of digits.
+  \"123456\" will return (1 2 3 4 5 6.)"
+  [s]
+  (map #(Character/digit % 10) s))
+
+(defmacro puzzle-input-parse [f]
+  `(~f ($puzzle-input-string *ns*)))
+
 (defn remove-nil [& colls]
   (apply map #(remove nil? %) colls))
 
