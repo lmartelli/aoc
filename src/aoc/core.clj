@@ -89,7 +89,7 @@
 
 (defn digit-seq
   "Parses s as a sequence of digits.
-  \"123456\" will return (1 2 3 4 5 6.)"
+  \"123456\" will return (1 2 3 4 5 6)."
   [s]
   (map #(Character/digit % 10) s))
 
@@ -106,6 +106,10 @@
 (defn sub "Vector subtraction"
   [a & rest]
   (vec (apply map - a rest)))
+
+(defn mult "Vector multiplication by a number: v × n"
+  [v n]
+  (mapv #(* % n) v))
 
 (defn read-all [channel]
   (loop [v []]
