@@ -109,7 +109,7 @@
 (defpart part2 [input]
   (let [[x y] (nth (vaporization-order input (find-best-station input))
                    199)]
-    (str x (format "%02d" y))))
+    (+ x (* 100 y))))
 
 ;; tests
 
