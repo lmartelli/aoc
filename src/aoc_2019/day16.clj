@@ -4,7 +4,7 @@
    [clojure.math.numeric-tower :refer [abs]]
    [clojure.test :refer :all]))
 
-(def puzzle-input (puzzle-input-parse digit-seq))
+(puzzle-input-parse digit-seq)
 
 (def base-pattern [0 1 0 -1])
 
@@ -34,9 +34,36 @@
        (take 8)
        (apply str)))
 
+(deftest apply-pattern-test
+  (doall
+   (map
+    #(is (= %1 (apply-pattern (range 1 9) %2)))
+    '(4 8 2 2 6 1 5 8)
+    (range 1 9))))
+
 ;; part 2
 
-(defn part2 [input]
-  )
+;; We take advantage of the fact that the offset is in the 2nd half of the signal.
+;; And for this half, the FFT is a triangular matrix made of 1's in the upper side,
+;; So each digit only depends on the following ones (and it is the sum of them).
+
+(defn signal-offset [input]
+  (parse-int (apply str (take 7 input))))
+
+(defn partial-sum
+  [signal]
+  (reductions (fn [last current] (mod (+ current last) 10)) signal))
+
+(defn transform [signal]
+  (nth
+   (iterate partial-sum signal)
+   100))
+
+(defpart part2 [input]
+  (let [offset (signal-offset input)
+        signal-tail (take (- (* 10000 (count input)) offset) (cycle (reverse input)))]
+    (->> (reverse (transform signal-tail))
+         (take 8)
+         (apply str))))
 
 ;; tests
