@@ -20,12 +20,6 @@
 (defn halt-condition [state]
   (= 2 (-> state :out count)))
 
-(defn rotate-left [[x y]]
-  [y (- x)])
-
-(defn rotate-right [[x y]]
-  [(- y)  x])
-
 (defn rotate [robot instr]
   (case instr
     0 (update robot :dir rotate-left)

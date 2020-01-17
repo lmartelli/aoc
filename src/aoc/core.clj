@@ -111,6 +111,12 @@
   [v n]
   (mapv #(* % n) v))
 
+(defn rotate-left [[x y]]
+  [y (- x)])
+
+(defn rotate-right [[x y]]
+  [(- y)  x])
+
 (defn read-all [channel]
   (loop [v []]
     (if-let [val (poll! channel)]
