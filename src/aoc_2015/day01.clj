@@ -1,12 +1,12 @@
 (ns aoc-2015.day01
   (:require [aoc.core :refer :all]))
 
-(def puzzle-input (puzzle-input-string))
+(puzzle-input-string)
 
-(defn part1 [input]
+(defpart part1 [input]
   (reduce + (map {\( 1, \) -1} input)))
 
-(defn part2 [input]
+(defpart part2 [input]
   (loop [floor 0
          pos 0
          input (map {\( 1, \) -1} input)]

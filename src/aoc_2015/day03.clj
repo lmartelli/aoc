@@ -2,7 +2,7 @@
   (:require [aoc.core :refer :all]
             [clojure.string :refer [split]]))
 
-(def puzzle-input (puzzle-input-string))
+(puzzle-input-string)
 
 ;; part 1
 
@@ -22,7 +22,7 @@
        {:pos [0 0] :visited #{[0 0]}}
        directions))
 
-(defn part1 [input]
+(defpart part1 [input]
   (-> (distribute input)
       :visited
       count))
@@ -36,7 +36,7 @@
     (repeat n [])
     (partition n n (repeat nil) coll))))
 
-(defn part2 [input]
+(defpart part2 [input]
   (->> (for [directions (dispatch input 2)]
         (-> (distribute directions)
             :visited))
