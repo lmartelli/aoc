@@ -60,7 +60,7 @@
       (apply str)))
 
 (defmacro puzzle-input-string []
-  '(def ~'puzzle-input ($puzzle-input-string *ns*)))
+  `(def ~'puzzle-input ($puzzle-input-string *ns*)))
 
 (defn $puzzle-input-lines [ns]
   (->> ($puzzle-input-stream ns)
@@ -123,6 +123,7 @@
       (recur (conj v val))
       v))
   )
+
 (defmacro defpart [name args body]
   `(def ~name
      (fn
