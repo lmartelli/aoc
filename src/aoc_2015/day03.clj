@@ -30,11 +30,10 @@
 ;; part 2
 
 (defn dispatch [coll n]
-  (remove-nil
-   (reduce
-    (fn [colls items] (doall (map conj colls items)))
-    (repeat n [])
-    (partition n n (repeat nil) coll))))
+  (->> coll
+       (partition n n (repeat nil))
+       (apply map vector)
+       remove-nil))
 
 (defpart part2 [input]
   (->> (for [directions (dispatch input 2)]
