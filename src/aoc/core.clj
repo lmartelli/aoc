@@ -75,7 +75,7 @@
   `(def ~'puzzle-input ($puzzle-input-lines *ns*)))
 
 (defmacro puzzle-input-parse-lines [f]
-  `(def ~'puzzle-input (map ~f ($puzzle-input-lines *ns*))))
+  `(def ~'puzzle-input (mapv ~f ($puzzle-input-lines *ns*))))
 
 (defn parse-int [s] (Long/parseLong s))
 
