@@ -56,9 +56,9 @@
 
 (defn $puzzle-input-string [ns]
   (->> ($puzzle-input-stream ns)
-      slurp
-      str/split-lines
-      (apply str)))
+       slurp
+       str/split-lines
+       (apply str)))
 
 (defmacro puzzle-input-string []
   `(def ~'puzzle-input ($puzzle-input-string *ns*)))

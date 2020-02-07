@@ -89,7 +89,7 @@
                               (map tile-types)))]
     (run {:mem input} nil out)
     (->> (read-all out)
-     frequencies
+         frequencies
          :block)))
 
 ;; part 2
@@ -122,7 +122,7 @@
                             (> @paddle-x @ball-x) -1
                             :else 0)]
                  move))]
-      (run {:mem (assoc input 0 2)} play out)
+    (run {:mem (assoc input 0 2)} play out)
     (close! out)
     (run! handle-out (read-all out))
     @score))

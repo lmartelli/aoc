@@ -30,9 +30,9 @@
   (reduce (fn [input _] (phase input)) digits (range n)))
 
 (defpart part1 [input]
-  (->> (phases input 100)
-       (take 8)
-       (apply str)))
+   (->> (phases input 100)
+        (take 8)
+        (apply str)))
 
 (deftest apply-pattern-test
   (doall

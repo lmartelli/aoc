@@ -98,13 +98,13 @@
         (if (nil? amp)
           amps
           (do
-          (let [new-amp (run amp)
-                ret-value (new-amp :out)]
-            (recur
-             (inc n)
-             (-> amps
-                 (assoc n (assoc new-amp :out []))
-                 (update-in [(mod (inc n) nb-amps) :in] concat ret-value))))))))))
+            (let [new-amp (run amp)
+                  ret-value (new-amp :out)]
+              (recur
+               (inc n)
+               (-> amps
+                   (assoc n (assoc new-amp :out []))
+                   (update-in [(mod (inc n) nb-amps) :in] concat ret-value))))))))))
 
 (defn init-amps [mem phases]
   (update-in

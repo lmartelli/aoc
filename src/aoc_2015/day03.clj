@@ -7,20 +7,20 @@
 ;; part 1
 
 (defn move [pos dir]
-     (case dir
-       \< (update pos 0 dec)
-       \> (update pos 0 inc)
-       \^ (update pos 1 dec)
-       \v (update pos 1 inc)))
+  (case dir
+    \< (update pos 0 dec)
+    \> (update pos 0 inc)
+    \^ (update pos 1 dec)
+    \v (update pos 1 inc)))
 
 (defn distribute [directions]
   (reduce
-       (fn [{pos :pos visited :visited} dir]
-         (let [new-pos (move pos dir)]
-           {:pos new-pos
-            :visited (conj visited new-pos)}))
-       {:pos [0 0] :visited #{[0 0]}}
-       directions))
+   (fn [{pos :pos visited :visited} dir]
+     (let [new-pos (move pos dir)]
+       {:pos new-pos
+        :visited (conj visited new-pos)}))
+   {:pos [0 0] :visited #{[0 0]}}
+   directions))
 
 (defpart part1 [input]
   (-> (distribute input)

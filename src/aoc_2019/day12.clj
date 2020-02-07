@@ -102,7 +102,7 @@
   (is (= [{:pos [1 2 3] :velocity [12 13 13]}
           {:pos [9 8 7] :velocity [-2 -2 -2]}
           {:pos [3 3 3] :velocity [3 4 6]}]
-         (apply-gravity 
+         (apply-gravity
           [{:pos [1 2 3] :velocity [10 11 12]}
            {:pos [9 8 7] :velocity [0 0 0]}
            {:pos [3 3 3] :velocity [3 4 5]}]))))

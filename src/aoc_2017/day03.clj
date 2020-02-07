@@ -32,7 +32,7 @@
         (range))
        (map (fn [{:keys [:m :pos :dir]}]
               {:pos pos, :val (m pos)}))))
-  
+
 (defpart part1 [input]
   (->> (spiral-seq 1 inc-last)
        (find-first #(= (% :val) input))
