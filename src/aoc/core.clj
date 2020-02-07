@@ -2,6 +2,7 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
+   [clojure.math.numeric-tower :refer [abs]]
    [clj-http.client :as http]
    [clojure.core.async :as async :refer [poll!]]))
 
@@ -116,6 +117,11 @@
 
 (defn rotate-right [[x y]]
   [(- y)  x])
+
+(defn manatthan-dist [p]
+  (->> p
+       (map abs)
+       (reduce +)))
 
 (defn read-all [channel]
   (loop [v []]
