@@ -118,6 +118,9 @@
 (defn rotate-right [[x y]]
   [(- y)  x])
 
+(defn move [pos dir dist]
+  (add pos (mult dir dist)))
+
 (defn manatthan-dist [p]
   (->> p
        (map abs)
