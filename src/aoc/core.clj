@@ -102,11 +102,11 @@
 
 (defn add "Vector addition"
   [a & rest]
-  (vec (apply map + a rest)))
+  (apply mapv + a rest))
 
 (defn sub "Vector subtraction"
   [a & rest]
-  (vec (apply map - a rest)))
+  (apply mapv - a rest))
 
 (defn mult "Vector multiplication by a number: v × n"
   [v n]
