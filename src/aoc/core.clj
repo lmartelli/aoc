@@ -77,6 +77,12 @@
 (defmacro puzzle-input-parse-lines [f]
   `(def ~'puzzle-input (mapv ~f ($puzzle-input-lines *ns*))))
 
+(defmacro puzzle-input-split-lines
+  ([regex xf]
+   `(puzzle-input-parse-lines #(~xf (str/split % ~regex))))
+  ([regex]
+   `(puzzle-input-split-lines ~regex identity)))
+
 (defn parse-int [s] (Long/parseLong s))
 
 (defn parse-int-array [input]
@@ -138,3 +144,9 @@
      (fn
        ([] (~name ~'puzzle-input))
        (~args ~body))))
+
+(defn remove-index [array index]
+  (vec
+   (concat
+    (subvec array 0 index)
+    (subvec array (inc index)))))
