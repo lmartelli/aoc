@@ -150,3 +150,9 @@
    (concat
     (subvec array 0 index)
     (subvec array (inc index)))))
+
+(defn grep [regex seq]
+  (filter #(re-find regex %) seq))
+
+(defn find-first [f seq]
+  (first (filter f seq)))
