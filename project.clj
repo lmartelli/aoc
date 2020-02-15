@@ -7,7 +7,8 @@
                  [org.clojure/math.combinatorics "0.1.6"]
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [org.clojure/core.async "0.6.532"]
-                 [clj-http "3.10.0"]]
+                 [clj-http "3.10.0"]
+                 [instaparse "1.4.10"]]
   :main ^:skip-aot aoc.core
   :test-paths ["src"]
   :target-path "target/%s"
