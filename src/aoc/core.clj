@@ -76,8 +76,13 @@
   ([] `(puzzle-input-lines identity))
   ([xf] `(def ~'puzzle-input (~xf ($puzzle-input-lines *ns*)))))
 
-(defmacro puzzle-input-parse-lines [f]
-  `(def ~'puzzle-input (mapv ~f ($puzzle-input-lines *ns*))))
+(defn $puzzle-input-parse-lines
+  ([lines parse] ($puzzle-input-parse-lines lines parse identity))
+  ([lines parse xf] (->> lines (mapv parse) xf)))
+
+(defmacro puzzle-input-parse-lines
+  ([f] `(def ~'puzzle-input ($puzzle-input-parse-lines ($puzzle-input-lines *ns*) ~f)))
+  ([f xf] `(def ~'puzzle-input ($puzzle-input-parse-lines ($puzzle-input-lines *ns*) ~f ~xf))))
 
 (defmacro puzzle-input-split-lines
   ([regex xf]
@@ -177,3 +182,5 @@
        (map #(conj % x) (combinations-with-sum (dec n) (- sum x))))
      (range (inc sum)))))
 
+(defn get-wrap [v index]
+  (get v (mod index (count v))))

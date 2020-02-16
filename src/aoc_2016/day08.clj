@@ -10,9 +10,6 @@
 
 ;; part 1
 
-(defn get-wrap [v index]
-  (get v (mod index (count v))))
-
 (defn rotate [v n]
   (mapv (fn [pixel index] (get-wrap v (- index n))) v (range)))
 
