@@ -3,6 +3,7 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [clojure.math.numeric-tower :refer [abs]]
+   [clojure.math.combinatorics :as combin]
    [clj-http.client :as http]
    [clojure.core.async :as async :refer [poll!]]))
 
@@ -156,3 +157,13 @@
 
 (defn find-first [f seq]
   (first (filter f seq)))
+
+(defn combinations-with-sum
+  "Combinations of n positive integers constrained by a sum"
+  [n sum]
+  (if (= 1 n)
+    (list [sum])
+    (mapcat
+     (fn [x]
+       (map #(conj % x) (combinations-with-sum (dec n) (- sum x))))
+     (range (inc sum)))))
