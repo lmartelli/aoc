@@ -26,11 +26,14 @@
        (map #(property-score properties recipe %))
        (reduce *)))
 
-(defn recipes-seq [properties]
+(def recipes-seq
   (let [range (range 0 101)]
     (for [a range, b range, c range, d range
                :when (= 100 (+ a b c d))]
            [a b c d])))
+
+(def recipes-seq
+  (combinations-with-sum 4 100))
 
 (defn find-best-recipe [properties seq]
   (->> seq
@@ -38,7 +41,7 @@
        (apply max)))
 
 (defpart part1 [input]
-  (find-best-recipe input (recipes-seq input)))
+  (find-best-recipe input recipes-seq))
 
 ;; part 2
 
@@ -48,6 +51,6 @@
 (defpart part2 [properties]
   (find-best-recipe
    properties
-   (filter #(= 500 (calories properties %)) (recipes-seq properties))))
+   (filter #(= 500 (calories properties %)) recipes-seq)))
 
 ;; tests
