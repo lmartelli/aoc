@@ -184,3 +184,10 @@
 
 (defn get-wrap [v index]
   (get v (mod index (count v))))
+
+(defn multimap [entries]
+  (reduce
+   (fn [m [key value]]
+     (update m key conj value))
+   {}
+   entries))

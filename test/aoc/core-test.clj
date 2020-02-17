@@ -8,9 +8,6 @@
     "abcde" {} "abcde"
     "abcde" {\a \A, \b \B} "ABcde"))
 
-(deftest puzzle-input-resource-path-test
-  (is (= "a_b/c_d.txt" (puzzle-input-resource-path (create-ns 'a-b.c_d)))))
-
 (deftest parse-aoc-ns-name-test
   (are [name year day] (= [year day] (parse-aoc-ns-name name))
     "aoc-123.day0042" "123" "42" 
@@ -50,3 +47,7 @@
     [0 1 2 3 -4]  3 [0 3 6 9 -12]
     [0 1 2 3 -4] -1 [0 -1 -2 -3 4]
     ))
+
+(deftest multimap-test
+  (is (= {:a '(3 1), :b '(2)}
+         (multimap [[:a 1] [:b 2] [:a 3]]))))
