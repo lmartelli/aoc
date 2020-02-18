@@ -8,14 +8,6 @@
 
 (def initial-pos [1 1])
 
-(defn array-2d-to-map [rows]
-  (into
-   {}
-   (mapcat
-    (fn [row y]
-      (mapv (fn [val x] [[x y] val]) row (range)))
-    rows (range))))
-
 (def keyboard1
   (array-2d-to-map
    [[1 2 3]

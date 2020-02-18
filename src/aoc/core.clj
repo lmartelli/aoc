@@ -72,8 +72,9 @@
 (defmacro puzzle-input-parse-stream [f]
   `(def ~'puzzle-input (~f ($puzzle-input-stream *ns*))))
 
-(defmacro puzzle-input-lines []
-  `(def ~'puzzle-input ($puzzle-input-lines *ns*)))
+(defmacro puzzle-input-lines
+  ([] `(puzzle-input-lines identity))
+  ([xf] `(def ~'puzzle-input (~xf ($puzzle-input-lines *ns*)))))
 
 (defmacro puzzle-input-parse-lines [f]
   `(def ~'puzzle-input (mapv ~f ($puzzle-input-lines *ns*))))
@@ -146,6 +147,14 @@
        ([] (~name ~'puzzle-input))
        (~args ~body))))
 
+(defn array-2d-to-map [rows]
+  (into
+   {}
+   (mapcat
+    (fn [row y]
+      (mapv (fn [val x] [[x y] val]) row (range)))
+    rows (range))))
+
 (defn remove-index [array index]
   (vec
    (concat
@@ -167,3 +176,4 @@
      (fn [x]
        (map #(conj % x) (combinations-with-sum (dec n) (- sum x))))
      (range (inc sum)))))
+
