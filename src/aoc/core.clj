@@ -61,8 +61,9 @@
        str/split-lines
        (apply str)))
 
-(defmacro puzzle-input-string []
-  `(def ~'puzzle-input ($puzzle-input-string *ns*)))
+(defmacro puzzle-input-string
+  ([] `(puzzle-input-string identity))
+  ([xf] `(def ~'puzzle-input (~xf ($puzzle-input-string *ns*)))))
 
 (defn $puzzle-input-lines [ns]
   (->> ($puzzle-input-stream ns)
@@ -172,6 +173,9 @@
 (defn find-first [f seq]
   (first (filter f seq)))
 
+(defn find-last [f seq]
+  (last (take-while f seq)))
+
 (defn combinations-with-sum
   "Combinations of n positive integers constrained by a sum"
   [n sum]
@@ -191,3 +195,30 @@
      (update m key conj value))
    {}
    entries))
+
+(defn positions [col pred]
+  (keep-indexed
+   (fn [index item]
+     (when (pred item) index))
+   col))
+
+(defn first-position [col pred]
+  (first (positions col pred)))
+
+(defn range-inc [from to]
+  (range from (inc to)))
+
+(defn expand-bag [bag]
+  (mapcat (fn [[k v]] (repeat v k)) bag))
+
+(defn update!
+  ([m k f]
+   (assoc! m k (f (get m k))))
+  ([m k f x]
+   (assoc! m k (f (get m k) x)))
+  ([m k f x y]
+   (assoc! m k (f (get m k) x y)))
+  ([m k f x y z]
+   (assoc! m k (f (get m k) x y z)))
+  ([m k f x y z & more]
+   (assoc! m k (apply f (get m k) (concat [x y z] more)))))
