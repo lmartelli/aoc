@@ -81,18 +81,21 @@
    (->> (multiples-in-range n min)
         (take-while #(<= % max)))))
 
+(defn aupdate-long [^longs a k f x]
+  (aset-long a k (f (aget a k) x))
+  a)
+
 (defn elf-delivery [house-min house-max houses elf-num]
   (reduce
    (fn [houses house-num]
-     (update! houses house-num + (* elf-num 10)))
+     (aupdate-long houses house-num + (* elf-num 10)))
    houses
    (multiples-in-range elf-num house-min house-max)))
 
 (defn deliver-presents [min-house max-house elf-delivery]
-  (persistent!
-   (reduce (partial elf-delivery min-house max-house)
-           (transient (vec (repeat (inc max-house) 0)))
-           (range-inc 1 (count houses)))))
+  (reduce (partial elf-delivery min-house max-house)
+          (long-array (inc max-house))
+          (range-inc 1 (count houses))))
 
 (defn lower-bound-house-num [min-presents]
   (->> (iterate next-local-max {})
@@ -108,8 +111,8 @@
     (->> (deliver-presents start
                            (upper-bound-house-num min-presents)
                            elf-delivery)
-         (map vector (range))
          (drop start)
+         (map vector (iterate inc start))
          (find-first
           (fn [[house-num nb-present]]
             (> nb-present min-presents))))))
@@ -123,10 +126,7 @@
 (defn elf-delivery2 [houses elf-num]
   (reduce
    (fn [houses house-num]
-     (assoc! houses
-             (dec house-num)
-             (+ (* elf-num 11)
-                (get houses (dec house-num)))))
+     (update! houses house-num + (* elf-num 11)))
    houses
    (->> (multiples elf-num)
         (take 50)
