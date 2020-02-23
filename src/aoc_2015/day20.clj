@@ -123,16 +123,18 @@
 
 ;; part 2
 
-(defn elf-delivery2 [houses elf-num]
+(defn presents-delivered2 [house-num]
   (reduce
-   (fn [houses house-num]
-     (update! houses house-num + (* elf-num 11)))
-   houses
-   (->> (multiples elf-num)
-        (take 50)
-        (take-while #(<= % (count houses))))))
+   (fn [nb-presents elf-num]
+     (if (divisible? house-num elf-num)
+       (+ nb-presents
+          (* 11 (/ house-num elf-num)))
+       nb-presents))
+   0
+   (range-inc 1 50)))
 
 (defpart part2 [input]
-  (find-house-with-min-presents input elf-delivery2))
+  (->> (iterate #(+ 60 %) 0)
+       (find-first #(>= (presents-delivered2 %) input))))
 
 ;; tests
