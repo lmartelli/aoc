@@ -226,3 +226,6 @@
 (defn group-by-pred [pred coll]
   [(filter pred coll)
    (filter (comp not pred) coll)])
+
+(defn max-val [m]
+  (val (apply max-key val m)))
