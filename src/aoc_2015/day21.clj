@@ -1,16 +1,10 @@
 (ns aoc-2015.day21
   (:require
    [aoc.core :refer :all]
-   [clojure.string :refer [split]]
+   [aoc-2015.rpg :refer :all]
    [clojure.math.combinatorics :as combi :refer [combinations]]))
 
-(def props {"Hit Points" :hit-points, "Armor" :armor, "Damage" :damage})
-
-(puzzle-input-parse-lines
- (fn [line] (split line #": "))
- (fn [lines]
-   (let [[keys vals] (apply map vector lines)]
-     (zipmap (map props keys) (map parse-int vals)))))
+(puzzle-input-rpg-properties)
 
 (defn parse-items [coll]
   (->> coll
@@ -46,15 +40,8 @@
 
 ;; part 1
 
-(defn play-turn [[attacker defender]]
-  [(update defender
-           :hit-points
-           -
-           (max 1 (- (attacker :damage) (defender :armor))))
-   attacker])
-
-(defn dead? [player]
-  (<= (player :hit-points) 0))
+(defn play-turn [players]
+  (reverse (apply-damage players)))
 
 (defn win? [player enemy]
   (->> (iterate play-turn [player (assoc enemy :boss true)])
