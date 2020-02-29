@@ -222,3 +222,7 @@
    (assoc! m k (f (get m k) x y z)))
   ([m k f x y z & more]
    (assoc! m k (apply f (get m k) (concat [x y z] more)))))
+
+(defn group-by-pred [pred coll]
+  [(filter pred coll)
+   (filter (comp not pred) coll)])
