@@ -94,10 +94,9 @@
 (defn parse-int [s] (Long/parseLong s))
 
 (defn parse-int-array [input]
-  (vec
-   (map
+   (mapv
     #(Long/parseLong %)
-    (str/split input #","))))
+    (str/split input #",")))
 
 (defmacro puzzle-input-int-array []
   `(def ~'puzzle-input (parse-int-array ($puzzle-input-string *ns*))))
