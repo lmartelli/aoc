@@ -5,7 +5,8 @@
    [clojure.math.numeric-tower :refer [abs]]
    [clojure.math.combinatorics :as combin]
    [clj-http.client :as http]
-   [clojure.core.async :as async :refer [poll!]]))
+   [clojure.core.async :as async :refer [poll!]]
+   [clojure.pprint :refer [cl-format]]))
 
 (defn system-get-property [p]
   (System/getProperty p))
@@ -152,13 +153,16 @@
        ([] (~name ~'puzzle-input))
        (~args ~body))))
 
-(defn array-2d-to-map [rows]
-  (into
-   {}
-   (mapcat
-    (fn [row y]
-      (mapv (fn [val x] [[x y] val]) row (range)))
-    rows (range))))
+(defn array-2d-to-map
+  ([rows] (array-2d-to-map identity rows))
+  ([pred rows]
+   (into
+    {}
+    (filter (fn [[[x y] val]] (pred val)))
+     (mapcat
+      (fn [row y]
+        (mapv (fn [val x] [[x y] val]) row (range)))
+      rows (range)))))
 
 (defn remove-index [array index]
   (vec
@@ -228,3 +232,9 @@
 
 (defn max-val [m]
   (val (apply max-key val m)))
+
+(defn hex [ints]
+  (apply str (map #(format "%02x" %) ints)))
+
+(defn bin [ints]
+  (apply str (map #(cl-format nil "~8,'0',B" %) ints)))
