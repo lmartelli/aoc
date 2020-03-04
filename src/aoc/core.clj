@@ -8,6 +8,8 @@
    [clojure.core.async :as async :refer [poll!]]
    [clojure.pprint :refer [cl-format]]))
 
+;; puzzle input downloading
+
 (defn system-get-property [p]
   (System/getProperty p))
 
@@ -48,6 +50,8 @@
         (-> (puzzle-input-uri year day)
             (http/get {:cookies {"session" {:path "/" :value session}}})
             :body)))
+
+;; puzzle input parsing
 
 (defn $puzzle-input-stream [ns]
   (let [[year day] (parse-aoc-ns-name (ns-name ns))
@@ -102,43 +106,32 @@
 (defmacro puzzle-input-int-array []
   `(def ~'puzzle-input (parse-int-array ($puzzle-input-string *ns*))))
 
+(defmacro puzzle-input-parse [f]
+  `(def ~'puzzle-input (~f ($puzzle-input-string *ns*))))
+
+(defn split-input [str regex xf]
+  (->> (str/split str regex)
+       (map xf)))
+
+(defmacro puzzle-input-split
+  ([regex xf]
+   `(def ~'puzzle-input (split-input ($puzzle-input-string *ns*) ~regex ~xf)))
+  ([regex]
+   `(def ~'puzzle-input (split-input ($puzzle-input-string *ns*) ~regex identity))))
+
+;; misc
+
+(defn digit [c]
+  (Character/digit c 10))
+
 (defn digit-seq
   "Parses s as a sequence of digits.
   \"123456\" will return (1 2 3 4 5 6)."
   [s]
-  (map #(Character/digit % 10) s))
-
-(defmacro puzzle-input-parse [f]
-  `(def ~'puzzle-input (~f ($puzzle-input-string *ns*))))
+  (map digit s))
 
 (defn remove-nil [& colls]
   (apply map #(remove nil? %) colls))
-
-(defn add "Vector addition"
-  [a & rest]
-  (apply mapv + a rest))
-
-(defn sub "Vector subtraction"
-  [a & rest]
-  (apply mapv - a rest))
-
-(defn mult "Vector multiplication by a number: v × n"
-  [v n]
-  (mapv #(* % n) v))
-
-(defn rotate-left [[x y]]
-  [y (- x)])
-
-(defn rotate-right [[x y]]
-  [(- y)  x])
-
-(defn move [pos dir dist]
-  (add pos (mult dir dist)))
-
-(defn manatthan-dist [p]
-  (->> p
-       (map abs)
-       (reduce +)))
 
 (defn read-all [channel]
   (loop [v []]
@@ -163,12 +156,6 @@
       (fn [row y]
         (mapv (fn [val x] [[x y] val]) row (range)))
       rows (range)))))
-
-(defn remove-index [array index]
-  (vec
-   (concat
-    (subvec array 0 index)
-    (subvec array (inc index)))))
 
 (defn grep [regex seq]
   (filter #(re-find regex %) seq))
@@ -238,3 +225,55 @@
 
 (defn bin [ints]
   (apply str (map #(cl-format nil "~8,'0',B" %) ints)))
+
+;; vector
+
+(defn add "Vector addition"
+  [a & rest]
+  (apply mapv + a rest))
+
+(defn sub "Vector subtraction"
+  [a & rest]
+  (apply mapv - a rest))
+
+(defn mult "Vector multiplication by a number: v × n"
+  [v n]
+  (mapv #(* % n) v))
+
+(defn rotate-left [[x y]]
+  [y (- x)])
+
+(defn rotate-right [[x y]]
+  [(- y)  x])
+
+(defn move [pos dir dist]
+  (add pos (mult dir dist)))
+
+(defn manatthan-dist [p]
+  (->> p
+       (map abs)
+       (reduce +)))
+
+(defn remove-index [array index]
+  (vec
+   (concat
+    (subvec array 0 index)
+    (subvec array (inc index)))))
+
+(defn shift-right [v n]
+  (let [size (count v)]
+    (if (zero? size)
+      v
+      (let [pos (- size (mod n size))]
+        (vec (concat (subvec v pos) (subvec v 0 pos)))))))
+
+(defn swap [v i1 i2]
+  (assoc v
+         i1 (v i2)
+         i2 (v i1)))
+
+(defn index-of [v value]
+  (let [index (.indexOf v value)]
+    (if (= -1 index)
+      nil
+      index)))
