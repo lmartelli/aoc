@@ -254,11 +254,16 @@
        (map abs)
        (reduce +)))
 
-(defn remove-index [array index]
+(defn remove-index [v index]
   (vec
    (concat
-    (subvec array 0 index)
-    (subvec array (inc index)))))
+    (subvec v 0 index)
+    (subvec v (inc index)))))
+
+(defn insert-at [v pos value]
+  (-> (subvec v 0 pos)
+      (conj value)
+      (into (subvec v pos))))
 
 (defn shift-right [v n]
   (let [size (count v)]

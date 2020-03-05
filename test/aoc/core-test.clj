@@ -75,3 +75,12 @@
   (are [v expected] (= expected (shift-right v 2) (shift-right v (+ 2 (count v))))
     [0] [0]
     [0 1 2 3] [2 3 0 1]))
+
+(deftest insert-at-test
+  (are [v pos value expected] (= expected (insert-at v pos value))
+    [] 0 :x [:x]
+    [0] 0 :x [:x 0]
+    [0] 1 :x [0 :x]
+    [0 1 2] 1 :x [0 :x 1 2]
+    [0 1 2] 2 :x [0 1 :x 2]
+    [0 1 2] 3 :x [0 1 2 :x]))
