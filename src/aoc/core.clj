@@ -265,12 +265,18 @@
       (conj value)
       (into (subvec v pos))))
 
-(defn shift-right [v n]
-  (let [size (count v)]
-    (if (zero? size)
-      v
-      (let [pos (- size (mod n size))]
-        (vec (concat (subvec v pos) (subvec v 0 pos)))))))
+(defn shift-right
+  ([v] (shift-right v 1))
+  ([v n]
+   (let [size (count v)]
+     (if (zero? size)
+       v
+       (let [pos (- size (mod n size))]
+         (vec (concat (subvec v pos) (subvec v 0 pos))))))))
+
+(defn shift-left
+  ([v] (shift-left v 1))
+  ([v n] (shift-right v (- n))))
 
 (defn swap [v i1 i2]
   (assoc v
