@@ -162,14 +162,6 @@
         (mapv (fn [val x] [[x y] val]) row (range)))
       rows (range)))))
 
-(defn array-2d-to-set
-  "Returns a set of coordinates of `on-char` values."
-  [on-char rows]
-  (->> rows
-       (array-2d-to-map #{on-char})
-       keys
-       set))
-
 (defn init-matrix [x y value]
   (vec (repeat y (vec (repeat x value)))))
 

@@ -34,17 +34,18 @@
   (assoc-in block [y x] value))
 
 (defn indexes [size]
-  (for [x (range size), y (range size)]
-    [x y]))
+  (let [range (range size)]
+    (for [y range, x range]
+      [x y])))
 
 (defn transform [tx block]
   (let [size (get-size block)
         origin (center [(dec size) (dec size)])]
     (reduce
-     (fn [res coord]
-       (set-pixel res (tx coord origin) (get-pixel block coord)))
-     block
-     (indexes size))))
+      (fn [res coord]
+        (set-pixel res (tx coord origin) (get-pixel block coord)))
+      block
+      (indexes size))))
 
 (defn rotate [block]
   (transform rotate-right block))
@@ -56,24 +57,29 @@
   (->> block (iterate rotate) (take 4)))
 
 (defn variations [block]
-  (into #{}
-        (mapcat rotations [block (flip block)])))
+  (mapcat rotations [block (flip block)]))
 
 (defn as-strings [block]
   (->> block
        (map #(apply str %))))
 
+(defn frame [strings]
+  (let [size (count (first strings))]
+    (concat [(str \┏ (apply str (repeat size \━)) \┓)]
+            (map #(str \┃ % \┃) strings)
+            [(str \┗ (apply str (repeat size \━)) \┛)])))
+
 (defn print-block [block]
   (->> block
        as-strings
+       frame
        (join "\n")
        println)
-  (println (apply str (repeat (get-size block) \╌)))
   block)
 
 (defn print-blocks [blocks]
   (dorun
-   (map #(print-block (second %)) blocks))
+   (map #(print-block %) blocks))
   blocks)
 
 (defn complete-rules [rules]
@@ -82,38 +88,32 @@
        (into {})))
 
 (defn apply-rules [rules blocks]
-  (for [[pos block] blocks]
-    [pos (rules block)]))
+  (map rules blocks))
 
-(defn copy [from from-pos from-size to to-pos]
-  (reduce
-   (fn [to coord]
-     (set-pixel to
-                (add to-pos coord)
-                (get-pixel from (add coord from-pos))))
-   to
-   (indexes from-size)))
-
-(defn mk-block [size]
-  (init-matrix size size \.))
-
-(defn sub-block [block top-left size]
-  (copy block top-left size
-        (mk-block size) [0 0]))
+(defn split-row [row]
+  (let [size (count row)]
+    (->> row
+         (map #(partition size %))
+         (apply map vector))))
 
 (defn split-block [block]
-  (let [sub-block-size (if (multiple? (get-size block) 2) 2 3)
-        range (range (/ (get-size block) sub-block-size))]
-    (for [x range, y range]
-      [[x y] (sub-block block (mult [x y] sub-block-size) sub-block-size)])))
+  (let [size (if (multiple? (get-size block) 2) 2 3)]
+    (->> block
+         (partition size)
+         (mapcat split-row))))
+
+(defn concat-into [& vectors]
+  (reduce into vectors))
+
+(defn concat-blocks [blocks]
+  (apply map concat blocks))
 
 (defn merge-blocks [blocks]
-  (let [n (sqrt (count blocks))
-        size (get-size (second (first blocks)))]
-    (reduce
-     (fn [res [pos block]] (copy block [0 0] size res (mult pos size)))
-     (mk-block (* n size))
-     blocks)))
+  (let [n (sqrt (count blocks))]
+    (->> blocks
+         (partition n)
+         (mapcat concat-blocks)
+         vec)))
 
 (defn iter [block rules]
   (->> block
@@ -141,27 +141,50 @@
 
 ;; tests
 
-(deftest copy-block-test
-  (are [from from-pos from-size to to-pos expected]
-      (= (read-block expected) (copy (read-block from) from-pos from-size to to-pos))
-    ["┏┳┓" ;; from
-     "┣╋┫"
-     "┗┻┛"] [0 0] 3
-    (mk-block 6) [1 2] ;; to
-    ["......" ;; expected
-     "......"
-     ".┏┳┓.."
-     ".┣╋┫.."
-     ".┗┻┛.."
-     "......"]
+(deftest split-block-test
+  (are [block expected] (= (map read-block expected)
+                           (split-block (read-block block)))
+    ["01"
+     "45"]
+    [["01"
+      "45"]]
+    ["012"
+     "345"
+     "678"]
+    [["012"
+      "345"
+      "678"]]
+    ["0123"
+     "4567"
+     "89ab"
+     "cdef"]
+    [["01" "45"]
+     ["23" "67"]
+     ["89" "cd"]
+     ["ab" "ef"]]))
 
-    ["......" ;; from
-     "......"
-     ".┏┳┓.."
-     ".┣╋┫.."
-     ".┗┻┛.."
-     "......"] [1 2] 3
-    (mk-block 3) [0 0] ;; to
-    ["┏┳┓" ;; expected
-     "┣╋┫"
-     "┗┻┛"]))
+(deftest concat-blocks-test
+  (are [blocks expected]
+      (= (read-block expected) (concat-blocks (map read-block blocks)))
+    [["01"
+     "45"]
+     ["23"
+      "67"]]
+    ["0123"
+     "4567"]))
+
+(deftest merge-blocks-test
+  (are [blocks expected]
+      (= (read-block expected) (merge-blocks (map read-block blocks)))
+    [["01"
+      "45"]
+     ["23"
+      "67"]
+     ["89"
+      "cd"]
+     ["ab"
+      "ef"]]
+    ["0123"
+     "4567"
+     "89ab"
+     "cdef"]))
