@@ -288,3 +288,6 @@
     (if (= -1 index)
       nil
       index)))
+
+(defn letter? [c]
+  (Character/isLetter c))
