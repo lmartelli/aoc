@@ -65,6 +65,86 @@
     [0 1 2 3 -4]  3 [0 3 6 9 -12]
     [0 1 2 3 -4] -1 [0 -1 -2 -3 4]))
 
+(deftest rotate-left-absolute-test
+  (are [v rotated] (= rotated (rotate-left v))
+    [ 0  0] [ 0  0]
+    [ 3 -2] [-2 -3]
+    [ 3  2] [ 2 -3]
+    [-3  2] [ 2  3]
+    [-3 -2] [-2  3]))
+
+(deftest rotate-left-relative-test
+  (are [v rotated] (= rotated (rotate-left v [1 1]))
+    [ 0  0] [ 0  2]
+    [ 3 -2] [-2 -1]
+    [ 3  2] [ 2 -1]
+    [-3  2] [ 2  5]
+    [-3 -2] [-2  5]))
+
+(deftest rotate-right-absolute-test
+  (are [rotated v] (= rotated (rotate-right v))
+    [ 0  0] [ 0  0]
+    [ 3 -2] [-2 -3]
+    [ 3  2] [ 2 -3]
+    [-3  2] [ 2  3]
+    [-3 -2] [-2  3]))
+
+(deftest rotate-left-relative-test
+  (are [rotated v] (= rotated (rotate-right v [1 1]))
+    [ 0  0] [ 0  2]
+    [ 3 -2] [-2 -1]
+    [ 3  2] [ 2 -1]
+    [-3  2] [ 2  5]
+    [-3 -2] [-2  5]))
+
+(deftest flip-vert-absolute-test
+  (are [v flipped] (= flipped (flip-vert v))
+    [ 0  0] [ 0  0]
+    [ 3  0] [-3  0]
+    [ 3  3] [-3  3]
+    [ 0  3] [ 0  3]
+    [-3  3] [ 3  3]
+    [-3  0] [ 3  0]
+    [-3 -3] [ 3 -3]
+    [ 0 -3] [ 0 -3]
+    [ 3 -3] [-3 -3]))
+
+(deftest flip-vert-rel-test
+  (are [v flipped] (= flipped (flip-vert v [1 2]))
+    [ 0  0] [ 2  0]
+    [ 3  0] [-1  0]
+    [ 3  3] [-1  3]
+    [ 0  3] [ 2  3]
+    [-3  3] [ 5  3]
+    [-3  0] [ 5  0]
+    [-3 -3] [ 5 -3]
+    [ 0 -3] [ 2 -3]
+    [ 3 -3] [-1 -3]))
+
+(deftest flip-horiz-absolute-test
+  (are [v flipped] (= flipped (flip-horiz v))
+    [ 0  0] [ 0  0]
+    [ 3  0] [ 3  0]
+    [ 3  3] [ 3 -3]
+    [ 0  3] [ 0 -3]
+    [-3  3] [-3 -3]
+    [-3  0] [-3  0]
+    [-3 -3] [-3  3]
+    [ 0 -3] [ 0  3]
+    [ 3 -3] [ 3  3]))
+
+(deftest flip-horiz-absolute-test
+  (are [v flipped] (= flipped (flip-horiz v [1 2]))
+    [ 0  0] [ 0  4]
+    [ 3  0] [ 3  4]
+    [ 3  3] [ 3  1]
+    [ 0  3] [ 0  1]
+    [-3  3] [-3  1]
+    [-3  0] [-3  4]
+    [-3 -3] [-3  7]
+    [ 0 -3] [ 0  7]
+    [ 3 -3] [ 3  7]))
+
 (deftest shift-right-test
   (are [v] (= v (shift-right v 0) (shift-right v (count v)))
     [] [0] [0 1] [0 1 2 3])

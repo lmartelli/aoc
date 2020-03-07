@@ -83,7 +83,7 @@
 
 (defn $puzzle-input-parse-lines
   ([lines parse] ($puzzle-input-parse-lines lines parse identity))
-  ([lines parse xf] (->> lines (mapv parse) xf)))
+  ([lines parse xf] (xf (mapv parse lines))))
 
 (defmacro puzzle-input-parse-lines
   ([f] `(def ~'puzzle-input ($puzzle-input-parse-lines ($puzzle-input-lines *ns*) ~f)))
@@ -151,6 +151,7 @@
        (~args ~body))))
 
 (defn array-2d-to-map
+  "`pred` applies a filter to keep only some values."
   ([rows] (array-2d-to-map identity rows))
   ([pred rows]
    (into
@@ -160,6 +161,9 @@
       (fn [row y]
         (mapv (fn [val x] [[x y] val]) row (range)))
       rows (range)))))
+
+(defn init-matrix [x y value]
+  (vec (repeat y (vec (repeat x value)))))
 
 (defn grep [regex seq]
   (filter #(re-find regex %) seq))
@@ -238,6 +242,14 @@
 (defn eq [x]
   (fn [y] (= x y)))
 
+(defn square [n]
+  (* n n ))
+
+(defn multiple?
+  "Is n a multiple of m ?"
+  [n m]
+  (zero? (mod n m)))
+
 ;; vector
 
 (defn add "Vector addition"
@@ -252,11 +264,15 @@
   [v n]
   (mapv #(* % n) v))
 
+(defn div "Vector division by a number: v × 1/n"
+  [v n]
+  (mapv #(/ % n) v))
+
+(defn center [v]
+  (mult v (/ 1 2)))
+
 (defn prod "Scalar product of 2 vectors" [u v]
   (reduce + (map * u v)))
-
-(defn square [n]
-  (* n n ))
 
 (defn norm [v]
   (sqrt (reduce + (map square v))))
@@ -264,11 +280,27 @@
 (defn cos [v u]
   (/ (prod u v) (* (norm u) (norm v))))
 
-(defn rotate-left [[x y]]
-  [y (- x)])
+(defn- transform-relative [p origin tx]
+  (-> p
+      (sub origin)
+      tx
+      (add origin)))
 
-(defn rotate-right [[x y]]
-  [(- y)  x])
+(defn rotate-left "Y axis points down"
+  ([[x y]] [y (- x)])
+  ([p center] (transform-relative p center rotate-left)))
+
+(defn rotate-right "Y axis points down"
+  ([[x y]] [(- y)  x])
+  ([p center] (transform-relative p center rotate-right)))
+
+(defn flip-vert "Y axis points down"
+  ([[x y]] [(- x) y])
+  ([p [cx cy]] (transform-relative p [cx 0] flip-vert)))
+
+(defn flip-horiz "Y axis points down"
+  ([[x y]] [x (- y)])
+  ([p [cx cy]] (transform-relative p [0 cy] flip-horiz)))
 
 (defn move [pos dir dist]
   (add pos (mult dir dist)))
