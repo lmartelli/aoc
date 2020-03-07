@@ -2,8 +2,7 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
-   [clojure.math.numeric-tower :refer [abs]]
-   [clojure.math.combinatorics :as combin]
+   [clojure.math.numeric-tower :refer [abs sqrt]]
    [clj-http.client :as http]
    [clojure.core.async :as async :refer [poll!]]
    [clojure.pprint :refer [cl-format]]))
@@ -91,8 +90,10 @@
   ([f xf] `(def ~'puzzle-input ($puzzle-input-parse-lines ($puzzle-input-lines *ns*) ~f ~xf))))
 
 (defmacro puzzle-input-split-lines
-  ([regex xf]
-   `(puzzle-input-parse-lines #(~xf (str/split % ~regex))))
+  ([regex xf-line xf-lines]
+   `(puzzle-input-parse-lines (comp ~xf-line #(str/split % ~regex)) ~xf-lines))
+  ([regex xf-line]
+   `(puzzle-input-split-lines ~regex ~xf-line identity))
   ([regex]
    `(puzzle-input-split-lines ~regex identity)))
 
@@ -120,6 +121,9 @@
    `(def ~'puzzle-input (split-input ($puzzle-input-string *ns*) ~regex identity))))
 
 ;; misc
+
+(defn letter? [c]
+  (Character/isLetter c))
 
 (defn digit [c]
   (Character/digit c 10))
@@ -226,6 +230,14 @@
 (defn bin [ints]
   (apply str (map #(cl-format nil "~8,'0',B" %) ints)))
 
+(defn range-width [coll]
+  (if (empty? coll)
+    nil
+    (- (apply max coll) (apply min coll))))
+
+(defn eq [x]
+  (fn [y] (= x y)))
+
 ;; vector
 
 (defn add "Vector addition"
@@ -239,6 +251,18 @@
 (defn mult "Vector multiplication by a number: v × n"
   [v n]
   (mapv #(* % n) v))
+
+(defn prod "Scalar product of 2 vectors" [u v]
+  (reduce + (map * u v)))
+
+(defn square [n]
+  (* n n ))
+
+(defn norm [v]
+  (sqrt (reduce + (map square v))))
+
+(defn cos [v u]
+  (/ (prod u v) (* (norm u) (norm v))))
 
 (defn rotate-left [[x y]]
   [y (- x)])
@@ -288,6 +312,3 @@
     (if (= -1 index)
       nil
       index)))
-
-(defn letter? [c]
-  (Character/isLetter c))
