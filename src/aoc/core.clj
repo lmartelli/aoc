@@ -19,7 +19,7 @@
 
 (def aoc-dir (expand-home "~/.aoc"))
 
-(def session
+(defn session []
   (try (slurp (str aoc-dir "/session"))
        (catch java.io.FileNotFoundException e nil)))
 
@@ -47,7 +47,7 @@
 (defn download-puzzle-input [year day]
   (spit (puzzle-input-filename year day)
         (-> (puzzle-input-uri year day)
-            (http/get {:cookies {"session" {:path "/" :value session}}})
+            (http/get {:cookies {"session" {:path "/" :value (session)}}})
             :body)))
 
 ;; puzzle input parsing
