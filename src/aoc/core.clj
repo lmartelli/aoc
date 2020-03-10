@@ -251,6 +251,9 @@
   [n m]
   (zero? (mod n m)))
 
+(defn contains [x]
+  (fn [s] (contains? s x)))
+
 ;; vector
 
 (defn add "Vector addition"
