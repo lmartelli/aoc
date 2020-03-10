@@ -48,7 +48,9 @@
   (is (= {[0 0] \1, [1 0] \2, [2 0] \3, [0 1] \a, [1 1] \b, [2 1] \c}
          (array-2d-to-map ["123" "abc"])))
   (is (= {[0 0] \1, [2 0] \3, [1 1] \b, [2 1] \c}
-         (array-2d-to-map #(not= \space %) ["1 3" " bc"]))))
+         (array-2d-to-map #(not= \space %) ["1 3" " bc"])))
+  (is (= {[0 0] :on, [1 0] :off, [2 0] :on, [0 1] :off, [1 1] :on, [2 1] :off}
+         (array-2d-to-map #(not= \space %) {\# :on \. :off} ["#.#" ".#."]))))
 
 ;; vector
 

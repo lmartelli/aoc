@@ -144,23 +144,24 @@
       v))
   )
 
-(defmacro defpart [name args body]
+(defmacro defpart [name args & body]
   `(def ~name
      (fn
        ([] (~name ~'puzzle-input))
-       (~args ~body))))
+       (~args ~@body))))
 
 (defn array-2d-to-map
   "`pred` applies a filter to keep only some values."
   ([rows] (array-2d-to-map identity rows))
-  ([pred rows]
+  ([pred rows] (array-2d-to-map pred identity rows))
+  ([pred value-xf rows]
    (into
-    {}
-    (filter (fn [[[x y] val]] (pred val)))
+     {}
+     (filter (fn [[coord val]] (pred val)))
      (mapcat
-      (fn [row y]
-        (mapv (fn [val x] [[x y] val]) row (range)))
-      rows (range)))))
+       (fn [row y]
+         (map-indexed (fn [x val] [[x y] (value-xf val)]) row))
+       rows (range)))))
 
 (defn init-matrix [x y value]
   (vec (repeat y (vec (repeat x value)))))
