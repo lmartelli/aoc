@@ -40,6 +40,13 @@
 
 ;; part 1
 
+(defn apply-damage [[attacker defender]]
+  [attacker
+   (update defender
+           :hit-points
+           -
+           (max 1 (- (attacker :damage) (get defender :armor 0))))])
+
 (defn play-turn [players]
   (reverse (apply-damage players)))
 

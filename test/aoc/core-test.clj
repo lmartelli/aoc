@@ -166,3 +166,9 @@
     [0 1 2] 1 :x [0 :x 1 2]
     [0 1 2] 2 :x [0 1 :x 2]
     [0 1 2] 3 :x [0 1 2 :x]))
+
+(deftest map-vals-test
+  (is (= {:a 1 :b 2 :c 3} (map-vals inc {:a 0 :b 1 :c 2}))))
+
+(deftest filter-vals-test
+  (is (= {:b 1} (filter-vals odd? {:a 0 :b 1 :c 2}))))

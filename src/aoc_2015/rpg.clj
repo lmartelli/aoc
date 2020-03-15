@@ -15,9 +15,8 @@
 (defn dead? [player]
   (<= (player :hit-points) 0))
 
-(defn apply-damage [[attacker defender]]
-  [attacker
-   (update defender
-           :hit-points
-           -
-           (max 1 (- (attacker :damage) (get defender :armor 0))))])
+(defn apply-damage [defender {:keys [damage]}]
+  (update
+    defender
+    :hit-points
+    - (max 1 (- damage (get defender :armor 0)))))

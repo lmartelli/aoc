@@ -254,6 +254,12 @@
 (defn contains [x]
   (fn [s] (contains? s x)))
 
+(defn map-vals
+  [f m] (into {} (map (fn [[k v]] [k (f v)]) m)))
+
+(defn filter-vals
+  [pred m] (into {} (filter (fn [[k v]] (pred v)) m)))
+
 ;; vector
 
 (defn add "Vector addition"
