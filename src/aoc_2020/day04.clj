@@ -12,14 +12,7 @@
       (->> (str/split line #" ")
            (map #(let [[field value] (str/split % #":")] [(keyword field) value]))
            (into {}))))
-  (fn [lines]
-    (reduce
-      (fn [acc fields]
-        (if (nil? fields)
-          (conj acc {})
-          (conj (rest acc) (merge (first acc) fields))))
-      '({})
-      lines)))
+  (merge-lines nil {} merge))
 
 ;; part 1
 

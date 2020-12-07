@@ -97,7 +97,11 @@
   ([regex]
    `(puzzle-input-split-lines ~regex identity)))
 
-(defn parse-int [s] (Long/parseLong s))
+(defn parse-int
+  ([s] (Long/parseLong s))
+  ([s radix] (Long/parseLong s radix)))
+
+(defn parse-binary [s] (parse-int s 2))
 
 (defn parse-int-array [input]
    (mapv
@@ -354,3 +358,15 @@
     (if (= -1 index)
       nil
       index)))
+
+(defn merge-lines
+  ([separator empty-value merge-fn lines]
+   (reduce
+     (fn [acc line]
+       (if (= separator line)
+         (conj acc empty-value)
+         (conj (rest acc) (merge-fn (first acc) line))))
+     (list empty-value)
+     lines))
+  ([separator empty-value merge-fn] (fn [lines] (merge-lines separator empty-value merge-fn lines))))
+
