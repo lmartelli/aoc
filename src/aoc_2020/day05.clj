@@ -5,10 +5,9 @@
 
 (defn get-seat-id [boarding-pass]
   (->> boarding-pass
-       (map {\B 1, \F 0, \L 0, \R 1})
-       reverse
-       (map * (iterate #(* 2 %) 1))
-       (reduce +)))
+       (map {\B \1, \F \0, \L \0, \R \1})
+       (apply str)
+       parse-binary))
 
 (puzzle-input-parse-lines get-seat-id)
 
@@ -31,7 +30,7 @@
 
 ;; test
 
-(deftest boarding-pass-test
+(deftest get-seat-id-test
   (are [pass-number seat-id] (= seat-id (get-seat-id pass-number))
     "BFFFBBFRRR" 567
     "FFFBBBFRRR" 119
