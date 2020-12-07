@@ -9,10 +9,10 @@
        (apply str)
        parse-binary))
 
-(puzzle-input-parse-lines get-seat-id)
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream get-seat-id))
 
 ;; part 1
-
 
 (defpart part1 [input]
   (apply max input))

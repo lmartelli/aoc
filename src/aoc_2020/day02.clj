@@ -3,10 +3,12 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (let [[_ low high char password] (re-matches #"(\d+)-(\d+) (.): ([a-z]+)" line)]
-     (vector (parse-int low) (parse-int high) (first char) password))))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+    stream
+    (fn [line]
+      (let [[_ low high char password] (re-matches #"(\d+)-(\d+) (.): ([a-z]+)" line)]
+        (vector (parse-int low) (parse-int high) (first char) password)))))
 
 (defn count-valid-passwords [valid? input]
   (->> input

@@ -4,7 +4,9 @@
    [clojure.set :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-lines (merge-lines "" nil conj))
+(defn puzzle-input [stream]
+  (->> (puzzle-input-lines stream)
+       (merge-lines "" nil conj)))
 
 ;; part 1
 

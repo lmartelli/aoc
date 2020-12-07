@@ -12,11 +12,14 @@
          (map #(let [[_ cnt color] (re-matches #"(\d+) (.*) bags?" %)] [color (parse-int cnt)]))
          (into {}))))
 
-(puzzle-input-parse-lines
-  (fn [line]
-    (let [[_ container l] (re-matches #"(.*) bags contain (.*)\." line)]
-      [container (parse-bag-list l)]))
-  #(into {} %))
+(def puzzle-input
+  (fn [f]
+    (puzzle-input-parse-lines
+      f
+      (fn [line]
+        (let [[_ container l] (re-matches #"(.*) bags contain (.*)\." line)]
+          [container (parse-bag-list l)]))
+      #(into {} %))))
 
 ;; part 1
 
@@ -49,11 +52,8 @@
 
 ;; test
 
-(def test-input
-  {"shiny gold" {"dark red" 2}
-   "dark red" {"dark orange" 2}
-   "dark orange" {"dark yellow" 2}
-   "dark yellow" {"dark green" 2}
-   "dark green" {"dark blue" 2}
-   "dark blue" {"dark violet" 2}
-   "dark violet" {}})
+(deftest part1-test
+  (is (= 4 (part1 (puzzle-input (test-input 1 *ns*))))))
+
+(deftest part1-test
+  (is (= 126 (part2 (puzzle-input (test-input 2 *ns*))))))

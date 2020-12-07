@@ -5,14 +5,16 @@
    [clojure.set :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines
-  (fn [line]
-    (if (= "" line)
-      nil
-      (->> (str/split line #" ")
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+    stream
+    (fn [line]
+      (if (= "" line)
+        nil
+        (->> (str/split line #" ")
            (map #(let [[field value] (str/split % #":")] [(keyword field) value]))
            (into {}))))
-  (merge-lines nil {} merge))
+    (merge-lines nil {} merge)))
 
 ;; part 1
 

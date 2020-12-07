@@ -40,9 +40,12 @@
 (defn puzzle-input-uri [year day]
   (str "https://adventofcode.com/" year "/day/" day "/input"))
 
+(defn format-day [day]
+  (str (when (-> day count (= 1)) "0") day))
+
 (defn puzzle-input-filename [year day]
-  (let [day (str (when (-> day count (= 1)) "0") day)]
-    (str aoc-dir "/puzzle-input-"year "-" day ".txt")))
+  (let [day (format-day day)]
+    (str aoc-dir "/puzzle-input-" year "-" day ".txt")))
 
 (defn download-puzzle-input [year day]
   (spit (puzzle-input-filename year day)
@@ -52,50 +55,39 @@
 
 ;; puzzle input parsing
 
-(defn $puzzle-input-stream [ns]
-  (let [[year day] (parse-aoc-ns-name (ns-name ns))
+(defn puzzle-input-stream [ns]
+  (let [[year day] (parse-aoc-ns-name (str ns))
         filename (puzzle-input-filename year day)]
     (when-not (.exists (io/file filename))
       (download-puzzle-input year day))
     (io/reader filename)))
 
-(defn $puzzle-input-string [ns]
-  (->> ($puzzle-input-stream ns)
-       slurp
-       str/split-lines
-       (apply str)))
+(defn test-input [suffix ns]
+  (let [[year day] (parse-aoc-ns-name (str ns))]
+    (io/reader (str "test/aoc_" year "/day" (format-day day) "_" suffix ".input"))))
 
-(defmacro puzzle-input-string
-  ([] `(puzzle-input-string identity))
-  ([xf] `(def ~'puzzle-input (~xf ($puzzle-input-string *ns*)))))
+(defn puzzle-input-string
+  ([stream] (puzzle-input-string stream identity))
+  ([stream xf]
+   (->> (slurp stream)
+        str/split-lines
+        (apply str)
+        xf)))
 
-(defn $puzzle-input-lines [ns]
-  (->> ($puzzle-input-stream ns)
-       io/reader
-       line-seq))
+(defn puzzle-input-lines [stream]
+  (line-seq stream))
 
-(defmacro puzzle-input-parse-stream [f]
-  `(def ~'puzzle-input (~f ($puzzle-input-stream *ns*))))
+(defn puzzle-input-parse-lines
+  ([stream parse] (puzzle-input-parse-lines stream parse identity))
+  ([stream parse xf] (xf (mapv parse (puzzle-input-lines stream)))))
 
-(defmacro puzzle-input-lines
-  ([] `(puzzle-input-lines identity))
-  ([xf] `(def ~'puzzle-input (~xf ($puzzle-input-lines *ns*)))))
-
-(defn $puzzle-input-parse-lines
-  ([lines parse] ($puzzle-input-parse-lines lines parse identity))
-  ([lines parse xf] (xf (mapv parse lines))))
-
-(defmacro puzzle-input-parse-lines
-  ([f] `(def ~'puzzle-input ($puzzle-input-parse-lines ($puzzle-input-lines *ns*) ~f)))
-  ([f xf] `(def ~'puzzle-input ($puzzle-input-parse-lines ($puzzle-input-lines *ns*) ~f ~xf))))
-
-(defmacro puzzle-input-split-lines
-  ([regex xf-line xf-lines]
-   `(puzzle-input-parse-lines (comp ~xf-line #(str/split % ~regex)) ~xf-lines))
-  ([regex xf-line]
-   `(puzzle-input-split-lines ~regex ~xf-line identity))
-  ([regex]
-   `(puzzle-input-split-lines ~regex identity)))
+(defn puzzle-input-split-lines
+  ([stream regex xf-line xf-lines]
+   (puzzle-input-parse-lines stream (comp xf-line #(str/split % regex)) xf-lines))
+  ([stream regex xf-line]
+   (puzzle-input-split-lines stream regex xf-line identity))
+  ([stream regex]
+   (puzzle-input-split-lines stream regex identity)))
 
 (defn parse-int
   ([s] (Long/parseLong s))
@@ -108,21 +100,18 @@
     #(Long/parseLong %)
     (str/split input #",")))
 
-(defmacro puzzle-input-int-array []
-  `(def ~'puzzle-input (parse-int-array ($puzzle-input-string *ns*))))
-
-(defmacro puzzle-input-parse [f]
-  `(def ~'puzzle-input (~f ($puzzle-input-string *ns*))))
+(defn puzzle-input-int-array [stream]
+  (parse-int-array (puzzle-input-string stream)))
 
 (defn split-input [str regex xf]
   (->> (str/split str regex)
        (map xf)))
 
-(defmacro puzzle-input-split
-  ([regex xf]
-   `(def ~'puzzle-input (split-input ($puzzle-input-string *ns*) ~regex ~xf)))
-  ([regex]
-   `(def ~'puzzle-input (split-input ($puzzle-input-string *ns*) ~regex identity))))
+(defn puzzle-input-split
+  ([stream regex xf]
+   (split-input (puzzle-input-string stream) regex xf))
+  ([stream regex]
+   (puzzle-input-split stream regex identity)))
 
 ;; misc
 
@@ -151,7 +140,7 @@
 (defmacro defpart [name args & body]
   `(def ~name
      (fn
-       ([] (~name ~'puzzle-input))
+       ([] (~name (~'puzzle-input (puzzle-input-stream *ns*))))
        (~args ~@body))))
 
 (defn array-2d-to-map

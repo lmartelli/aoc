@@ -4,7 +4,8 @@
    [clojure.test :refer :all]
    [clojure.math.combinatorics :refer [combinations]]))
 
-(puzzle-input-parse-lines parse-int)
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream parse-int))
 
 ;; part 1
 
