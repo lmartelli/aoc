@@ -55,18 +55,30 @@
 
 ;; puzzle input parsing
 
-(defn puzzle-input-stream [ns]
+(defn puzzle-input-stream
+  "Gets an input stream for the puzzle of the current namespace"
+  [ns]
   (let [[year day] (parse-aoc-ns-name (str ns))
         filename (puzzle-input-filename year day)]
     (when-not (.exists (io/file filename))
       (download-puzzle-input year day))
     (io/reader filename)))
 
-(defn test-input [suffix ns]
-  (let [[year day] (parse-aoc-ns-name (str ns))]
-    (io/reader (str "test/aoc_" year "/day" (format-day day) "_" suffix ".input"))))
+(defn test-input
+  "Gets an input stream for the test data of puzzle of the current namespace
+  (from file test/aoc_<year>/day<day>[_<suffix>].input)"
+  ([ns] (test-input nil ns))
+  ([suffix ns]
+   (let [[year day] (parse-aoc-ns-name (str ns))]
+     (io/reader
+       (str
+         "test/aoc_" year
+         "/day" (format-day day)
+         (if (nil? suffix) "" (str "_" suffix))
+         ".input")))))
 
 (defn puzzle-input-string
+  "Concatenates all the lines of the puzzle input into one string."
   ([stream] (puzzle-input-string stream identity))
   ([stream xf]
    (->> (slurp stream)
@@ -95,10 +107,12 @@
 
 (defn parse-binary [s] (parse-int s 2))
 
-(defn parse-int-array [input]
+(defn parse-int-array
+  ([input] (parse-int-array input ","))
+  ([input sep]
    (mapv
-    #(Long/parseLong %)
-    (str/split input #",")))
+     #(Long/parseLong %)
+     (str/split input (re-pattern sep)))))
 
 (defn puzzle-input-int-array [stream]
   (parse-int-array (puzzle-input-string stream)))
@@ -126,6 +140,12 @@
   \"123456\" will return (1 2 3 4 5 6)."
   [s]
   (map digit s))
+
+(defn digit-vec
+  "Parses s as a vector of digits.
+  \"123456\" will return [1 2 3 4 5 6]."
+  [s]
+  (mapv digit s))
 
 (defn remove-nil [& colls]
   (apply map #(remove nil? %) colls))
@@ -197,8 +217,9 @@
 (defn first-position [col pred]
   (first (positions col pred)))
 
-(defn range-inc [from to]
-  (range from (inc to)))
+(defn range-inc
+  ([to] (range-inc 0 to))
+  ([from to] (range from (inc to))))
 
 (defn expand-bag [bag]
   (mapcat (fn [[k v]] (repeat v k)) bag))
@@ -359,3 +380,12 @@
      lines))
   ([separator empty-value merge-fn] (fn [lines] (merge-lines separator empty-value merge-fn lines))))
 
+(defn iterate-with
+  "Like `iterate`, but supplies an additional parameter to `f`, and stops when there are no more parameters."
+  [x params f]
+  (if (empty? params)
+    x
+    (recur
+      (f x (first params))
+      (rest params)
+      f)))
