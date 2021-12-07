@@ -12,11 +12,8 @@
 (defn solve [input n]
   (->> (combinations input n)
        (filter #(= 2020 (apply + %)))
-       (map #(apply * %))
-       first))
-
-(defn solve2 [input]
-  (for [x input y input z input :when (= 2020 (+ x y z))] (* x y z)))
+       first
+       (apply *)))
 
 (defpart part1 [input]
   (solve input 2))
@@ -25,3 +22,13 @@
 
 (defpart part2 [input]
   (solve input 3))
+
+;; tests
+
+(def input [1721 979 366 299 675 1456])
+
+(deftest part1-test
+  (is (= 514579 (part1 input))))
+
+(deftest part2-test
+  (is (= 241861950 (part2 input))))
