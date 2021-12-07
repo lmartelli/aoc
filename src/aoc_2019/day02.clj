@@ -7,14 +7,6 @@
 
 ;; part 1
 
-(defn run-op [opcodes ip]
-  (let [target (get opcodes (+ ip 3))
-        op1 (get opcodes (get opcodes (+ ip 1)))
-        op2 (get opcodes (get opcodes (+ ip 2)))]
-    (case (get opcodes ip)
-      1 (assoc opcodes target (+ op1 op2))
-      2 (assoc opcodes target (* op1 op2)))))
-
 (defn run-op [memory ip]
   (let [operator (case (get memory ip)
                    1 +
