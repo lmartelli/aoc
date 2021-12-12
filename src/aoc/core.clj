@@ -201,12 +201,14 @@
 (defn get-wrap [v index]
   (get v (mod index (count v))))
 
-(defn multimap [entries]
-  (reduce
-   (fn [m [key value]]
-     (update m key conj value))
-   {}
-   entries))
+(defn multimap
+  ([entries] (multimap entries nil))
+  ([entries empty-coll]
+   (reduce
+     (fn [m [key value]]
+       (update m key (fnil conj empty-coll) value))
+     {}
+     entries)))
 
 (defn positions [col pred]
   (keep-indexed
@@ -270,6 +272,9 @@
 
 (defn map-vals
   [f m] (into {} (map (fn [[k v]] [k (f v)]) m)))
+
+(defn map-keys
+  [f m] (into {} (map (fn [[k v]] [(f k) v]) m)))
 
 (defn filter-vals
   [pred m] (into {} (filter (fn [[k v]] (pred v)) m)))
