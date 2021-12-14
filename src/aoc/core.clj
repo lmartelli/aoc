@@ -127,6 +127,15 @@
   ([stream regex]
    (puzzle-input-split stream regex identity)))
 
+(defn split-seq [seq pred]
+  (loop [splitted []
+         current []
+         remaining seq]
+    (cond
+      (empty? remaining) (conj splitted current)
+      (pred (first remaining)) (recur (conj splitted current) [] (rest remaining))
+      :else (recur splitted (conj current (first remaining)) (rest remaining)))))
+
 ;; misc
 
 (defn letter? [c]

@@ -52,6 +52,11 @@
   (is (= {[0 0] :on, [1 0] :off, [2 0] :on, [0 1] :off, [1 1] :on, [2 1] :off}
          (array-2d-to-map #(not= \space %) {\# :on \. :off} ["#.#" ".#."]))))
 
+(deftest split-seq-test
+  (are [seq pred exepected] (= exepected (split-seq seq pred))
+    [1 2 3] nil? [[1 2 3]]
+    ["a" "b" "" "c" "d"] empty? [["a" "b"] ["c" "d"]]))
+
 ;; vector
 
 (deftest add-test
