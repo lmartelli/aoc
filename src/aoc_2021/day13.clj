@@ -39,7 +39,7 @@
     (run!
       prn
       (map (fn [y]
-             (apply str (map (fn [x] (if (points [x y]) \# \.)) (range-inc width))))
+             (apply str (map (fn [x] (if (points [x y]) \# \space)) (range-inc width))))
            (range-inc height))
       )
     points))
