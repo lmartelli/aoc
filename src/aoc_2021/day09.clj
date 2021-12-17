@@ -36,9 +36,8 @@
 (defn up-hill-neighbours [boundary heightmap]
   (let [w×h (dim heightmap)]
     (->> (mapcat (fn [pos]
-                   (let [h (get-in heightmap pos)]
-                     (->> (neighbours pos w×h)
-                          (filter #(let [h2 (get-in heightmap %)] (and (not= h2 9) (= h2 (inc h))))))))
+                   (->> (neighbours pos w×h)
+                        (filter #(> 9 (get-in heightmap %) (get-in heightmap pos)))))
                  boundary)
          (into #{}))))
 
