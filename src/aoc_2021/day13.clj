@@ -45,7 +45,7 @@
     points))
 
 (defpart part2 [{:keys [:coords :folds]}]
-  (-> (iterate-with coords folds fold)
+  (-> (reduce fold coords folds)
       plot))
 
 ;; tests

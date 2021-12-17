@@ -393,13 +393,3 @@
      (list empty-value)
      lines))
   ([separator empty-value merge-fn] (fn [lines] (merge-lines separator empty-value merge-fn lines))))
-
-(defn iterate-with
-  "Like `iterate`, but supplies an additional parameter to `f`, and stops when there are no more parameters."
-  [x params f]
-  (if (empty? params)
-    x
-    (recur
-      (f x (first params))
-      (rest params)
-      f)))

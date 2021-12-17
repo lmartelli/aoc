@@ -23,7 +23,7 @@
 (defn calc-pos-and-depth
   ([input] (calc-pos-and-depth [0 0] input))
   ([pos-and-depth input]
-   (iterate-with [0 0] input exec)))
+   (reduce exec [0 0] input)))
 
 (defpart part1 [input]
   (->> (calc-pos-and-depth input)
@@ -40,7 +40,7 @@
 (defn calc-pos-and-depth-2
   ([input] (calc-pos-and-depth-2 [0 0 0] input))
   ([pos-and-depth input]
-   (iterate-with [0 0 0] input exec-2)))
+   (reduce exec-2 [0 0 0] input)))
 
 (defpart part2 [input]
   (->> (calc-pos-and-depth-2 input)
