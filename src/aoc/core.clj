@@ -127,7 +127,7 @@
   ([stream regex]
    (puzzle-input-split stream regex identity)))
 
-(defn split-seq [seq pred]
+(defn split-seq [pred seq]
   (loop [splitted []
          current []
          remaining seq]
