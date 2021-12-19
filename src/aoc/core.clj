@@ -393,3 +393,6 @@
      (list empty-value)
      lines))
   ([separator empty-value merge-fn] (fn [lines] (merge-lines separator empty-value merge-fn lines))))
+
+(defn nil-if-empty [x]
+  (if (empty? x) nil x))

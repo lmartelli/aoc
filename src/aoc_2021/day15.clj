@@ -12,10 +12,6 @@
 (defn grid-dim [grid]
   [(count grid) (count (first grid))])
 
-
-(defn nil-if-empty [x]
-  (if (empty? x) nil x))
-
 (defn dijkstra [risk-levels start end]
   (let [[width height] (grid-dim risk-levels)
         neighbours (fn [[x y]]
