@@ -14,9 +14,6 @@
        (mapcat #(cl-format nil "~4,'0',B" %))
        digit-seq))
 
-(defn bits-to-int [bits]
-  (parse-binary (apply str bits)))
-
 (defn read-bits [n bit-seq]
   [(bits-to-int (take n bit-seq))
    (drop n bit-seq)])

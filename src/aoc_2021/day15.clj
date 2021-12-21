@@ -58,9 +58,6 @@
     {:value v
      :path (get-path p start end)}))
 
-(defn display-grid [grid]
-  (dorun (map #(println (apply str %)) grid)))
-
 (defn display-path [grid {:keys [:path] :as res}]
   (let [in-path (into #{} path)]
     (-> (map-indexed

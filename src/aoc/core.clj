@@ -107,6 +107,11 @@
 
 (defn parse-binary [s] (parse-int s 2))
 
+(defn bits-to-int
+  "Converts a sequence of bits to an integer"
+  [bits]
+  (parse-binary (apply str bits)))
+
 (defn parse-int-array
   ([input] (parse-int-array input ","))
   ([input sep]
@@ -127,7 +132,10 @@
   ([stream regex]
    (puzzle-input-split stream regex identity)))
 
-(defn split-seq [pred seq]
+;; TODO: do it lazily ?
+(defn split-seq
+  "Returns a vector of 2 seqs"
+  [pred seq]
   (loop [splitted []
          current []
          remaining seq]
@@ -163,8 +171,7 @@
   (loop [v []]
     (if-let [val (poll! channel)]
       (recur (conj v val))
-      v))
-  )
+      v)))
 
 (defmacro defpart [name args & body]
   `(def ~name
@@ -173,7 +180,8 @@
        (~args ~@body))))
 
 (defn array-2d-to-map
-  "`pred` applies a filter to keep only some values."
+  "Converts a 2D array (a seq of seqs) to a map [x y] -> value.
+  `pred` applies a filter to keep only some values."
   ([rows] (array-2d-to-map identity rows))
   ([pred rows] (array-2d-to-map pred identity rows))
   ([pred value-xf rows]
@@ -185,8 +193,14 @@
          (map-indexed (fn [x val] [[x y] (value-xf val)]) row))
        rows (range)))))
 
+(defn lines-to-matrix [lines value-xf]
+  (mapv #(mapv value-xf %) lines))
+
 (defn init-matrix [x y value]
   (vec (repeat y (vec (repeat x value)))))
+
+(defn matrix-vals [m]
+  (apply concat m))
 
 (defn grep [regex seq]
   (filter #(re-find regex %) seq))
@@ -396,3 +410,40 @@
 
 (defn nil-if-empty [x]
   (if (empty? x) nil x))
+
+(defn min-max [first & more]
+  (loop [m    first
+         M    first
+         coll more]
+      (if (empty? coll)
+        [m M]
+        (let [[curr & more] coll]
+          (recur (min m curr) (max M curr) more)))))
+
+(defn display-grid [grid]
+  (dorun (map #(println (apply str %)) grid)))
+
+(defn display-grid-map
+  "`m` is map whose keys are [x y] coordinates"
+  ([m] (display-grid-map m identity))
+  ([m value-xf]
+   (let [[x-min x-max] (apply min-max (map first (keys m)))
+         [y-min y-max] (apply min-max (map second (keys m)))]
+     (-> (map
+           (fn [y]
+             (map
+               (fn [x]
+                 (if-let [value (m [x y])] (value-xf value) \space))
+              (range-inc x-min x-max)))
+          (range-inc y-min y-max))
+        display-grid)
+    m)))
+
+(defn vec-min-max [first & more]
+  (loop [res (map vector first first)
+         [cur & more] more]
+    (if (nil? cur)
+      res
+      (recur
+        (map (fn [v [m M]] [(min v m) (max v M)]) cur res)
+        more))))
