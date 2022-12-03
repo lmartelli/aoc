@@ -53,7 +53,7 @@
          (array-2d-to-map #(not= \space %) {\# :on \. :off} ["#.#" ".#."]))))
 
 (deftest split-seq-test
-  (are [seq pred exepected] (= exepected (split-seq seq pred))
+  (are [seq pred expected] (= expected (split-seq seq pred))
     [1 2 3] nil? [[1 2 3]]
     ["a" "b" "" "c" "d"] empty? [["a" "b"] ["c" "d"]]))
 

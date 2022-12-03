@@ -134,7 +134,7 @@
 
 ;; TODO: do it lazily ?
 (defn split-seq
-  "Returns a vector of 2 seqs"
+  "Returns a vector of 2 seqs: elements before the 1st element that macthes pred, and elements after"
   [pred seq]
   (loop [splitted []
          current []
