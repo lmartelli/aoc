@@ -90,6 +90,7 @@
   (line-seq stream))
 
 (defn puzzle-input-parse-lines
+  "Parse all lines and then applies an optional transform on the resulting collection."
   ([stream parse] (puzzle-input-parse-lines stream parse identity))
   ([stream parse xf] (xf (mapv parse (puzzle-input-lines stream)))))
 
@@ -134,7 +135,7 @@
 
 ;; TODO: do it lazily ?
 (defn split-seq
-  "Returns a vector of 2 seqs: elements before the 1st element that macthes pred, and elements after"
+  "Splits a sequence around items that match pred."
   [pred seq]
   (loop [splitted []
          current []
