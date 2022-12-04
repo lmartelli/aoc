@@ -1,6 +1,7 @@
 (ns aoc-2021.day19
   (:require
    [aoc.core :refer :all]
+   [clojure.string :refer [split]]
    [clojure.math.combinatorics :refer [combinations]]
    [clojure.set :refer [intersection]]
    [clojure.test :refer :all]))
