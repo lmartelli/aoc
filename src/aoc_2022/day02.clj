@@ -60,8 +60,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest match-score-test
   (are [opponent-shape self-shape score] (= score (match-score [opponent-shape self-shape]))
     :rock :rock (+ 3 1)
@@ -74,8 +72,6 @@
     :scissors :paper (+ 0 2)
     :scissors :scissors (+ 3 3)))
 
-(deftest part1-test
-  (is (= 15 (part1 test-data))))
+(deftest part1-test (part-test part1 15))
 
-(deftest part2-test
-  (is (= 12 (part2 test-data))))
+(deftest part2-test (part-test part2 12))

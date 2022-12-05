@@ -5,7 +5,7 @@
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
-  (puzzle-input-int-array
+  (puzzle-input-parse-lines
     stream
     #(->> (split % #"[^\d]+")
           (map parse-int)
@@ -50,10 +50,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
+(deftest part1-test (part-test part1 5))
 
-(deftest part1-test
-  (is (= 5 (part1 test-data))))
-
-(deftest part1-test
-  (is (= 12 (part2 test-data))))
+(deftest part2-test (part-test part2 12))

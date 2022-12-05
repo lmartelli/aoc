@@ -69,13 +69,12 @@
 ;; tests
 
 (deftest gamma-test
-  (is (= [1 0 1 1 0] (gamma (puzzle-input (test-input *ns*))))))
+  (is (= [1 0 1 1 0] (gamma (puzzle-input (test-input))))))
 
 (deftest bit-inv-test
   (is (= [1 0 1 1 0] (bit-inv [0 1 0 0 1]))))
 
-(deftest part1-test
-  (is (= 198 (part1 (puzzle-input (test-input *ns*))))))
+(deftest part1-test (part-test part1 198))
 
 (deftest most-common-bit-test
   (are [bits expected] (= expected (most-common-bit bits))
@@ -89,5 +88,4 @@
     [0 0 1] 1
     [0 1] 0))
 
-(deftest part2-test
-  (is (= 230 (part2 (puzzle-input (test-input *ns*))))))
+(deftest part2-test (part-test part2 230))

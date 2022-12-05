@@ -24,10 +24,7 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
 
-(deftest part1-test
-  (is (= 24000 (part1 test-data))))
+(deftest part1-test (part-test part1 24000))
 
-(deftest part2-test
-  (is (= 45000 (part2 test-data))))
+(deftest part2-test (part-test part2 45000))

@@ -50,8 +50,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest fold-test
   (are [points axis pos expected] (->> [expected (fold [axis pos] points)] (map #(into #{} %)) (apply =))
     [[0 0]] :x 0 [[0 0]]
@@ -63,5 +61,4 @@
     [[3 4]] :y 2 [[3 0]]
     ))
 
-(deftest part1-test
-  (is (= 17 (part1 test-data))))
+(deftest part1-test (part-test part1 17))

@@ -48,8 +48,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest validate-test
   (are [input] (= :legal (validate input))
     ""
@@ -93,8 +91,7 @@
     "[<(<(<(<{}))><([]([]()" \)
     "<{([([[(<>()){}]>(<<{{" \>))
 
-(deftest part1-test
-  (is (= 26397 (part1 test-data))))
+(deftest part1-test (part-test part1 26397))
 
 (deftest middle-score-test
   (are [scores expected] (= expected (middle-score scores))
@@ -103,5 +100,4 @@
     [288957 5566 1480781 995444 294] 288957
     [5 4 3 2 1] 3))
 
-(deftest part2-test
-  (is (= 288957 (part2 test-data))))
+(deftest part2-test (part-test part2 288957))

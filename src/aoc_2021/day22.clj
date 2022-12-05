@@ -224,8 +224,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest intervals-intersection-test
   (are [a b expected] (= expected (intervals-intersection a b) (intervals-intersection b a))
     [0 1] [2 2] nil
@@ -418,8 +416,6 @@
     [[0 0] [0 0] [0 0]] [[0 0 0]]
     [[0 1] [0 1] [0 1]] [[0 0 0] [0 0 1] [0 1 0] [0 1 1] [1 0 0] [1 0 1] [1 1 0] [1 1 1]]))
 
-(deftest part1-test
-  (is (= 590784 (part1 test-data))))
+(deftest part1-test (part-test part1 590784))
 
-(deftest part2-test
-  (is (= 2758514936282235 (part2 (puzzle-input (test-input "part2" *ns*))))))
+(deftest part2-test (part-tests part2 ["part2" 2758514936282235]))

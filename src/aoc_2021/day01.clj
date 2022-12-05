@@ -28,8 +28,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest count-increases-test
   (are [input increases] (= increases (count-increases input))
     [] 0
@@ -44,8 +42,6 @@
   (are [input increases] (= increases (count-3-windows-increases input))
     [199 200 208 210 200 207 240 269 260 263] 5))
 
-(deftest part1-test
-  (is (= 7 (part1 test-data))))
+(deftest part1-test (part-test part1 7))
 
-(deftest part2-test
-  (is (= 5 (part2 test-data))))
+(deftest part2-test (part-test part2 5))

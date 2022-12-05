@@ -1,5 +1,6 @@
 (ns aoc.core
   (:require
+   [clojure.test :refer [deftest is are]]
    [clojure.java.io :as io]
    [clojure.string :as str]
    [clojure.math.numeric-tower :refer [abs sqrt]]
@@ -27,9 +28,6 @@
   ([s m] (apply str (replace m s)))
   ([s from-chars to-chars]
    (replace-chars s (zipmap from-chars to-chars))))
-
-(defn ns-name [ns]
-  (str (clojure.core/ns-name ns)))
 
 (defn parse-aoc-ns-name [ns-name]
   (if-let [[_ year day] (re-matches #"aoc-(\d+)\.day0*(\d+)" ns-name)]
@@ -64,18 +62,36 @@
       (download-puzzle-input year day))
     (io/reader filename)))
 
-(defn test-input
+(defn *test-input*
   "Gets an input stream for the test data of puzzle of the current namespace
   (from file test/aoc_<year>/day<day>[_<suffix>].input)"
-  ([ns] (test-input nil ns))
+  ([ns] (*test-input* nil ns))
   ([suffix ns]
    (let [[year day] (parse-aoc-ns-name (str ns))]
      (io/reader
-       (str
-         "test/aoc_" year
-         "/day" (format-day day)
-         (if (nil? suffix) "" (str "_" suffix))
-         ".input")))))
+      (str
+       "test/aoc_" year
+       "/day" (format-day day)
+       (if (nil? suffix) "" (str "_" suffix))
+       ".input")))))
+
+(defmacro test-input
+  ([] `(*test-input* ~*ns*))
+  ([suffix] `(*test-input* ~suffix ~*ns*)))
+
+(defmacro defparttest [name part expected]
+  `(deftest ~name (is (= ~expected (~part (test-input))))))
+
+(defmacro part-test [part expected]
+  `(is (= ~expected (~part (~'puzzle-input (test-input))))))
+
+(defmacro def-part-test [part expected]
+  `(deftest ~(symbol (str part "-test"))
+     (is (= ~expected (~part (~'puzzle-input (test-input)))))))
+
+(defmacro part-tests [part expectations]
+  `(are [input-num expected] (= expected (~part (~'puzzle-input (test-input input-num))))
+     ~@expectations))
 
 (defn puzzle-input-string
   "Concatenates all the lines of the puzzle input into one string."

@@ -108,8 +108,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest magnitude-test
   (are [number expected] (= expected (magnitude number))
     [9,1] 29
@@ -144,9 +142,7 @@
   (are [n expected] (= expected (snail-reduce n))
     [[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]] [[[[0,7],4],[[7,8],[6,0]]],[8,1]]))
 
-(deftest part1-test
-  (is (= 4140 (part1 test-data))))
+(deftest part1-test (part-test part1 4140))
 
-(deftest part2-test
-  (is (= 3993 (part2 test-data))))
+(deftest part2-test (part-test part2 3993))
 

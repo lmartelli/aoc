@@ -63,17 +63,18 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest iterate-rules-test
-  (are [nb-iter expected] (= (pair-frequencies expected) (into {} (filter #(> (val %) 0) (iterate-rules test-data nb-iter))))
+  (are [nb-iter expected]
+      (= (pair-frequencies expected)
+         (into {}
+               (filter
+                #(> (val %) 0)
+                (iterate-rules (puzzle-input (test-input)) nb-iter))))
     1 "NCNBCHB"
     2 "NBCCNBBBCBHCB"
     3 "NBBBCNCCNBBNBNBBCHBHHBCHB"
     4 "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB"))
 
-(deftest part1-test
-  (is (= 1588 (part1 test-data))))
+(deftest part1-test (part-test part1 1588))
 
-(deftest part2-test
-  (is (= 2188189693529 (part2 test-data))))
+(deftest part2-test (part-test part2 2188189693529))

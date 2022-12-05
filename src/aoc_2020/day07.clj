@@ -13,9 +13,9 @@
          (into {}))))
 
 (def puzzle-input
-  (fn [f]
+  (fn [stream]
     (puzzle-input-parse-lines
-      f
+      stream
       (fn [line]
         (let [[_ container l] (re-matches #"(.*) bags contain (.*)\." line)]
           [container (parse-bag-list l)]))
@@ -53,7 +53,7 @@
 ;; test
 
 (deftest part1-test
-  (is (= 4 (part1 (puzzle-input (test-input 1 *ns*))))))
+  (part-tests part1 ["1" 4]))
 
-(deftest part1-test
-  (is (= 126 (part2 (puzzle-input (test-input 2 *ns*))))))
+(deftest part2-test
+  (part-tests part2 ["2" 126]))

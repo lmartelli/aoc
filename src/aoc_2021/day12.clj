@@ -55,17 +55,12 @@
 
 ;; tests
 
-(defn test-data [n]
-  (puzzle-input (test-input (str n) *ns*)))
-
 (deftest part1-test
-  (are [data-set expected] (= expected (part1 (test-data data-set)))
-    1 10
-    2 19
-    3 226))
+  (part-tests part1 ["1" 10
+                     "2" 19
+                     "3" 226]))
 
 (deftest part2-test
-  (are [data-set expected] (= expected (part2 (test-data data-set)))
-    1 36
-    2 103
-    3 3509))
+  (part-tests part2 ["1" 36
+                     "2" 103
+                     "3" 3509]))

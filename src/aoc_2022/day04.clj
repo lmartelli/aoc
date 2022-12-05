@@ -38,8 +38,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest parse-range-test
   (are [range-spec expected] (= expected (parse-range range-spec))
     "1-2" [1 2]
@@ -77,8 +75,6 @@
     [2 4] [1 1] false
     ))
 
-(deftest part1-test
-  (is (= 2 (part1 test-data))))
+(deftest part1-test (part-test part1 2))
 
-(deftest part2-test
-  (is (= 4 (part2 test-data))))
+(deftest part2-test (part-test part2 4))

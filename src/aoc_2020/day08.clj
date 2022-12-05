@@ -38,7 +38,6 @@
 
 (defpart part1 [prog]
   (->> (exec-until-loop init-state prog)
-      first
       :acc))
 
 ;; part 2
@@ -84,9 +83,12 @@
 ;; test
 
 (deftest exec-instr-test
-  (let [prog (puzzle-input (test-input 1 *ns*))]
+  (let [prog (puzzle-input (test-input))]
     (are [state expected] (= expected (exec-instr state prog))
       {:ip 0, :acc 0} {:ip 1, :acc 0}
       {:ip 1, :acc 0} {:ip 2, :acc 1}
       {:ip 2, :acc 1} {:ip 6, :acc 1})))
 
+(deftest part1-test (part-test part1 5))
+
+(deftest part1-test (part-test part2 8))

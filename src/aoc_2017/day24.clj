@@ -3,7 +3,8 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-split-lines #"/" #(mapv parse-int %) set)
+(defn puzzle-input [stream]
+  (puzzle-input-split-lines stream #"/" #(mapv parse-int %) set))
 
 ;; part 1
 
@@ -90,19 +91,16 @@
     [2 5] 5 2
     [3 3] 3 3))
 
-(def test-input #{[0 2] [2 2] [2 3] [3 4] [3 5] [0 1] [10 1] [9 10]})
-
 (deftest bridges-test
   (are [components expected] (= (set expected) (set (bridges components)))
     #{[0 1]} [[[0 1]]]
     #{[3 4] [0 1]} [[[0 1]]]
     #{[1 4] [0 1]} [[[0 1] [1 4]]]
-    test-input
+    (puzzle-input (test-input))
     '(([0 1] [10 1] [9 10])
       ([0 2] [2 3] [3 4])
       ([0 2] [2 3] [3 5])
       ([0 2] [2 2] [2 3] [3 4])
       ([0 2] [2 2] [2 3] [3 5]))))
 
-(deftest strongest-bridge-test
-  (is (= 31 (strongest-bridge test-input))))
+(deftest part1-test (part-test part1 31))

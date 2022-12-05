@@ -83,14 +83,10 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
-(deftest part1-test
-  (is (= 26 (part1 test-data))))
+(deftest part1-test (part-test part1 26))
 
 (deftest decode-line-test
   (is (= [8394 9781 1197 9361 4873 8418 4548 1625 8717 4315]
-         (map decode-line test-data))))
+         (map decode-line (puzzle-input (test-input))))))
 
-(deftest part2-test
-  (is (= 61229 (part2 test-data))))
+(deftest part2-test (part-test part2 61229))

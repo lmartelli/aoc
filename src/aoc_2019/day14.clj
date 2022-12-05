@@ -19,7 +19,8 @@
         output-element (parse-element output)]
     {:in input-elements :out output-element}))
 
-(puzzle-input-parse-lines parse-reaction)
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream parse-reaction))
 
 ;; part 1
 
@@ -28,8 +29,6 @@
    (fn [reactions r] (assoc reactions (get-in r [:out 0]) r))
    {}
    reactions))
-
-(def reactions (map-reactions-byoutput-elt puzzle-input))
 
 (defn substitute [[elt qty] reactions]
   (let [r (reactions elt)]
@@ -126,14 +125,9 @@
     {:a 1 :b 2} {:a 1 :b 2}
     {:a 0 :b 2 :c 0 :d 4} {:b 2 :d 4}))
 
-(def test-input-1 "157 ORE => 5 NZVS
-165 ORE => 6 DCFZ
-44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL
-12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ
-179 ORE => 7 PSHF
-177 ORE => 5 HKGWZ
-7 DCFZ, 7 PSHF => 2 XJWVT
-165 ORE => 2 GPVTF
-3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT")
-
-
+(deftest part1-test
+  (part-tests part1
+              ["small" 165
+               "large1" 13312
+               "large2" 180697
+               "large3" 2210736]))

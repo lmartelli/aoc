@@ -121,34 +121,32 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
+(def test-data (puzzle-input (test-input)))
 
 (deftest play-test
   (let [expected [{:turn 0
-                   :players        [{:position 4 :score 0}
-                                    {:position 8 :score 0}]
+                   :players  [{:position 4 :score 0}
+                              {:position 8 :score 0}]
                    }
                   {:turn 1
-                   :players        [{:position 10 :score 10}
-                                    {:position 8 :score 0}]
+                   :players  [{:position 10 :score 10}
+                              {:position 8 :score 0}]
                    }
                   {:turn 2
-                   :players        [{:position 10 :score 10}
-                                    {:position 3 :score 3}]
+                   :players  [{:position 10 :score 10}
+                              {:position 3 :score 3}]
                    }
                   {:turn 3
-                   :players        [{:position 4 :score 14}
-                                    {:position 3 :score 3}]
+                   :players  [{:position 4 :score 14}
+                              {:position 3 :score 3}]
                    }
                   {:turn 4
-                   :players        [{:position 4 :score 14}
-                                    {:position 6 :score 9}]
+                   :players  [{:position 4 :score 14}
+                              {:position 6 :score 9}]
                    }]]
     (is (= expected
          (->> (play (init-state test-data deterministic-die)) (take (count expected)) (map #(dissoc % :dice)))))))
 
-(deftest part1-test
-  (is (= 739785 (part1 test-data))))
+(deftest part1-test (part-test part1 739785))
 
-(deftest part2-test
-  (is (= 444356092776315 (part2 test-data))))
+(deftest part2-test (part-test part2 444356092776315))

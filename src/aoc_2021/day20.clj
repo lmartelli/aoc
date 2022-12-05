@@ -70,7 +70,7 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
+(def test-data (puzzle-input (test-input)))
 
 (def test-image (test-data :image))
 
@@ -138,7 +138,7 @@
                                         (apply-algo (test-data :algo) input)
                                         :finite-image
                                         display-image))
-      (test-data :image) iteration-1
+      test-image iteration-1
       (update
         iteration-1
         :finite-image
@@ -162,11 +162,9 @@
                                                     input)
                                         :finite-image
                                         display-image))
-      (test-data :image) iteration-1)))
+      test-image iteration-1)))
 
-(deftest part1-test
-  (is (= 35 (part1 test-data))))
+(deftest part1-test (part-test part1 35))
 
-(deftest part2-test
-  (is (= 3351 (part2 test-data))))
+(deftest part2-test (part-test part2 3351))
 

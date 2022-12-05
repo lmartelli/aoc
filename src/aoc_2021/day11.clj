@@ -67,8 +67,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest neighbours-test
   (are [x y expected] (= expected (into #{} (neighbours [x y])))
     0 0 #{[1 0] [1 1] [0 1]}
@@ -76,12 +74,10 @@
     1 1 #{[2 1] [2 2] [1 2] [0 2] [0 1] [0 0] [1 0] [2 0]}))
 
 (deftest step-test
-  (are [steps expected] (= expected (-> (iterate step test-data) (nth steps)))
-    1 (puzzle-input (test-input "step1" *ns*))
-    2 (puzzle-input (test-input "step2" *ns*))))
+  (are [steps expected] (= expected (-> (iterate step (puzzle-input (test-input))) (nth steps)))
+    1 (puzzle-input (test-input "step1"))
+    2 (puzzle-input (test-input "step2"))))
 
-(deftest part1-test
-  (is (= 1656 (part1 test-data))))
+(deftest part1-test (part-test part1 1656))
 
-(deftest part2-test
-  (is (= 195 (part2 test-data))))
+(deftest part2-test (part-test part2 195))

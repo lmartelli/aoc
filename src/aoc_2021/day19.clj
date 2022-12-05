@@ -95,8 +95,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest intersection-count-greater-than-test
   (are [a b n expected] (= expected (intersection-count-greater-than-or-equal a b n))
     [1] [2] 1 false
@@ -107,9 +105,7 @@
     [1 2 3 4] [7 5 4 9 1 8 2 6] 3 true
     ))
 
-(deftest part1-test
-  (is (= 79 (part1 test-data))))
+(deftest part1-test (part-test part1 79))
 
-(deftest part2-test
-  (is (= nil (part2 test-data))))
+(deftest part2-test (part-test part2 3121))
 

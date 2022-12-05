@@ -91,8 +91,6 @@
 
 ;; tests
 
-(def test-data (puzzle-input (test-input *ns*)))
-
 (deftest remove-number-test
   (are [board number expected] (= expected (remove-number board number))
     [[0 1] [3 4]] 5 [[0 1] [3 4]]
@@ -108,8 +106,7 @@
   (are [boards numbers expected] (= expected (find-winning-board boards numbers))
     [[[0 1] [2 3]] [[4 5] [6 7]]] [1 4 5 7 0 3 2] [5 [[] [6 7]]]))
 
-(deftest part1-test
-  (is (= 4512 (part1 test-data))))
+(deftest part1-test (part-test part1 4512))
 
 (deftest remove-number-2-test
   (are [board number] (= board (remove-number-2 board number))
@@ -135,5 +132,4 @@
   (is (= {:board {0 [0 0], 1 [1 0], 2 [0 1], 3 [1 1]}, :completed {}}
          (init-board [[0 1] [2 3]]))))
 
-(deftest part2-test
-  (is (= 1924 (part2 test-data))))
+(deftest part2-test (part-test part2 1924))
