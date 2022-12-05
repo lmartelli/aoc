@@ -2,7 +2,7 @@
   (:require
    [aoc.core :refer :all]
    [clojure.string :refer [split]]
-   [clojure.math.combinatorics :refer [combinations]]
+   [clojure.math.combinatorics :refer :all]
    [clojure.set :refer [intersection]]
    [clojure.test :refer :all]))
 
@@ -14,79 +14,35 @@
 
 ;; part 1
 
-(defn rotate-x [points]
-  (map (fn [[x y z]] [x z (- y)]) points))
+(defn translate [delta positions]
+  (-> (map #(+ % delta) positions)
+      set))
 
-(defn rotate-x-2 [points]
-  (map (fn [[x y z]] [x (- y) (- z)]) points))
+(defn relative-to-min [positions]
+  (translate (- (apply min positions)) positions))
 
-(defn rotate-y [points]
-  (map (fn [[x y z]] [z y (- x)]) points))
+(defn translations [beacons-a beacons-b]
+  (->> (cartesian-product beacons-a beacons-b)
+       (map #(apply - %))
+       set))
 
-(defn rotate-z [points]
-  (map (fn [[x y z]] [y (- x) z]) points))
+(defn max-overlapping-beacons [beacons-a beacons-b]
+  (->> (translations beacons-a beacons-b)
+       (map #(translate % beacons-b))
+       (map #(intersection beacons-a %))
+       (apply max-key count)
+       relative-to-min))
+  
+(defn count-beacons [scans min-overlapping-beacons]
+  (cond
+    (empty? scans) 0
+    :else (- (->> scans
+                  (map count)
+                  (reduce +))
+             (dec (count scans)))))
 
-(defn orientations [points]
-  (->> (reductions
-         (fn [points f] (f points))
-         points
-         [rotate-z rotate-z rotate-z rotate-x rotate-x-2])
-       (mapcat #(->> (iterate rotate-y %) (take 4)))))
-
-(defn relative-to [origin points]
-  (map #(sub % origin) points))
-
-(defn relative-to-first [points]
-  (relative-to (first points) points))
-
-(defn relative-to-each [points]
-  (map #(relative-to % points) points))
-
-(defn intersection-count-greater-than-or-equal [a b n]
-  (let [set-a (into #{} a)]
-    (and
-      (>= (count b) n)
-      (reduce
-        (fn [[found remaining] x]
-          (if (set-a x)
-            (if (= (inc found) n)
-              (reduced true)
-              [(inc found) (dec remaining)])
-            (if (< remaining (- n found))
-              (reduced false)
-              [found (dec remaining)])))
-        [0 (dec (count b))]
-        b)
-      )))
-
-(defn overlapping-beacons
-  [beacons-a beacons-b]
-  (->> (for [a (->> (orientations beacons-a)
-                    (mapcat #(relative-to-each %)))
-             b (relative-to-each beacons-b)]
-         [a b])
-       (find-first (fn [[a b]] (intersection-count-greater-than-or-equal a b 12)))))
-
-(defn find-overlapping-pair [scans]
-  (-> (for [[a b] (combinations scans 2)
-            :let [overlap (overlapping-beacons a b)
-                  [overlap-a overlap-b] overlap]
-            :when overlap]
-        (let [found (conj (filter (complement #{a b}) scans)
-                          (into #{} (concat overlap-a overlap-b)))]
-          (println "Found overlapping pair")
-          ;;(clojure.pprint/pprint found)
-          found))
-      first))
-
-(defn merge-scans [scans]
-  (println (count scans))
-  (cond (= 1 (count scans)) (first scans)
-        (nil? scans) "Error: no overlapping pair found"
-        :else (merge-scans (find-overlapping-pair scans))))
-
-(defpart part1 [scans]
-  (count (merge-scans scans)))
+(defpart part1 [scans] 0)
+;  (count (first scans)))
 
 ;; part 2
 
@@ -97,19 +53,61 @@
 
 (def test-data (puzzle-input (test-input *ns*)))
 
-(deftest intersection-count-greater-than-test
-  (are [a b n expected] (= expected (intersection-count-greater-than-or-equal a b n))
-    [1] [2] 1 false
-    [1] [1] 1 true
-    [2 1] [1] 1 true
-    [2 1] [1] 2 false
-    [2 1] [3 1] 1 true
-    [1 2 3 4] [7 5 4 9 1 8 2 6] 3 true
-    ))
+(deftest max-overlapping-beacons-test
+  (is (= #{0} (max-overlapping-beacons [0 1] [0 2])))
+  (is (= #{0 1} (max-overlapping-beacons [0 1] [0 1])))
+  (is (= #{0 1} (max-overlapping-beacons [0 1] [1 0])))
+  (is (= #{0 1} (max-overlapping-beacons [0 1] [1 2])))
+  (is (= #{0 1} (max-overlapping-beacons [1 2] [0 1])))
+  (is (= #{0 1} (max-overlapping-beacons [1 2] [4 5])))
+  (is (= #{0 1} (max-overlapping-beacons [4 5] [1 2])))
+  (is (= #{0 1} (max-overlapping-beacons [0 1 3] [0 1])))
+  (is (= #{0 1} (max-overlapping-beacons [0 1] [0 1 3])))
+  (is (= #{0 1} (max-overlapping-beacons [0 2 3] [0 1])))
+  (is (= #{0 1} (max-overlapping-beacons [0 1] [0 2 3])))
+  (is (= #{0 2} (max-overlapping-beacons [0 1 3] [0 2])))
+  (is (= #{0 3} (max-overlapping-beacons [0 1 3] [0 3])))
+  (is (= #{0} (max-overlapping-beacons [0 1 3] [0 4])))
+  )
 
-(deftest part1-test
-  (is (= 79 (part1 test-data))))
+(deftest count-beacons-test
+  (testing "min-overlapping-beacons == 1"
+    (let [min-overlapping-beacons 1]
+      (is (= 0 (count-beacons [] min-overlapping-beacons)))
+      (is (= 1 (count-beacons [[[0 0 0]]] min-overlapping-beacons)))
+      (is (= 1 (count-beacons [[[0 0 0]]
+                               [[1 1 1]]]
+                              min-overlapping-beacons)))
+      (is (= 1 (count-beacons [[[0 0 0]]
+                               [[1 1 1]]
+                               [[2 2 2]]]
+                              min-overlapping-beacons)))
+      (is (= 2 (count-beacons [[[0 0 0] [1 2 3]]
+                               [[1 1 1]]]
+                              min-overlapping-beacons)))
+      (is (= 3 (count-beacons [[[0 0 0] [1 2 3]]
+                               [[1 1 1] [4 5 6]]]
+                              min-overlapping-beacons)))
+      )
+    )
+    (testing "min-overlapping-beacons == 2"
+    (let [min-overlapping-beacons 1]
+      (is (= 0 (count-beacons [] min-overlapping-beacons)))
+      (is (= 1 (count-beacons [[[0 0 0]]] min-overlapping-beacons)))
+      (is (= 2 (count-beacons [[[0 0 0] [0 0 1]]] min-overlapping-beacons)))
+      (is (= 2 (count-beacons [[[0 0 0] [0 0 1]]
+                               [[0 0 0] [0 0 1]]]
+                              min-overlapping-beacons)))
+      )
+    )
+  )
 
-(deftest part2-test
-  (is (= nil (part2 test-data))))
+
+
+
+;(deftest part1-test-full
+;  (is (= 79 (part1 test-data))))
+
+;(deftest part2-test
+;  (is (= nil (part2 test-data))))
 
