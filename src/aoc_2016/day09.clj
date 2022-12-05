@@ -1,10 +1,11 @@
 (ns aoc-2016.day09
   (:require
    [aoc.core :refer :all]
-   [clojure.string :refer [index-of join]]
+   [clojure.string :as s]
    [clojure.test :refer :all]))
 
-(puzzle-input-string)
+(defn puzzle-input [stream]
+  (puzzle-input-string stream))
 
 ;; part 1
 
@@ -16,7 +17,7 @@
 
 ;; → [marker-pos sequence-start length times]
 (defn find-marker [s pos]
-  (when-let [marker-pos (index-of s \( pos)]
+  (when-let [marker-pos (s/index-of s \( pos)]
     (let [[marker length times] (re-find #"\((\d+)x(\d+)\)" (subs s marker-pos))]
       [marker-pos (+ marker-pos (count marker)) (parse-int length) (parse-int times)])))
 
@@ -46,18 +47,20 @@
 
 ;; tests
 
-(deftest decompress-test
-  (are [in out] (= out (decompress in))
-    "ADVENT" "ADVENT"
-    "A(1x5)BC" "ABBBBBC"
-    "(3x3)XYZ" "XYZXYZXYZ"
-    "(6x1)(1x3)A" "(1x3)A"
-    "X(8x2)(3x3)ABCY" "X(3x3)ABC(3x3)ABCY"))
+(deftest part1-test
+  (are [input expected] (= expected (part1 input))
+    "ADVENT" 6
+    "A(1x5)BC" 7
+    "(3x3)XYZ" 9
+    "A(2x2)BCD(2x2)EFG" 11
+    "(6x1)(1x3)A" 6
+    "X(8x2)(3x3)ABCY" 18))
 
-(deftest decompress2-test
-  (are [in out] (= out (decompress2 in))
-    "ADVENT" "ADVENT"
-    "A(1x5)BC" "ABBBBBC"
-    "(3x3)XYZ" "XYZXYZXYZ"
-    "X(8x2)(3x3)ABCY" "XABCABCABCABCABCABCY"
-    "(27x12)(20x12)(13x14)(7x10)(1x12)A" (apply str (repeat 241920 \A))))
+(deftest part2-test
+  (are [input expected] (= expected (part2 input))
+    "ADVENT" 6
+    "A(1x5)BC" 7
+    "(3x3)XYZ" 9
+    "X(8x2)(3x3)ABCY" 20
+    "(27x12)(20x12)(13x14)(7x10)(1x12)A" 241920
+    "(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN" 445))

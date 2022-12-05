@@ -7,7 +7,8 @@
      [(parse-int x1) (parse-int y1)]
      [(parse-int x2) (parse-int y2)]]))
 
-(puzzle-input-parse-lines parse-input-line)
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream parse-input-line))
 
 ;; part 1
 

@@ -1,9 +1,10 @@
 (ns aoc-2015.day04
   (:require [aoc.core :refer :all]
             [aoc.md5 :refer :all]
-            [clojure.string :refer [split]]))
+            [clojure.test :refer :all]))
 
-(puzzle-input-string)
+(defn puzzle-input [stream]
+  (puzzle-input-string stream))
 
 ;; part 1
 

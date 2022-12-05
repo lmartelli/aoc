@@ -4,7 +4,8 @@
    [clojure.string :refer [split]]
    [clojure.test :refer :all]))
 
-(puzzle-input-lines)
+(defn puzzle-input [stream]
+  (line-seq stream))
 
 ;; part 1
 

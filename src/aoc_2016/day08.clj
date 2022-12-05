@@ -3,10 +3,12 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines
- (fn [l]
-   (let [[_ cmd & params] (re-matches #"(rect|rotate (?:row|column)) [^\d]*(\d+)[^\d]*(\d+)" l)]
-     [cmd (mapv parse-int params)])))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   (fn [l]
+     (let [[_ cmd & params] (re-matches #"(rect|rotate (?:row|column)) [^\d]*(\d+)[^\d]*(\d+)" l)]
+       [cmd (mapv parse-int params)]))))
 
 ;; part 1
 

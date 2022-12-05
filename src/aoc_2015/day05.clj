@@ -1,7 +1,10 @@
 (ns aoc-2015.day05
-  (:require [aoc.core :refer :all]))
+  (:require
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
-(puzzle-input-lines)
+(defn puzzle-input [stream]
+  (line-seq stream))
 
 ;; part 1
 
@@ -40,3 +43,22 @@
 
 (defpart part2 [input]
   (count-nice input nice2?))
+
+;; Tests
+
+(deftest nice?-test
+  (are [s] (nice? s)
+    "ugknbfddgicrmopn"
+    "aaa")
+  (are [s] (not (nice? s))
+    "jchzalrnumimnmhp"
+    "haegwjzuvuyypxyu"
+    "dvszwmarrgswjxmb"))
+
+(deftest nice2?-test
+  (are [s] (nice2? s)
+    "qjhvhtzxzqqjkmpb"
+    "xxyxx")
+  (are [s] (not (nice2? s))
+    "uurcxstgmygtbstg"
+    "ieodomkazucvgmuy"))

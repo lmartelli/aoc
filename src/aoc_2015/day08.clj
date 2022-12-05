@@ -1,8 +1,10 @@
 (ns aoc-2015.day08
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
-(puzzle-input-lines)
+(defn puzzle-input [stream]
+  (line-seq stream))
 
 ;; part 1
 
@@ -32,3 +34,7 @@
   (total-size input encode-delta-size))
 
 ;; tests
+
+(deftest part1-test (part-test part1 12))
+
+(deftest part1-test (part-test part2 19))

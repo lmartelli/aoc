@@ -1,8 +1,10 @@
 (ns aoc-2015.day02
   (:require [aoc.core :refer :all]
+            [clojure.test :refer :all]
             [clojure.string :refer [split]]))
 
-(puzzle-input-parse-lines #(map parse-int (split % #"x")))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream #(map parse-int (split % #"x"))))
 
 ;; part 1
 
@@ -26,3 +28,15 @@
 
 (defpart part2 [input]
   (reduce + (map ribbon-length input)))
+
+;; Tests
+
+(deftest surface-test
+  (are [dimensions expected] (= expected (surface dimensions))
+    [2 3 4] 58
+    [1 1 10] 43))
+
+(deftest ribbon-length-test
+  (are [dimensions expected] (= expected (ribbon-length dimensions))
+    [2 3 4] 34
+    [1 1 10] 14))

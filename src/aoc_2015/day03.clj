@@ -1,8 +1,9 @@
 (ns aoc-2015.day03
-  (:require [aoc.core :refer :all]
+  (:require [aoc.core :refer [puzzle-input-string defpart remove-nil]]
             [clojure.string :refer [split]]))
 
-(puzzle-input-string)
+(defn puzzle-input [stream]
+  (puzzle-input-string stream))
 
 ;; part 1
 

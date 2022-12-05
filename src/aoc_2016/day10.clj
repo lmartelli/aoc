@@ -13,15 +13,17 @@
     OUTPUT = <'output '> INT
     INT = #'[0-9]+'"))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (->> line
-        parser
-        first
-        (insta/transform
-         {:INT parse-int
-          :DISPATCH (fn [bot low high] {:cmd :dispatch, :bot bot, :low low, :high high })
-          :INIT (fn [value bot] {:cmd :init, :bot bot, :value value})}))))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   (fn [line]
+     (->> line
+          parser
+          first
+          (insta/transform
+           {:INT parse-int
+            :DISPATCH (fn [bot low high] {:cmd :dispatch, :bot bot, :low low, :high high })
+            :INIT (fn [value bot] {:cmd :init, :bot bot, :value value})})))))
 
 ;; part 1
 
