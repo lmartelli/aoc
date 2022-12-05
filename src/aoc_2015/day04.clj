@@ -8,15 +8,39 @@
 
 ;; part 1
 
-(defn find-salt [key regex]
-  (->>  (map vector (range) (md5-seq key))
-        (find-first #(re-find regex (second %)))
-        first))
+(defn md5-seq [key]
+  (map #(md5 (str key %)) (range)))
+
+(defn byte-to-quad-bits [b]
+  (let [int-value (bit-and b 0xff)]
+    [(quot int-value 16) (mod int-value 16)]))
+
+(defn bytes-to-quadbits [bytes]
+  (mapcat byte-to-quad-bits bytes))
+
+(defn has-nb-leading-zeros? [n bytes]
+  (->> (bytes-to-quadbits bytes)
+       (take n)
+       (every? zero?)))
+
+(defn find-salt [key nb-leading-zeros]
+  (find-first
+   (fn [salt]
+     (->> (md5 (str key salt))
+          (has-nb-leading-zeros? nb-leading-zeros)))
+   (range)))
 
 (defpart part1 [input]
-  (find-salt input #"^0{5}"))
+  (find-salt input 5))
 
 ;; part 2
 
 (defpart part2 [input]
-  (find-salt input #"^0{6}"))
+  (find-salt input 6))
+
+;; Tests
+
+(deftest part1-test
+  (are [key expected] (= expected (part1 key))
+    "abcdef" 609043
+    "pqrstuv" 1048970))
