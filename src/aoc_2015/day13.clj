@@ -4,13 +4,15 @@
    [clojure.math.combinatorics :refer [permutations]]
    [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (let [[_ person gain-or-lose points neighbour] (re-matches #"([^ ]*).*(gain|lose) (\d+).* (.*)\." line)]
-     [[person neighbour]
-      (* (parse-int points)
-         (if (= "gain" gain-or-lose) 1 -1))]))
- #(into {} %))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   (fn [line]
+     (let [[_ person gain-or-lose points neighbour] (re-matches #"([^ ]*).*(gain|lose) (\d+).* (.*)\." line)]
+       [[person neighbour]
+        (* (parse-int points)
+           (if (= "gain" gain-or-lose) 1 -1))]))
+   #(into {} %)))
 
 ;; part 1
 

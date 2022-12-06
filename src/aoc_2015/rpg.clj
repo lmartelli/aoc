@@ -9,8 +9,8 @@
   (let [[keys vals] (apply map vector lines)]
     (zipmap (map props keys) (map parse-int vals))))
 
-(defmacro puzzle-input-rpg-properties []
-  `(puzzle-input-parse-lines #(split % #": ") transform-lines))
+(defn puzzle-input-rpg-properties [stream]
+  (puzzle-input-parse-lines stream #(split % #": ") transform-lines))
 
 (defn dead? [player]
   (<= (player :hit-points) 0))

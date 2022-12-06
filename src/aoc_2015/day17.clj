@@ -2,7 +2,11 @@
   (:require
    [aoc.core :refer :all]))
 
-(puzzle-input-parse-lines parse-int #(sort-by - %))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   parse-int
+   #(sort > %)))
 
 ;; part 1
 

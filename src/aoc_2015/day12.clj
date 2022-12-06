@@ -4,7 +4,10 @@
    [clojure.data.json :as json]
    [clojure.test :refer :all]))
 
-(puzzle-input-string)
+(defn puzzle-input [stream]
+  (-> stream
+      line-seq
+      first))
 
 ;; part 1
 

@@ -93,6 +93,9 @@
   `(are [input-num expected] (= expected (~part (~'puzzle-input (test-input input-num))))
      ~@expectations))
 
+(defmacro parse-input-string [input]
+  `(~'puzzle-input (io/input-stream (.getBytes ~input))))
+
 (defn puzzle-input-string
   "Concatenates all the lines of the puzzle input into one string."
   ([stream] (puzzle-input-string stream identity))
@@ -464,3 +467,15 @@
       (recur
         (map (fn [v [m M]] [(min v m) (max v M)]) cur res)
         more))))
+
+(defn byte-to-quad-bits [b]
+  (let [int-value (bit-and b 0xff)]
+    [(quot int-value 16) (mod int-value 16)]))
+
+(defn bytes-to-quadbits [bytes]
+  (mapcat byte-to-quad-bits bytes))
+
+(defn bytes-to-hex [^bytes bytes]
+  (->> bytes
+       (BigInteger. 1)
+       (format (str "%0" (* 2 (count bytes))  "x"))))

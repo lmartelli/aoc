@@ -2,16 +2,18 @@
   (:require
    [aoc.core :refer :all]))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (let [[_ ingredient capacity durability flavor texture calories]
-         (re-matches #"(\w*):.* (-?\d+),.* (-?\d+),.* (-?\d+),.* (-?\d+),.* (-?\d+)" line)]
-     {:name ingredient
-      :capacity (parse-int capacity)
-      :durability (parse-int durability)
-      :flavor (parse-int flavor)
-      :texture (parse-int texture)
-      :calories (parse-int calories)})))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   (fn [line]
+     (let [[_ ingredient capacity durability flavor texture calories]
+           (re-matches #"(\w*):.* (-?\d+),.* (-?\d+),.* (-?\d+),.* (-?\d+),.* (-?\d+)" line)]
+       {:name ingredient
+        :capacity (parse-int capacity)
+        :durability (parse-int durability)
+        :flavor (parse-int flavor)
+        :texture (parse-int texture)
+        :calories (parse-int calories)}))))
 
 ;; part 1
 
@@ -29,8 +31,8 @@
 (def recipes-seq
   (let [range (range 0 101)]
     (for [a range, b range, c range, d range
-               :when (= 100 (+ a b c d))]
-           [a b c d])))
+          :when (= 100 (+ a b c d))]
+      [a b c d])))
 
 (def recipes-seq
   (combinations-with-sum 4 100))

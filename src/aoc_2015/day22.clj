@@ -4,7 +4,8 @@
    [aoc-2015.rpg :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-rpg-properties)
+(defn puzzle-input [stream]
+  (puzzle-input-rpg-properties stream))
 
 (def init-player {:hit-points 50, :armor 0, :mana 500, :spent 0})
 

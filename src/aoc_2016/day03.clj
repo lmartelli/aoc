@@ -3,7 +3,8 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-split-lines #"\s+" #(mapv parse-int (rest %)))
+(defn puzzle-input [stream]
+  (puzzle-input-split-lines stream #"\s+" #(mapv parse-int (rest %))))
 
 ;; part 1
 

@@ -1,13 +1,17 @@
 (ns aoc-2016.day01
   (:require
    [aoc.core :refer :all]
-   [clojure.string :refer [split]]))
+   [clojure.string :refer [split]]
+   [clojure.java.io :refer [input-stream]]
+   [clojure.test :refer :all]))
 
-(puzzle-input-parse
- (fn [input]
-   (->> (split input #", *")
-        (map #(let [[_ turn dist] (re-matches #"(R|L)(\d+)" %)]
-                {:turn turn, :dist (parse-int dist)})))))
+(defn puzzle-input [stream]
+  (puzzle-input-string
+   stream
+   (fn [input]
+     (->> (split input #", *")
+          (map #(let [[_ turn dist] (re-matches #"(R|L)(\d+)" %)]
+                  {:turn turn, :dist (parse-int dist)}))))))
 
 ;; part 1
 
@@ -59,3 +63,13 @@
        manatthan-dist))
 
 ;; tests
+
+(deftest part1-test
+  (are [input expected] (= expected (part1 (parse-input-string input)))
+    "R2, L3" 5
+    "R2, R2, R2" 2
+    "R5, L5, R5, R3" 12))
+
+(deftest part2-test
+  (are [input expected] (= expected (part2 (parse-input-string input)))
+    "R8, R4, R4, R8" 4))

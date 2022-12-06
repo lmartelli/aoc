@@ -2,14 +2,16 @@
   (:require
    [aoc.core :refer :all]))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (let [[_ reindeer speed run-time rest-time]
-         (re-matches #"([^ ]*).* (\d+) .* (\d+) .* (\d+) .*" line)]
-     {:name reindeer
-      :speed (parse-int speed)
-      :run-time (parse-int run-time)
-      :rest-time (parse-int rest-time)})))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   (fn [line]
+     (let [[_ reindeer speed run-time rest-time]
+           (re-matches #"([^ ]*).* (\d+) .* (\d+) .* (\d+) .*" line)]
+       {:name reindeer
+        :speed (parse-int speed)
+        :run-time (parse-int run-time)
+        :rest-time (parse-int rest-time)}))))
 
 ;; part 1
 

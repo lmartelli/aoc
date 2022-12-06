@@ -1,8 +1,10 @@
 (ns aoc-2016.day06
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
-(puzzle-input-lines)
+(defn puzzle-input [stream]
+  (line-seq stream))
 
 ;; part 1
 
@@ -23,3 +25,7 @@
   (unjam input #(apply min-key val %)))
 
 ;; tests
+
+(deftest part1-test (part-test part1 "easter"))
+
+(deftest part2-test (part-test part2 "advent"))

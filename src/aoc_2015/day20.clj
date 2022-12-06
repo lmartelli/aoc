@@ -5,7 +5,10 @@
    [clojure.math.combinatorics :as combi :refer [combinations]]
    [clojure.math.numeric-tower :refer [exact-integer-sqrt]]))
 
-(puzzle-input-string parse-int)
+(defn puzzle-input [stream]
+  (-> (line-seq stream)
+      first
+      parse-int))
 
 ;; part 1
 
@@ -35,9 +38,6 @@
     (if (zero? r)
       n
       (+ n (- m (rem n m))))))
-
-(defn multiple? [x y]
-  (zero? (mod x y)))
 
 (defn presents-delivered [house-num]
   (reduce

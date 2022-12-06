@@ -1,8 +1,10 @@
 (ns aoc-2016.day02
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
-(puzzle-input-lines)
+(defn puzzle-input [stream]
+  (line-seq stream))
 
 ;; part 1
 
@@ -52,3 +54,7 @@
   (get-code [0 2] input keyboard2))
 
 ;; tests
+
+(deftest part1-test (part-test part1 "1985"))
+
+(deftest part2-test (part-test part2 "5DB3"))

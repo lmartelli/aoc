@@ -11,13 +11,6 @@
 (defn md5-seq [key]
   (map #(md5 (str key %)) (range)))
 
-(defn byte-to-quad-bits [b]
-  (let [int-value (bit-and b 0xff)]
-    [(quot int-value 16) (mod int-value 16)]))
-
-(defn bytes-to-quadbits [bytes]
-  (mapcat byte-to-quad-bits bytes))
-
 (defn has-nb-leading-zeros? [n bytes]
   (->> (bytes-to-quadbits bytes)
        (take n)

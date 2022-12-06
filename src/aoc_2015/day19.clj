@@ -3,10 +3,10 @@
    [aoc.core :refer :all]
    [clojure.string :as str]))
 
-(puzzle-input-lines
- (fn [lines]
-     {:replacements (mapv #(str/split % #" => ") (-> lines vec pop pop))
-      :molecule (last lines)}))
+(defn puzzle-input [stream]
+  (let [lines (line-seq stream)]
+    {:replacements (mapv #(str/split % #" => ") (drop-last 2 lines))
+     :molecule (last lines)}))
 
 ;; part 1
 

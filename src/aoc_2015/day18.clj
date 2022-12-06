@@ -2,7 +2,9 @@
   (:require
    [aoc.core :refer :all]))
 
-(puzzle-input-lines array-2d-to-map)
+(defn puzzle-input [stream]
+  (-> (line-seq stream)
+      array-2d-to-map))
 
 ;; part 1
 
@@ -55,7 +57,7 @@
 
 ;; tests
 
-(def test-input
+(def test-data
   (array-2d-to-map
    [".#.#.#"
     "...##."

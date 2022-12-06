@@ -3,12 +3,14 @@
    [clojure.string :refer [split join]]
    [aoc.core :refer :all]))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (let [[_ name id checksum] (re-matches #"(.*)-(\d+)\[(.*)\]" line)]
-        {:name (split name #"-")
-         :sector (parse-int id)
-         :checksum checksum})))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   (fn [line]
+     (let [[_ name id checksum] (re-matches #"(.*)-(\d+)\[(.*)\]" line)]
+       {:name (split name #"-")
+        :sector (parse-int id)
+        :checksum checksum}))))
 
 ;; part 1
 

@@ -1,10 +1,11 @@
 (ns aoc-2015.day21
   (:require
    [aoc.core :refer :all]
-   [aoc-2015.rpg :refer :all]
+   [aoc-2015.rpg :refer [puzzle-input-rpg-properties dead?]]
    [clojure.math.combinatorics :as combi :refer [combinations]]))
 
-(puzzle-input-rpg-properties)
+(defn puzzle-input [stream]
+  (puzzle-input-rpg-properties stream))
 
 (defn parse-items [coll]
   (->> coll

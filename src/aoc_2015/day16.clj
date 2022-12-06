@@ -17,12 +17,14 @@
             :COMPOUND (fn [name qty] [(keyword name) qty])
             :INT parse-int}))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (->> line
-        parser
-        transform))
- #(into {} %))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+   stream
+   (fn [line]
+     (->> line
+          parser
+          transform))
+   #(into {} %)))
 
 (def clues
   {:children 3
