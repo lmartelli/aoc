@@ -1,14 +1,15 @@
 (ns aoc-2015.day06
-  (:require [aoc.core :refer :all]))
-
-(defn parse-input-line [line]
-  (when-let [[_ cmd x1 y1 x2 y2] (re-matches #"(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)" line)]
-    [({"turn on" :on, "turn off" :off "toggle" :toggle} cmd)
-     [(parse-int x1) (parse-int y1)]
-     [(parse-int x2) (parse-int y2)]]))
+  (:require
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
-  (puzzle-input-parse-lines stream parse-input-line))
+  (->> (line-seq stream)
+       (re-parse-lines
+        #"(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)"
+        #(vector ({"turn on" :on, "turn off" :off "toggle" :toggle} %1)
+                 [(parse-int %2) (parse-int %3)]
+                 [(parse-int %4) (parse-int %5)]))))
 
 ;; part 1
 
@@ -58,3 +59,7 @@
   (->> input
        (run-cmds commands2)
        total-brightness))
+
+;; Tests
+
+(deftest part1-test (part-test part1 4998))

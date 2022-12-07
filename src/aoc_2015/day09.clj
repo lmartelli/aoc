@@ -5,10 +5,9 @@
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
-  (puzzle-input-parse-lines
-   stream
-   #(let [[_ from to dist] (re-matches #"([^ ]+) to ([^ ]+) = (\d+)" %)]
-      [from to (parse-int dist)])))
+  (->> (line-seq stream)
+       (re-parse-lines #"([^ ]+) to ([^ ]+) = (\d+)"
+                       #(vector %1 %2 (parse-int %3)))))
 
 ;; part 1
 

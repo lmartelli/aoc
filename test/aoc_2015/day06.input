@@ -1,0 +1,3 @@
+turn on 0,50 through 99,99
+toggle 0,0 through 0,99
+turn off 49,49 through 50,50

@@ -105,6 +105,11 @@
         (apply str)
         xf)))
 
+(defn re-parse-lines [regex f lines]
+  (map
+   #(apply f (rest (re-matches regex %)))
+   lines))
+
 (defn puzzle-input-lines [stream]
   (line-seq stream))
 
