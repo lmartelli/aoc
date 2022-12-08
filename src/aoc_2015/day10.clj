@@ -1,6 +1,7 @@
 (ns aoc-2015.day10
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
   (-> stream
@@ -33,3 +34,15 @@
       count))
 
 ;; tests
+
+(deftest look-and-say-test
+  (are [digits expected] (= expected (look-and-say digits))
+    [1] [1 1]
+    [1 1] [2 1]
+    [2 1] [1 2 1 1]
+    [1 2 1 1] [1 1 1 2 2 1]
+    [1 1 1 2 2 1] [3 1 2 2 1 1]))
+
+(deftest part1-test (is (= 329356 (part1 "3113322113"))))
+
+(deftest part2-test (is (= 4666278 (part2 "3113322113"))))

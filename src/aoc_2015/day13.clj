@@ -73,4 +73,4 @@
                                    (sum-happyness rules (vec (reverse permutation))))
       [:a :b :c :d] (+ 10 15 -5 7 -1 25 -5 -34))))
 
-
+(deftest part1-test (part-test part1 330))
