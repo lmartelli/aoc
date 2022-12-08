@@ -11,27 +11,26 @@
 ;; part 1
 
 (defn look-and-say [s]
-  (->> (re-seq #"(.)\1*" s)
-       (map first)
-       (reduce
-        (fn [say look]
-          (conj say (count look) (first look)))
-        [])
-       (apply str)))
+  (->> (partition-by identity s)
+       (mapcat (juxt count first))))
 
 (defn look-and-say-seq [start]
   (iterate look-and-say start))
 
-(defpart part1 [input]
-  (-> (look-and-say-seq input)
+(defn look-and-say-nth-length [seed n]
+  (-> seed
+      digit-seq
+      look-and-say-seq
       (nth 40)
       count))
+
+(defpart part1 [input]
+  (look-and-say-nth-length input 40))
+
 ;; part 2
 
 (defpart part2 [input]
-    (-> (look-and-say-seq input)
-      (nth 50)
-      count))
+  (look-and-say-nth-length input 50))
 
 ;; tests
 
