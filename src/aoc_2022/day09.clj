@@ -16,14 +16,20 @@
   (and (<= -1 (- ax bx) 1)
        (<= -1 (- ay by) 1)))
 
-(defn follow-move [from to]
+(defn vadd [[ax ay] [bx by]]
+  [(+ ax bx) (+ ay by)])
+
+(defn vsub [[ax ay] [bx by]]
+  [(- ax bx) (- ay by)])
+
+(defn follow-move [[fx fy :as from] [tx ty :as to]]
   (if-not (touching? from to)
-    (map signum (sub to from))))
+    [(signum (- tx fx)) (signum (- ty fy))])
 
 (defn step [[k1 k2 :as knots] v]
   (if (not v)
     knots
-    (let [new-k1 (add k1 v)]
+    (let [new-k1 (vadd k1 v)]
       (if-not k2
         (list new-k1)
         (cons new-k1 (step (rest knots) (follow-move k2 new-k1)))))))
@@ -32,12 +38,13 @@
   (repeat steps (directions dir)))
 
 (defn count-visited [nb-knots motions]
-  (->> (reductions step
-                   (repeat nb-knots [0 0])
-                   (mapcat explode-motion motions))
-       (map last)
-       (into #{})
-       count))
+  (let [motion-increments (mapcat explode-motion motions)]
+    (->> (reductions step
+                     (repeat nb-knots [0 0])
+                     motion-increments)
+         (map last)
+         (into #{})
+         count)))
 
 ;; part 2
 
