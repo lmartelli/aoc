@@ -79,6 +79,9 @@
   ([] `(*test-input* ~*ns*))
   ([suffix] `(*test-input* ~suffix ~*ns*)))
 
+(defmacro test-data []
+  `(~'puzzle-input (test-input)))
+
 (defmacro defparttest [name part expected]
   `(deftest ~name (is (= ~expected (~part (test-input))))))
 
@@ -382,10 +385,11 @@
 (defn move [pos dir dist]
   (add pos (mult dir dist)))
 
-(defn manatthan-dist [p]
-  (->> p
-       (map abs)
-       (reduce +)))
+(defn manatthan-dist
+  ([a b] (manatthan-dist (sub a b)))
+  ([p] (->> p
+            (map abs)
+            (reduce +))))
 
 (defn remove-index [v index]
   (vec
