@@ -79,14 +79,18 @@
   ([] `(*test-input* ~*ns*))
   ([suffix] `(*test-input* ~suffix ~*ns*)))
 
-(defmacro test-data []
-  `(~'puzzle-input (test-input)))
+(defmacro test-data
+  ([] `(~'puzzle-input (test-input)))
+  ([suffix] `(~'puzzle-input (test-input ~suffix))))
 
 (defmacro defparttest [name part expected]
   `(deftest ~name (is (= ~expected (~part (test-input))))))
 
-(defmacro part-test [part expected]
-  `(is (= ~expected (~part (~'puzzle-input (test-input))))))
+(defmacro part-test
+  ([part expected]
+   `(is (= ~expected (~part (~'puzzle-input (test-input))))))
+  ([part suffix expected]
+   `(is (= ~expected (~part (~'puzzle-input (test-input ~suffix)))))))
 
 (defmacro def-part-test [part expected]
   `(deftest ~(symbol (str part "-test"))
@@ -111,6 +115,11 @@
 (defn re-parse-lines [regex f lines]
   (map
    #(apply f (rest (re-matches regex %)))
+   lines))
+
+(defn split-lines [regex f lines]
+  (map
+   #(apply f (str/split % regex))
    lines))
 
 (defn puzzle-input-lines [stream]
@@ -488,3 +497,9 @@
   (->> bytes
        (BigInteger. 1)
        (format (str "%0" (* 2 (count bytes))  "x"))))
+
+(defn signum [n]
+  (cond
+    (zero? n) 0
+    (pos? n) 1
+    :else -1))
