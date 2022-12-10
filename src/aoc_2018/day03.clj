@@ -41,8 +41,9 @@
 
 (defpart part2 [input]
   (let [m (map-claims input)]
-    (difference
-     (filter-on-count m (partial = 1))
-     (filter-on-count m (partial < 1)))))
+    (-> (difference
+         (filter-on-count m (partial = 1))
+         (filter-on-count m (partial < 1)))
+        first)))
   
 ;; tests
