@@ -1,6 +1,7 @@
 (ns aoc-2019.day11
   (:require
    [aoc.core :refer :all]
+   [aoc.ocr :refer :all]
    [aoc-2019.day05 :refer [debug set-debug]]
    [aoc-2019.day07 :refer [terminated?]]
    [aoc-2019.day09 :refer [run-instr]]
@@ -68,15 +69,11 @@
          (update :right max (coord 0))
          (update :top min (coord 1))
          (update :bottom max (coord 1))))
-   {:left 0, :right 0, :top 0, :bottom 0}
+   {:left ##Inf, :right ##-Inf, :top ##Inf, :bottom ##-Inf}
    coordinates))
 
-(defn paint-panel [panels [[x y] color]]
-  (println "paint " [x y] "→" color)
-  (assoc-in panels [y x]
-             (case color
-               0 \space
-               1 \#)))
+(defn paint-black-panel [panels [[x y] color]]
+  (assoc-in panels [y x] \#))
 
 (defn display-panels [lines]
   (map #(apply str %) lines))
@@ -84,25 +81,24 @@
 (defn init-panels [width height]
   (vec (repeat height (vec (repeat width \space)))))
 
+(defn find-top-left [painted ])
+
 (defn paint-panels [painted-panels]
-  (let [{top :top left :left bottom :bottom right :right} (boundaries (keys painted-panels))
-        origin [top left]
+  (let [black-panels (filter #(= 1 (val %)) painted-panels)
+        {top :top left :left bottom :bottom right :right} (boundaries (keys black-panels))
+        origin [left top]
         width (inc (- right left))
         height (inc (- bottom top))]
-    (println "origin" origin)
-    (println "boundaries" top left bottom right)
-    (println "dim" [width height])
     (reduce
-     paint-panel
+     paint-black-panel
      (init-panels width height)
-     (map #(update % 0 sub origin) painted-panels))
-    ))
+     (map #(update % 0 sub origin) black-panels))))
 
 (defpart part2 [input]
   (-> (run-robot input 1)
       :painted-panels
       paint-panels
-      display-panels))
+      ocr))
 
 ;; tests
 

@@ -1,6 +1,7 @@
 (ns aoc-2021.day13
   (:require
    [aoc.core :refer :all]
+   [aoc.ocr :refer :all]
    [clojure.string :refer [split]]
    [clojure.test :refer :all]))
 
@@ -35,18 +36,14 @@
 (defn plot [points]
   (let [width (apply max (map first points))
         height (apply max (map second points))]
-    (prn)
-    (run!
-      prn
-      (map (fn [y]
-             (apply str (map (fn [x] (if (points [x y]) \# \space)) (range-inc width))))
-           (range-inc height))
-      )
-    points))
+    (map (fn [y]
+           (apply str (map (fn [x] (if (points [x y]) \# \space)) (range-inc width))))
+         (range-inc height))))
 
 (defpart part2 [{:keys [:coords :folds]}]
   (-> (reduce fold coords folds)
-      plot))
+      plot
+      ocr))
 
 ;; tests
 

@@ -1,6 +1,7 @@
 (ns aoc-2022.day10
   (:require
    [aoc.core :refer :all]
+   [aoc.ocr :refer :all]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -31,14 +32,13 @@
 ;; part 2
 
 (defn pixels-lines [prog screen-width]
-  (->> (map (fn [x pos] (if (<= (dec x) pos (inc x)) \u2588 \space))
+  (->> (map (fn [x pos] (if (<= (dec x) pos (inc x)) \# \space))
             (x-values prog) (cycle (range 0 screen-width)))
        (partition screen-width)
        (map #(apply str %))))
 
 (defpart part2 [prog]
-  (doseq [line (pixels-lines prog 40)]
-    (println line)))
+    (ocr (pixels-lines prog 40)))
 
 ;; tests
 

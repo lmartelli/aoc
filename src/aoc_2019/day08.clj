@@ -1,10 +1,12 @@
 (ns aoc-2019.day08
   (:require
    [aoc.core :refer :all]
+   [aoc.ocr :refer :all]
    [clojure.java.io :as io]
    [clojure.string :refer [join]]))
 
-(puzzle-input-parse seq)
+(defn puzzle-input [stream]
+  (puzzle-input-string stream))
 
 ;; part 1
 
@@ -38,14 +40,11 @@
 (defn combine-layers [layers]
   (apply map (fn [& pixels] (some #(if (not= \2 %) %) pixels)) layers))
 
-(defn display-image [pixels width]
-  (->>
-   (map #(apply str %) (partition width width nil (map {\0 \space, \1 \#, \2 \space} pixels)))
-   (join "\n")
-   (println)))
-
 (defn decode-image [data width height]
-  (-> data (layers width height) combine-layers (display-image width)))
+  (->> (layers data width height)
+       combine-layers
+       (partition width)))
 
 (defpart part2 [input]
-  (decode-image input width height))
+  (-> (decode-image input width height)
+      (ocr \0)))

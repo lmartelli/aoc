@@ -1,6 +1,7 @@
 (ns aoc-2016.day08
   (:require
    [aoc.core :refer :all]
+   [aoc.ocr :refer :all]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -72,6 +73,6 @@
 (defpart part2 [input]
   (->> input
        (reduce exec-cmd display)
-       show))
+       ocr))
 
 ;; tests
