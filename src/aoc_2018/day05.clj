@@ -6,7 +6,7 @@
 
 ;; part 1
 
-(defn upper-case [c]
+(defn upper-case [^Character c]
   (when c
     (Character/toUpperCase c)))
 
