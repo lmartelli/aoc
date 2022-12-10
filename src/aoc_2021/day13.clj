@@ -6,7 +6,7 @@
 
 (defn puzzle-input [stream]
   (let [lines (line-seq stream)
-        [coords folds] (split-seq empty lines?)]
+        [coords folds] (split-seq empty? lines)]
     {:coords (into #{} (map parse-int-array  coords))
      :folds (map #(let [[_ axis pos] (re-find #"(x|y)=(\d+)" %)]
                     [(keyword axis) (parse-int pos)])
