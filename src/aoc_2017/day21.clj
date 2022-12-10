@@ -11,7 +11,8 @@
 (defn parse-rule [rule]
   (mapv parse-block (split rule #" => ")))
 
-(puzzle-input-parse-lines parse-rule)
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream parse-rule))
 
 (defn read-block [strings]
   (mapv vec strings))

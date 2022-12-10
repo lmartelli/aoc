@@ -7,7 +7,8 @@
   (let [[_ id x y w h] (re-matches #"#(.*) @ (\d+),(\d+): (\d+)x(\d+)" l)]
     {:id id, :left (parse-int x) :top (parse-int y) :width (parse-int w) :height (parse-int h) }))
 
-(puzzle-input-parse-lines parse-line)
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream parse-line))
 
 ;; part 1
 

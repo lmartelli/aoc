@@ -2,7 +2,8 @@
   (:require [aoc.core :refer :all]
             [clojure.test :refer :all]))
 
-(puzzle-input-string)
+(defn puzzle-input [stream]
+  (puzzle-input-string stream))
 
 ;; part 1
 

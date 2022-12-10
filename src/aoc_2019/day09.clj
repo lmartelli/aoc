@@ -5,7 +5,8 @@
    [aoc-2019.day07 :refer [terminated? cur-instr] :exclude [run]]
    [clojure.pprint :refer [pprint]]))
 
-(puzzle-input-int-array)
+(defn puzzle-input [stream]
+  (puzzle-input-int-array stream))
 
 ;; part 1
 

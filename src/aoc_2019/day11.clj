@@ -7,7 +7,8 @@
    [aoc-2019.day09 :refer [run-instr]]
    [clojure.test :refer :all]))
 
-(puzzle-input-int-array)
+(defn puzzle-input [stream]
+  (puzzle-input-int-array stream))
 
 ;; part 1
 
