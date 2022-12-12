@@ -114,7 +114,7 @@
 
 (defn re-parse-lines [regex f lines]
   (map
-   #(apply f (rest (re-matches regex %)))
+   #(apply f (rest (or (re-matches regex %) (throw (Exception. (str "Regex " regex " does not match: " %))))))
    lines))
 
 (defn split-lines [regex f lines]
