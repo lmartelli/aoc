@@ -1,6 +1,7 @@
 (ns aoc-2022.day09
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as v]
    [clojure.math.numeric-tower :as math]
    [clojure.test :refer :all]))
 
@@ -16,20 +17,14 @@
   (and (<= -1 (- ax bx) 1)
        (<= -1 (- ay by) 1)))
 
-(defn vadd [[ax ay] [bx by]]
-  [(+ ax bx) (+ ay by)])
-
-(defn vsub [[ax ay] [bx by]]
-  [(- ax bx) (- ay by)])
-
 (defn follow-move [[fx fy :as from] [tx ty :as to]]
   (if-not (touching? from to)
-    [(signum (- tx fx)) (signum (- ty fy))])
+    [(signum (- tx fx)) (signum (- ty fy))]))
 
 (defn step [[k1 k2 :as knots] v]
   (if (not v)
     knots
-    (let [new-k1 (vadd k1 v)]
+    (let [new-k1 (v/+ k1 v)]
       (if-not k2
         (list new-k1)
         (cons new-k1 (step (rest knots) (follow-move k2 new-k1)))))))
