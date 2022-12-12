@@ -226,9 +226,9 @@
      {}
      (filter (fn [[coord val]] (pred val)))
      (mapcat
-       (fn [row y]
+       (fn [y row]
          (map-indexed (fn [x val] [[x y] (value-xf val)]) row))
-       rows (range)))))
+       (range) rows))))
 
 (defn lines-to-matrix [lines value-xf]
   (mapv #(mapv value-xf %) lines))
