@@ -1,19 +1,27 @@
 (ns aoc.algo)
 
-(defn count-min-steps
-  "Counts minimum number of steps from a start position until stop condition,
-  using :directions steps, constrained by :allow-neighbour?
+(defmacro explore
+  "Explores a space from a starting position, until a condition is reached.
+  Returns a set of all visited positions, the number of executed
+  steps, and the positions visited during the last step
 
-  `start` is the start position
-  `next-positions` is a function of that returns the next possible position from a given position
-  `stop?` is a predicate that tells when to stop exploring. It must accept a set of positions."
-  [&{:keys [start next-positions stop?]}]
-  (loop [last-visited #{start}
-         visited #{start}
-         nb-steps 0]
-    (if (stop? last-visited)
-      nb-steps
-      (let [new-positions (->> (mapcat next-positions last-visited) (filter #(not (visited %))))]
-        (recur (into #{} new-positions)
-               (apply conj visited new-positions)
-               (inc nb-steps))))))
+  `stop?` is a form that has access to last-visited, visited and nb-steps
+  `neighbours` is a function of one argument that lists neighbours of a given position
+  `neighbour-allowed?` is a form that has access to `pos` and `neighbour` that
+  used to filter neighbours that have not been alreaady visited."
+  [&{:keys [start neighbours neighbour-allowed? stop?] :or {neighbour-allowed? true}}]
+  `(loop [~'last-visited #{~start}
+          ~'visited #{~start}
+          ~'nb-steps 0]
+     (if ~stop?
+       {:visited ~'visited :last-visited ~'last-visited :nb-steps ~'nb-steps}
+       (let [~'new-positions (->> (mapcat (fn [~'pos] (->> (~neighbours ~'pos)
+                                                           (filter (fn [~'neighbour-pos]
+                                                                     (and (not (~'visited ~'neighbour-pos))
+                                                                          ~neighbour-allowed?)))))
+                                          ~'last-visited)
+                                  )]
+         (recur (into #{} ~'new-positions)
+                (apply conj ~'visited ~'new-positions)
+                (inc ~'nb-steps)))))
+  )

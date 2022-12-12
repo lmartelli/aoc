@@ -9,11 +9,5 @@
 (defn - [[ax ay] [bx by]]
   [(core/- ax bx) (core/- ay by)])
 
-(def up-right-down-left [[0 1] [1 0] [0 -1] [-1 0]])
-
-(defn count-min-steps [&{:keys [start directions allowed-step? stop?]}]
-  (algo/count-min-steps :start start
-                        :stop? stop?
-                        :next-positions (fn [pos]
-                                          (->> (map #(+ pos %) directions)
-                                               (filter #(allowed-step? pos %))))))
+(defn direct-neighbours [[x y]]
+  (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]))

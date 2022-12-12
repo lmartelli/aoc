@@ -1,7 +1,8 @@
 (ns aoc-2016.day13
   (:require
    [aoc.core :refer :all]
-   [clojure.string :refer [split]]
+   [aoc.algo :as algo]
+   [aoc.space-2d :as space-2d]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -22,36 +23,25 @@
        count-bits
        even?))
 
-(defn neighbours [[x y] favorite-num]
-  (->> (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y])))
-
 (defn pos-or-zero? [n] (>= n 0))
 
-(defn allowed-neighbour? [pos explored favorite-num]
-  (and (not (explored pos))
-       (every? pos-or-zero? pos)
+(defn allowed-neighbour? [pos favorite-num]
+  (and (every? pos-or-zero? pos)
        (is-open-space? pos favorite-num)))
 
 (defn explore [from stop? favorite-num]
-  (loop [explored #{from}
-         last-explored #{from}
-         length 0]
-    (if (stop? length last-explored)
-      {:length length :explored explored}
-      (let [next-explored (->> last-explored
-                               (mapcat #(neighbours % favorite-num))
-                               (filter #(allowed-neighbour? % explored favorite-num))
-                               (into #{}))]
-        (recur
-         (into explored next-explored)
-         next-explored
-         (inc length))))))
+  (algo/explore :start from
+                :stop? (stop? nb-steps last-visited)
+                :neighbours (fn [pos]
+                              (->> (space-2d/direct-neighbours pos)
+                                   (filter #(every? pos-or-zero? %))))
+                :neighbour-allowed? (is-open-space? neighbour-pos favorite-num)))
 
 (def start [1 1])
 
 (defn shortest-path-length [from to favorite-num]
   (-> (explore from (fn [steps explored] (explored to)) favorite-num)
-      :length))
+      :nb-steps))
 
 (defpart part1 [input]
   (shortest-path-length start [31 39] input))

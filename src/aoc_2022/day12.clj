@@ -1,6 +1,7 @@
 (ns aoc-2022.day12
   (:require
    [aoc.core :refer :all]
+   [aoc.algo :as algo]
    [aoc.space-2d :as space-2d]
    [clojure.test :refer :all]))
 
@@ -31,13 +32,13 @@
 ;; part 1
 
 (defn count-steps [&{:keys [elevations start stop? allowed-step?]}]
-  (space-2d/count-min-steps :f elevations
-                            :start start
-                            :directions space-2d/up-right-down-left
-                            :stop? stop?
-                            :allowed-step? (fn [current-pos next-pos]
-                                             (if-let [next-elevation (elevations next-pos)]
-                                               (allowed-step? (elevations current-pos) next-elevation)))))
+  (-> (algo/explore :f elevations
+                    :start start
+                    :neighbours space-2d/direct-neighbours
+                    :stop? (stop? last-visited)
+                    :neighbour-allowed? (if-let [next-elevation (elevations neighbour-pos)]
+                                          (allowed-step? (elevations pos) next-elevation)))
+      :nb-steps))
 
 (defpart part1 [{:keys [start end elevations]}]
   (count-steps :elevations elevations
