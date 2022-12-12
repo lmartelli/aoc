@@ -14,7 +14,7 @@
   (System/getProperty p))
 
 (defn expand-home [s]
-  (if (.startsWith s "~")
+  (if (str/starts-with? s "~")
     (clojure.string/replace-first s "~" (system-get-property "user.home"))
     s))
 
@@ -183,10 +183,10 @@
 
 ;; misc
 
-(defn letter? [c]
+(defn letter? [^Character c]
   (Character/isLetter c))
 
-(defn digit [c]
+(defn digit [^Character c]
   (Character/digit c 10))
 
 (defn digit-seq
@@ -429,7 +429,7 @@
          i1 (v i2)
          i2 (v i1)))
 
-(defn index-of [v value]
+(defn index-of [^java.util.List v value]
   (let [index (.indexOf v value)]
     (if (= -1 index)
       nil
