@@ -4,19 +4,16 @@
    [clojure.string :refer [join]]
    [clojure.test :refer :all]))
 
-(defn transpose [lines]
-  (apply map vector lines))
-
 (defn apply-str [xs] (apply str xs))
+
+(defn char-columns-to-str-lines [columns]
+  (->> (transpose columns)
+       (map #(apply str %))))
 
 (defn split-chars [char-width lines]
   (->> (transpose lines)
        (partition char-width char-width (repeat (repeat (count lines) \space)))
        (map char-columns-to-str-lines)))
-
-(defn char-columns-to-str-lines [columns]
-  (->> (transpose columns)
-       (map #(apply str %))))
 
 (def font
   (->> (split-chars 5

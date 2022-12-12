@@ -503,3 +503,6 @@
     (zero? n) 0
     (pos? n) 1
     :else -1))
+
+(defn transpose [rows]
+  (apply map list rows))

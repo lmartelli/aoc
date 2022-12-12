@@ -177,3 +177,8 @@
 
 (deftest filter-vals-test
   (is (= {:b 1} (filter-vals odd? {:a 0 :b 1 :c 2}))))
+
+(deftest transpose-test
+  (are [colls transposed] (= transposed (transpose colls))
+    [[1] [2]] [[1 2]]
+    [[1 2] [3 4]] [[1 3] [2 4]]))
