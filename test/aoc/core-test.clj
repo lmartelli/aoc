@@ -37,13 +37,6 @@
   (is (= {:a '(3 1), :b '(2)}
          (multimap [[:a 1] [:b 2] [:a 3]]))))
 
-(deftest hex-test
-  (are [ints expected ] (= expected (hex ints))
-    [] ""
-    [0] "00"
-    [255] "ff"
-    [0 1 2 16 17 254 255] "0001021011feff"))
-
 (deftest array-2d-to-map-test
   (is (= {[0 0] \1, [1 0] \2, [2 0] \3, [0 1] \a, [1 1] \b, [2 1] \c}
          (array-2d-to-map ["123" "abc"])))

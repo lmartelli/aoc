@@ -106,10 +106,9 @@
 (defn puzzle-input-string
   "Concatenates all the lines of the puzzle input into one string."
   ([stream] (puzzle-input-string stream identity))
-  ([stream xf]
-   (->> (slurp stream)
-        str/split-lines
-        (apply str)
+  ([stream xf] ;; TODO: remove xf argument
+   (->> (line-seq stream)
+        str/join
         xf)))
 
 (defn re-parse [s regex f]
@@ -120,7 +119,9 @@
    #(re-parse % regex f)
    lines))
 
-(defn split-lines [regex f lines]
+(defn split-lines
+  "Splits lines by `regex` and applies `f` to the resulting items"
+  [regex f lines]
   (map
    #(apply f (str/split % regex))
    lines))
@@ -131,7 +132,9 @@
 (defn puzzle-input-parse-lines
   "Parse all lines and then applies an optional transform on the resulting collection."
   ([stream parse] (puzzle-input-parse-lines stream parse identity))
-  ([stream parse xf] (xf (mapv parse (puzzle-input-lines stream)))))
+  ([stream parse xf] (->> (line-seq stream)
+                          (mapv parse)
+                          xf)))
 
 (defn puzzle-input-split-lines
   ([stream regex xf-line xf-lines]
@@ -308,9 +311,6 @@
 (defn max-val [m]
   (val (apply max-key val m)))
 
-(defn hex [ints]
-  (apply str (map #(format "%02x" %) ints)))
-
 (defn bin [ints]
   (apply str (map #(cl-format nil "~8,'0',B" %) ints)))
 
@@ -360,43 +360,54 @@
   [v n]
   (mapv #(/ % n) v))
 
+;; todo: move to space-2d
 (defn center [v]
   (mult v (/ 1 2)))
 
+;; todo: move to space-2d
 (defn prod "Scalar product of 2 vectors" [u v]
   (reduce + (map * u v)))
 
+;; todo: move to space-2d
 (defn norm [v]
   (sqrt (reduce + (map square v))))
 
+;; todo: move to space-2d
 (defn cos [v u]
   (/ (prod u v) (* (norm u) (norm v))))
 
+;; todo: move to space-2d
 (defn- transform-relative [p origin tx]
   (-> p
       (sub origin)
       tx
       (add origin)))
 
+;; todo: move to space-2d
 (defn rotate-left "Y axis points down"
   ([[x y]] [y (- x)])
   ([p center] (transform-relative p center rotate-left)))
 
+;; todo: move to space-2d
 (defn rotate-right "Y axis points down"
   ([[x y]] [(- y)  x])
   ([p center] (transform-relative p center rotate-right)))
 
+;; todo: move to space-2d
 (defn flip-vert "Y axis points down"
   ([[x y]] [(- x) y])
   ([p [cx cy]] (transform-relative p [cx 0] flip-vert)))
 
+;; todo: move to space-2d
 (defn flip-horiz "Y axis points down"
   ([[x y]] [x (- y)])
   ([p [cx cy]] (transform-relative p [0 cy] flip-horiz)))
 
+;; todo: move to space-2d
 (defn move [pos dir dist]
   (add pos (mult dir dist)))
 
+;; todo: move to space-2d
 (defn manatthan-dist
   ([a b] (manatthan-dist (sub a b)))
   ([p] (->> p
@@ -461,11 +472,13 @@
         (let [[curr & more] coll]
           (recur (min m curr) (max M curr) more)))))
 
+;; TODO: move to sapce-2d or display
 (defn display-grid [grid]
   (dorun (map #(println (apply str %)) grid)))
 
+;; TODO: move to sapce-2d or display
 (defn display-grid-map
-  "`m` is map whose keys are [x y] coordinates"
+  "`m` is map whose keys are [x y] coordinates and whose values are a character to display"
   ([m] (display-grid-map m identity))
   ([m value-xf]
    (let [[x-min x-max] (apply min-max (map first (keys m)))
