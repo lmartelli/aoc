@@ -1,9 +1,11 @@
 (ns aoc-2017.day02
   (:require [aoc.core :refer :all]
-            [clojure.string :refer :all]
+            [clojure.string :as str]
             [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines #(map parse-int (split % #"\s+")))
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (map #(map parse-int (str/split % #"\s+")))))
 
 ;; part 1
 

@@ -4,7 +4,8 @@
             [clojure.math.combinatorics :refer [combinations]]
             [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines #(split % #"\s+"))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines stream  #(split % #"\s+")))
 
 ;; part 1
 (defn valid? [words]

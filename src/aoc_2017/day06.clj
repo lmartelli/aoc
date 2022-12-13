@@ -3,8 +3,8 @@
    [aoc.core :refer :all]
    [clojure.string :refer [split]]))
 
-(puzzle-input-parse
- #(->> (split % #"\s+")
+(defn puzzle-input [stream]
+  (->> (split (puzzle-input-string stream) #"\s+")
        (map parse-int)
        (zipmap (range))))
 

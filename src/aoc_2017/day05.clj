@@ -1,7 +1,9 @@
 (ns aoc-2017.day05
   (:require [aoc.core :refer :all]))
 
-(puzzle-input-parse-lines parse-int)
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (mapv parse-int)))
 
 ;; part 1
 

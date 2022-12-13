@@ -4,7 +4,9 @@
    [clojure.string :as str]
    [clojure.test :refer :all]))
 
-(puzzle-input-int-array)
+(defn puzzle-input [stream]
+  (-> (puzzle-input-string stream)
+      parse-int-array))
 
 ;; part 1
 

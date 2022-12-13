@@ -2,7 +2,10 @@
   (:require [aoc.core :refer :all]
             [clojure.test :refer :all]))
 
-(puzzle-input-parse parse-int)
+(defn puzzle-input [stream]
+  (-> (line-seq stream)
+      first
+      parse-int))
 
 ;; part 1
 
