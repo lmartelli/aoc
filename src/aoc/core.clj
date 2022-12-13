@@ -62,10 +62,8 @@
       (download-puzzle-input year day))
     (io/reader filename)))
 
-(defn *test-input*
-  "Gets an input stream for the test data of puzzle of the current namespace
-  (from file test/aoc_<year>/day<day>[_<suffix>].input)"
-  ([ns] (*test-input* nil ns))
+(defn test-input*
+  ([ns] (test-input* nil ns))
   ([suffix ns]
    (let [[year day] (parse-aoc-ns-name (str ns))]
      (io/reader
@@ -76,8 +74,10 @@
        ".input")))))
 
 (defmacro test-input
-  ([] `(*test-input* ~*ns*))
-  ([suffix] `(*test-input* ~suffix ~*ns*)))
+  "Gets an input stream for the test data of puzzle of the current namespace
+  (from file test/aoc_<year>/day<day>[_<suffix>].input)"
+  ([] `(test-input* ~*ns*))
+  ([suffix] `(test-input* ~suffix ~*ns*)))
 
 (defmacro test-data
   ([] `(~'puzzle-input (test-input)))
