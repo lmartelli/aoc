@@ -506,3 +506,6 @@
 
 (defn transpose [rows]
   (apply map list rows))
+
+(defn truncate [n v]
+  (subvec v 0 n))
