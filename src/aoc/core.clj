@@ -112,9 +112,12 @@
         (apply str)
         xf)))
 
+(defn re-parse [s regex f]
+  (apply f (rest (or (re-find regex s) (throw (Exception. (str "Regex " regex " does not match: ``" s "''")))))))
+
 (defn re-parse-lines [regex f lines]
   (map
-   #(apply f (rest (or (re-matches regex %) (throw (Exception. (str "Regex " regex " does not match: " %))))))
+   #(re-parse % regex f)
    lines))
 
 (defn split-lines [regex f lines]
