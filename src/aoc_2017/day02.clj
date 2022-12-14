@@ -21,16 +21,15 @@
 (defpart part1 [input]
   (checksum input diff-min-max))
 
-
 ;; part 2
 
 (defn find-div [row]
   (->> (for [a row, b row,
              :when (not= a b)]
          [a b])
-       (filter (zero? (apply rem %)))
+       (filter #(zero? (apply rem %)))
        first
-       (apply quot))))
+       (apply quot)))
 
 (defpart part2 [input]
   (checksum input find-div))
