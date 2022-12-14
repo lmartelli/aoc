@@ -290,7 +290,10 @@
 
 (defn range-inc
   ([to] (range-inc 0 to))
-  ([from to] (range from (inc to))))
+  ([from to]
+   (if (<= from to)
+     (range from (inc to))
+     (range to (inc from)))))
 
 (defn expand-bag [bag]
   (mapcat (fn [[k v]] (repeat v k)) bag))
@@ -491,10 +494,9 @@
              (map
                (fn [x]
                  (if-let [value (m [x y])] (value-xf value) \space))
-              (range-inc x-min x-max)))
-          (range-inc y-min y-max))
-        display-grid)
-    m)))
+               (range-inc x-min x-max)))
+           (range-inc y-min y-max))
+         display-grid))))
 
 (defn vec-min-max [first & more]
   (loop [res (map vector first first)
