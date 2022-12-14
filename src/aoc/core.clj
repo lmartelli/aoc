@@ -83,6 +83,9 @@
   ([] `(~'puzzle-input (test-input)))
   ([suffix] `(~'puzzle-input (test-input ~suffix))))
 
+(defmacro my-data []
+  `(~'puzzle-input (puzzle-input-stream *ns*)))
+
 (defmacro defparttest [name part expected]
   `(deftest ~name (is (= ~expected (~part (test-input))))))
 
@@ -219,7 +222,7 @@
 (defmacro defpart [name args & body]
   `(def ~name
      (fn
-       ([] (~name (~'puzzle-input (puzzle-input-stream *ns*))))
+       ([] (~name (my-data)))
        (~args ~@body))))
 
 (defn array-2d-to-map
