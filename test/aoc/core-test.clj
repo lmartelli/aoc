@@ -175,3 +175,11 @@
   (are [colls transposed] (= transposed (transpose colls))
     [[1] [2]] [[1 2]]
     [[1 2] [3 4]] [[1 3] [2 4]]))
+
+(deftest range-inc-test
+  (are [from to expected] (and (= expected (range-inc from to))
+                               (= expected (range-inc to from)))
+    0 0 [0]
+    0 1 [0 1]
+    0 2 [0 1 2]
+    ))

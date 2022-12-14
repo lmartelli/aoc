@@ -36,3 +36,7 @@
   (checksum input find-div))
 
 ;; tests
+
+(deftest part1-test (part-test part1 18))
+
+(deftest part1-test (part-test part2 "2" 9))
