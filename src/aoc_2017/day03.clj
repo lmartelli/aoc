@@ -9,9 +9,6 @@
 
 ;; part 1
 
-(defn find-first [f c]
-  (first (filter f c)))
-
 (defn inc-last [m pos dir]
   (-> (add pos (sub dir))
       m
