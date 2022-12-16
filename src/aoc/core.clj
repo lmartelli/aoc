@@ -158,12 +158,21 @@
   [bits]
   (parse-binary (apply str bits)))
 
+;; TODO: remove and use parse-ints
 (defn parse-int-array
   ([input] (parse-int-array input ","))
   ([input sep]
    (mapv
      #(Long/parseLong %)
      (str/split input (re-pattern sep)))))
+
+(defn parse-ints [s]
+  (map parse-int (re-seq #"-?\d+" s)))
+
+(defn parse-points [s]
+  (->> (parse-ints s)
+       (partition 2)
+       (map vec)))
 
 (defn puzzle-input-int-array [stream]
   (parse-int-array (puzzle-input-string stream)))

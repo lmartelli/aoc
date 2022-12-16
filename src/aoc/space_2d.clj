@@ -12,7 +12,11 @@
 (defn - [[ax ay] [bx by]]
   [(core/- ax bx) (core/- ay by)])
 
-(defn direct-neighbours [[x y]]
+(defn manatthan-dist
+  ([a b] (manatthan-dist (- a b)))
+  ([[^int x ^int y]] (core/+ (abs x) (abs y))))
+
+(defn direct-neighbours [[^int x ^int y]]
   (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]))
 
 (defn segment-points [[start-pos & other :as points]]

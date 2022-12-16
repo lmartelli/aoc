@@ -181,5 +181,10 @@
                                (= expected (range-inc to from)))
     0 0 [0]
     0 1 [0 1]
-    0 2 [0 1 2]
-    ))
+    0 2 [0 1 2]))
+
+(deftest parse-points-test
+  (are [s expected] (= expected (parse-points s))
+    "" []
+    "1 1" [[1 1]]
+    "1,2 3,4" [[1 2] [3 4]]))

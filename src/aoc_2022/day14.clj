@@ -4,15 +4,9 @@
    [aoc.space-2d :as space-2d]
    [clojure.test :refer :all]))
 
-(defn parse-points [re s]
-  (->> (re-seq re s)
-       (map (comp vec
-                  #(map parse-int %)
-                  rest))))
-
 (defn puzzle-input [stream]
   (->> (line-seq stream)
-       (map (partial parse-points #"(\d+),(\d+)"))))
+       (map parse-points)))
 
 ;; part 1
 
