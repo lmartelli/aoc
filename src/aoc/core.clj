@@ -122,6 +122,14 @@
    #(re-parse % regex f)
    lines))
 
+(defn re-seq-parse [s regex f]
+  (apply f (re-seq regex s)))
+
+(defn re-seq-parse-lines [regex f lines]
+  (map
+   #(re-seq-parse % regex f)
+   lines))
+
 (defn split-lines
   "Splits lines by `regex` and applies `f` to the resulting items"
   [regex f lines]
