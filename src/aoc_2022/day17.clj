@@ -95,14 +95,14 @@
 
 ;; part 2
 
-(defn relative-to-y-min [points]
-  (map #(space-2d/- % [0 (get-y-min points)]) points))
-
 (defn get-y-min [points]
   (apply min (map second points)))
 
 (defn get-y-max [points]
   (apply max (map second points)))
+
+(defn relative-to-y-min [points]
+  (map #(space-2d/- % [0 (get-y-min points)]) points))
 
 (defn top-config [{:keys [chamber height rock]}]
   (let [y-max (get-y-max rock)
@@ -113,20 +113,69 @@
                   :neighbour-allowed? (not (chamber-with-rock neighbour-pos))
                   :stop? (empty? last-visited))
         :visited
-        relative-to-y-min)))
+        relative-to-y-min
+        set)))
 
 (defn show-top [points]
   (let [y-max (get-y-max points)]
+    (println "---------")
     (space-2d/print
       (space-2d/draw-points {} \# points)
       (range -1 8)
       (range y-max (dec 0) -1))))
 
+(defn find-cycle [seq]
+  (loop [visited {}
+         pos 0
+         [current & more] seq]
+    (if-let [start (visited current)]
+      {:start-pos start
+       :start-value current
+       :length (- pos start)}
+      (recur (assoc visited current pos)
+             (inc pos)
+             more))))
+
+(defn find-cycle-key [f seq]
+  (loop [visited {}
+         current-pos 0
+         [[current-val current-key] & more] (map #(vector % (f %)) seq)]
+    (if-let [[start-pos start-val] (visited current-key)]
+      {:start-pos start-pos
+       :start-value start-val
+       :end-value current-val
+       :length (- current-pos start-pos)}
+      (recur (assoc visited current-key [current-pos current-val])
+             (inc current-pos)
+             more))))
+
+(defn find-top-config-cycle [input]
+  (->> (simulate input)
+       (take-nth 5 #_(count input))
+       (find-cycle-key top-config)))
+
+(defn height-at-nb-rocks [input n]
+  (-> (simulate (test-data))
+      (nth n)
+      :height))
+
 (defpart part2 [input]
-  nil)
+  (let [target 1000000000000
+        {start :start-value, end :end-value} (find-top-config-cycle input)
+        start-pos (start :nb-rock)
+        cycle-length (- (end :nb-rock) start-pos)
+        cycle-elevation (- (end :height) (start :height))
+        nb-last-rocks (mod (- target start-pos) cycle-length)]
+    (println "found cycle: " {:start-pos start-pos
+                              :length cycle-length
+                              :elevation cycle-elevation})
+    (+ (start :height)
+       (* (quot (- target start-pos) cycle-length)
+          cycle-elevation)
+       (apply - (map #(height-at-nb-rocks input %) [(+ start-pos nb-last-rocks) start-pos])))))
 
 ;; tests
 
 (deftest part1-test (part-test part1 3068))
 
-(deftest part2-test)
+(deftest part2-test (part-test part2 1514285714288))
