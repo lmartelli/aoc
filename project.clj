@@ -13,5 +13,5 @@
   :main ^:skip-aot aoc.core
   :test-paths ["src"]
   :target-path "target/%s"
-  :global-vars {*warn-on-reflection* true}
+  :global-vars {*warn-on-reflection* true, *print-length* 20}
   :profiles {:uberjar {:aot :all}})

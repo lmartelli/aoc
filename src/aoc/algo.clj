@@ -9,7 +9,7 @@
 
   `stop?` is a form that has access to last-visited, visited and nb-steps
   `neighbours` is a function of one argument that lists neighbours of a given position
-  `neighbour-allowed?` is a form that has access to `pos` and `neighbour` that
+  `neighbour-allowed?` is a form that has access to `pos` and `neighbour-pos` that
   used to filter neighbours that have not been alreaady visited."
   [&{:keys [start neighbours neighbour-allowed? stop?] :or {neighbour-allowed? true}}]
   `(loop [~'last-visited #{~start} ;; we need a set to test reach of end position efficiently
@@ -26,5 +26,4 @@
                                   )]
          (recur (into #{} ~'new-positions)
                 (apply conj ~'visited ~'new-positions)
-                (inc ~'nb-steps)))))
-  )
+                (inc ~'nb-steps))))))

@@ -4,6 +4,7 @@
    [clojure.core :as core]
    [aoc.core :refer [signum]]
    [aoc.algo :as algo]
+   [clojure.string :as str]
    [clojure.test :refer :all]))
 
 (defn + [[ax ay] [bx by]]
@@ -48,6 +49,12 @@
      (assoc paper pos ink))
    paper
    (segment-points from to)))
+
+(defn print [paper x-range y-range]
+  (run! (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] c \space)) x-range)
+                     str/join
+                     println))
+        y-range))
 
 ;; Tests
 
