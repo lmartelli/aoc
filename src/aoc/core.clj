@@ -547,3 +547,6 @@
 
 (defn truncate [n v]
   (subvec v 0 n))
+
+(defn third [[_ _ x]]
+  x)
