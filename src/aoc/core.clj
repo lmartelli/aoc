@@ -550,3 +550,5 @@
 
 (defn third [[_ _ x]]
   x)
+
+(defn debug-val [x msg] (println msg x) x)
