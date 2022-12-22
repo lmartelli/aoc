@@ -10,35 +10,41 @@
 
 ;; Part 1
 
-(defn move-item [v from to]
-  (-> v
-      (remove-index from)
-      (insert-at to (v from))))
+(defn a-move-item [^ints a from to]
+  (let [from-value (aget a from)]
+    (if (> to from)
+      (loop [i from]
+        (when (< i to)
+          (aset-int a i (aget a (inc i)))
+          (recur (inc i))))
+      (loop [i from]
+        (when (> i to)
+          (aset-int a i (aget a (dec i)))
+          (recur (dec i)))))
+    (aset-int a to from-value)))
 
 (defn mix [numbers repeat]
   (let [l (count numbers)]
     (as->
       (iterate
-        (fn [[positions rev-positions]]
+        (fn [[^ints positions ^ints rev-positions]]
           (reduce
-            (fn [[positions rev-positions] [i n]]
+            (fn [[^ints positions ^ints rev-positions] [i n]]
               (if (zero? (mod n (dec l)))
                 [positions rev-positions]
-                (let [from (rev-positions i)
-                      to (mod (+ from n) (dec l))
-                      new-positions (move-item positions from to)]
-                  [new-positions
-                   (reduce
-                     (fn [rev-positions i]
-                       (assoc rev-positions (new-positions i) i))
-                     rev-positions
-                     (range-inc from to)
-                     )
-                   ])))
+                (let [from (aget rev-positions i)
+                      to (mod (+ from n) (dec l))]
+                  (a-move-item positions from to)
+                  (let [[from to] (min-max from to)]
+                    (loop [i from]
+                      (when (<= i to)
+                        (aset rev-positions (aget positions i) (int i))
+                        (recur (inc i)))))
+                  [positions rev-positions])))
             [positions rev-positions]
             (map-indexed vector numbers)))
-        [(into [] (range l))
-         (into [] (range l))]) $
+        [(int-array (range l))
+         (int-array (range l))]) $
       (nth $ repeat)
       (first $)
       (map numbers $))))

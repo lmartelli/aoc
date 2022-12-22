@@ -542,6 +542,9 @@
     (pos? n) 1
     :else -1))
 
+(defn direction [from to]
+  (signum (- to from)))
+
 (defn transpose [rows]
   (apply map list rows))
 
