@@ -83,6 +83,16 @@
   ([] `(~'puzzle-input (test-input)))
   ([suffix] `(~'puzzle-input (test-input ~suffix))))
 
+(defn string->stream
+  ([^String s] (string->stream s "UTF-8"))
+  ([^String s ^String encoding]
+   (-> s
+       (.getBytes encoding)
+       (java.io.ByteArrayInputStream.))))
+
+(defmacro parse-input-lines [lines]
+  `(~'puzzle-input (string->stream (str/join "\n" lines))))
+
 (defmacro my-data []
   `(~'puzzle-input (puzzle-input-stream *ns*)))
 
@@ -298,9 +308,9 @@
 
 (defn positions [col pred]
   (keep-indexed
-   (fn [index item]
-     (when (pred item) index))
-   col))
+    (fn [index item]
+      (when (pred item) index))
+    col))
 
 (defn first-position [col pred]
   (first (positions col pred)))
@@ -327,9 +337,12 @@
   ([m k f x y z & more]
    (assoc! m k (apply f (get m k) (concat [x y z] more)))))
 
-(defn group-by-pred [pred coll]
-  [(filter pred coll)
-   (filter (comp not pred) coll)])
+(defn group-by-pred
+  "Returns a vector of 2 elements : a lazy seq of elements from `coll` that match `pred`,
+  and a lazy seq of those who don't."
+  [pred coll]
+  (let [{matching true, non-pmatching false} (group-by pred coll)]
+    [matching non-pmatching]))
 
 (defn max-val [m]
   (val (apply max-key val m)))
@@ -554,4 +567,6 @@
 (defn third [[_ _ x]]
   x)
 
-(defn debug-val [x msg] (println msg x) x)
+(defn debug-val
+  ([x] (println x) x)
+  ([x msg] (println msg x) x))

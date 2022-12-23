@@ -188,3 +188,8 @@
     "" []
     "1 1" [[1 1]]
     "1,2 3,4" [[1 2] [3 4]]))
+
+(deftest group-by-pred-test
+  (are [xs pred expected] (= expected (group-by-pred pred xs))
+    [] even? [nil nil]
+    (range 5) even? [[0 2 4] [1 3]]))
