@@ -193,3 +193,7 @@
   (are [xs pred expected] (= expected (group-by-pred pred xs))
     [] even? [nil nil]
     (range 5) even? [[0 2 4] [1 3]]))
+
+(deftest find-first-test
+  (are [coll pred expected] (= expected (find-first pred coll))
+    (take-nth 5 (range)) #(> % 10) 15))

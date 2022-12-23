@@ -278,8 +278,12 @@
 (defn grep [regex seq]
   (filter #(re-find regex %) seq))
 
-(defn find-first [f seq]
-  (first (filter f seq)))
+(defn find-first [pred seq]
+  (reduce
+    #(when (pred %2)
+       (reduced %2))
+    nil
+    seq))
 
 (defn find-last [f seq]
   (last (take-while f seq)))
@@ -314,6 +318,15 @@
 
 (defn first-position [col pred]
   (first (positions col pred)))
+
+(defn indices [pred col]
+  (keep-indexed
+    (fn [index item]
+      (when (pred item) index))
+    col))
+
+(defn first-index [pred col]
+  (first (indices pred col)))
 
 (defn range-inc
   ([to] (range-inc 0 to))
