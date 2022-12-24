@@ -19,12 +19,11 @@
      (when *debug* (println (format "step=%3d #last-visited=%5d #visited=%6d" ~'nb-steps (count ~'last-visited) (count ~'visited))))
      (if ~stop?
        {:visited ~'visited :last-visited ~'last-visited :nb-steps ~'nb-steps}
-       (let [~'new-positions (->> (mapcat (fn [~'pos] (->> (~neighbours ~'pos)
-                                                           (filter (fn [~'neighbour-pos]
-                                                                     (and (not (~'visited ~'neighbour-pos))
-                                                                          ~neighbour-allowed?)))))
-                                          ~'last-visited)
-                                  )]
+       (let [~'new-positions (mapcat (fn [~'pos] (->> (~neighbours ~'pos)
+                                                      (filter (fn [~'neighbour-pos]
+                                                                (and (not (~'visited ~'neighbour-pos))
+                                                                     ~neighbour-allowed?)))))
+                                     ~'last-visited)]
          (recur (into #{} ~'new-positions)
                 (apply conj ~'visited ~'new-positions)
                 (inc ~'nb-steps))))))
