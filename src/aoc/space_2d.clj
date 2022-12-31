@@ -83,17 +83,19 @@
    paper
    (segment-points from to)))
 
+(defn x-and-y-ranges [positions]
+  (reduce
+    (fn [[[x-min x-max] [y-min y-max]] [x y]]
+      [(apply min-max (remove nil? [x-max x-min x]))
+       (apply min-max (remove nil? [y-max y-min y]))])
+    [[] []]
+    positions))
+
 (defn print
   ([paper] (print paper identity))
   ([paper xf]
    (let [positions (keys paper)
-         [x-range y-range]
-         (reduce
-           (fn [[[x-min x-max] [y-min y-max]] [x y]]
-             [(apply min-max (remove nil? [x-max x-min x]))
-              (apply min-max (remove nil? [y-max y-min y]))])
-           [[] []]
-           positions)]
+         [x-range y-range] (x-and-y-ranges positions)]
      (print paper xf (apply range-inc x-range) (apply range-inc y-range))))
   ([paper x-range y-range]
    (print paper identity x-range y-range))
@@ -102,6 +104,20 @@
                       str/join
                       println))
          y-range)))
+
+(defn print-to-lines
+  ([paper] (print-to-lines paper identity))
+  ([paper xf]
+   (let [positions (keys paper)
+         [x-range y-range] (x-and-y-ranges positions)]
+     (print-to-lines paper xf (apply range-inc x-range) (apply range-inc y-range))))
+  ([paper x-range y-range]
+   (print-to-lines paper identity x-range y-range))
+  ([paper xf x-range y-range]
+   (map (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) x-range)
+                     str/join
+                     ))
+        y-range)))
 
 ;; Tests
 
