@@ -124,18 +124,6 @@
       (range -1 8)
       (range y-max (dec 0) -1))))
 
-(defn find-cycle [seq]
-  (loop [visited {}
-         pos 0
-         [current & more] seq]
-    (if-let [start (visited current)]
-      {:start-pos start
-       :start-value current
-       :length (- pos start)}
-      (recur (assoc visited current pos)
-             (inc pos)
-             more))))
-
 (defn find-cycle-key [f seq]
   (loop [visited {}
          current-pos 0
