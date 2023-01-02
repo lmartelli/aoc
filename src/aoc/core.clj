@@ -509,6 +509,7 @@
      lines))
   ([separator empty-value merge-fn] (fn [lines] (merge-lines separator empty-value merge-fn lines))))
 
+;; TODO: use not-empty instead
 (defn nil-if-empty [x]
   (if (empty? x) nil x))
 
