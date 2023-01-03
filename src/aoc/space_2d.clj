@@ -97,12 +97,21 @@
 (defn draw-segments [paper ink points]
   (draw-points paper ink (segment-points points)))
 
+(defn polygon-points [[vertex :as vertices]]
+  (rest (segment-points (concat vertices [vertex]))))
+
+(defn draw-polygon [paper ink vertices]
+  (draw-points paper ink (polygon-points vertices)))
+
 (defn draw-segment [paper ink [from to]]
   (reduce
    (fn [paper pos]
      (assoc paper pos ink))
    paper
    (segment-points from to)))
+
+(defn box [[x1 y1] [x2 y2]]
+  [[x1 y1] [x2 y1] [x2 y2] [x1 y2]])
 
 (defn x-and-y-ranges [positions]
   (reduce
@@ -111,6 +120,21 @@
        (apply min-max (remove nil? [y-max y-min y]))])
     [[] []]
     positions))
+
+(defn outter-box [positions]
+  (let [[[x-min x-max] [y-min y-max]] (x-and-y-ranges positions)]
+    (box [(dec x-min) (dec y-min)] [(inc x-max) (inc y-max)])))
+
+
+(defn find-min-steps-in-maze
+  "`wall-positions` should be a collection of wall positions"
+  [from to wall-positions]
+  (let [walls (set wall-positions)]
+    (-> (algo/explore :start from
+                      :stop? (last-visited to)
+                      :neighbours direct-neighbours
+                      :neighbour-allowed? (not (walls neighbour-pos)))
+        :nb-steps)))
 
 (defn print
   ([paper] (print paper identity))
@@ -125,6 +149,9 @@
                       str/join
                       println))
          y-range)))
+
+(defn print-maze [wall-positions]
+  (print (draw-points \█ wall-positions)))
 
 (defn print-to-lines
   ([paper] (print-to-lines paper identity))
