@@ -187,6 +187,9 @@
 (defn parse-ints [s]
   (map parse-int (re-seq #"-?\d+" s)))
 
+(defn parse-pos-ints [s]
+  (map parse-int (re-seq #"\d+" s)))
+
 (defn parse-points [s]
   (->> (parse-ints s)
        (partition 2)
