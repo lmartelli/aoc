@@ -43,8 +43,14 @@
   ([a b] (manatthan-dist (- a b)))
   ([[^int x ^int y]] (core/+ (abs x) (abs y))))
 
-(defn direct-neighbours [[^int x ^int y]]
-  (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]))
+(defn direct-neighbours
+  ([[^int x ^int y]]
+   (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]))
+  ([p [x-min x-max] [y-min y-max]]
+   (->> (direct-neighbours p)
+        (filter (fn [[x y]]
+                  (and (<= x-min x x-max)
+                       (<= y-min y y-max)))))))
 
 (defn all-neighbours [[^int x ^int y]]
   (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]
