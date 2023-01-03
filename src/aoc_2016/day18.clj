@@ -2,6 +2,7 @@
   (:require
    [aoc.core :refer :all]
    [aoc.algo :refer :all]
+   [clojure.string :as str]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -9,39 +10,30 @@
 
 ;; part 1
 
-(defn next-row [^booleans row]
-  (let [len (alength row)
-        new-row (boolean-array len)]
-    (aset-boolean new-row 0 true)
-    (aset-boolean new-row (dec len) true)
-    (loop [i 1]
-      (if (= i (unchecked-dec-int len))
-        new-row
-        (do
-          (aset-boolean new-row i (= (aget row (unchecked-dec-int i)) (aget row (unchecked-inc-int i))))
-          (recur (unchecked-inc-int i)))))))
+(defn next-row [^BigInteger row len]
+  (let [left (-> row (.shiftLeft 1) (.clearBit len))
+        right (-> row (.shiftRight 1))]
+    (.xor left right)))
 
-(defn boolean-row [row]
-  (->> (map {\^ false \. true} (str \. row \.))
-       (into-array Boolean/TYPE)))
+(defn bigint-row ^BigInteger [row]
+  (BigInteger. (str/join (map {\^ 1 \. 0} row)) 2))
+
+(defn print-row [^BigInteger row len]
+  (-> (map (fn [n] (if (.testBit row n) \^ \.)) (range len))
+      reverse
+      str/join))
 
 (defn rows [initial-row]
-  (iterate next-row (boolean-row initial-row)))
+  (let [len (count initial-row)]
+    (iterate #(next-row % len) (bigint-row initial-row))))
 
-(defn count-safe-tiles
-  ([^booleans row]
-   (loop [i (-> (alength row) (- 2)),
-          nb-safe 0]
-     (if (= i 0)
-       nb-safe
-       (if (aget row i)
-         (recur (unchecked-dec-int i) (unchecked-inc-int nb-safe))
-         (recur (unchecked-dec-int i) nb-safe)))))
-  ([initial-row n]
-   (->> (rows initial-row)
-        (take n)
-        (map count-safe-tiles)
-        (reduce +))))
+(defn count-safe-tiles [initial-row n]
+  (let [len (count initial-row)]
+    (->> (rows initial-row)
+         (take n)
+         (map (fn [^BigInteger row]
+                (- len (.bitCount row))))
+         (reduce +))))
 
 (defpart part1 [input]
   (count-safe-tiles input 40))
@@ -54,9 +46,14 @@
 ;; tests
 
 (deftest next-row-test
-  (are [row expected] (= (boolean-row expected) (next-row (boolean-row row)))
+  (are [row expected] (= (bigint-row expected) (next-row (bigint-row row) (count row)))
     "..^^." ".^^^^"
-    ".^^^^" "^^..^"))
+    ".^^^^" "^^..^"
+    ".^^.^.^^^^" "^^^...^..^"
+    "^^^...^..^" "^.^^.^.^^."
+    "^.^^.^.^^." "..^^...^^^"
+    "..^^...^^^" ".^^^^.^^.^"
+    ".^^^^.^^.^" "^^..^.^^.."))
 
 (deftest count-safe-tiles-test
   (is ( = 38 (count-safe-tiles ".^^.^.^^^^" 10))))
