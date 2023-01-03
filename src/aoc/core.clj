@@ -584,31 +584,3 @@
 (defn debug-val
   ([x] (println x) x)
   ([x msg] (println msg x) x))
-
-(defn find-cycle [seq]
-  (loop [visited {}
-         pos 0
-         [current & more] seq]
-    (if-let [start (visited current)]
-      {:start-pos start
-       :start-value current
-       :length (- pos start)}
-      (recur (assoc visited current pos)
-             (inc pos)
-             more))))
-
-(defn find-cycle-key [key seq]
-  (loop [visited-keys {}
-         visited-values []
-         pos 0
-         [current & more] seq]
-    (let [k (key current)]
-      (if-let [start (visited-keys k)]
-        {:start-pos start
-         :start-value (visited-values start)
-         :repeat-value current
-         :length (- pos start)}
-        (recur (assoc visited-keys k pos)
-               (conj visited-values current)
-               (inc pos)
-               more)))))

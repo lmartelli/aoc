@@ -124,23 +124,10 @@
       (range -1 8)
       (range y-max (dec 0) -1))))
 
-(defn find-cycle-key [f seq]
-  (loop [visited {}
-         current-pos 0
-         [[current-val current-key] & more] (map #(vector % (f %)) seq)]
-    (if-let [[start-pos start-val] (visited current-key)]
-      {:start-pos start-pos
-       :start-value start-val
-       :end-value current-val
-       :length (- current-pos start-pos)}
-      (recur (assoc visited current-key [current-pos current-val])
-             (inc current-pos)
-             more))))
-
 (defn find-top-config-cycle [input]
   (->> (simulate input)
        (take-nth 5 #_(count input))
-       (find-cycle-key top-config)))
+       (algo/find-cycle-key top-config)))
 
 (defn height-at-nb-rocks [input n]
   (-> (simulate (test-data))
@@ -149,7 +136,7 @@
 
 (defpart part2 [input]
   (let [target 1000000000000
-        {start :start-value, end :end-value} (find-top-config-cycle input)
+        {start :start-value, end :repeat-value} (find-top-config-cycle input)
         start-pos (start :nb-rock)
         cycle-length (- (end :nb-rock) start-pos)
         cycle-elevation (- (end :height) (start :height))

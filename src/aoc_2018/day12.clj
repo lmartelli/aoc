@@ -1,6 +1,7 @@
 (ns aoc-2018.day12
   (:require
    [aoc.core :refer :all]
+   [aoc.algo :refer :all]
    [clojure.string :as str]
    [clojure.test :refer :all]))
 
@@ -70,5 +71,3 @@
                 (take 11))))))
 
 (deftest part1-test (part-test part1 325))
-
-(deftest part2-test)
