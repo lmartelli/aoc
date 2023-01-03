@@ -1,5 +1,6 @@
 (ns aoc-2017.day03
   (:require [aoc.core :refer :all]
+            [aoc.space-2d :as s2]
             [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -15,7 +16,7 @@
       inc))
 
 (defn get-next-dir [m pos dir]
-  (let [rotated (rotate-left dir)]
+  (let [rotated (s2/rotate-left dir)]
     (if (m (add pos rotated))
       dir
       rotated)))

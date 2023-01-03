@@ -39,6 +39,21 @@
   ([[x y]] [(core/- y)  x])
   ([p center] (transform-relative p center rotate-right)))
 
+(defn flip-vert "Y axis points down"
+  ([[x y]] [(- x) y])
+  ([p [cx cy]] (transform-relative p [cx 0] flip-vert)))
+
+(defn flip-horiz "Y axis points down"
+  ([[x y]] [x (- y)])
+  ([p [cx cy]] (transform-relative p [0 cy] flip-horiz)))
+
+(defn mult "Vector multiplication by a number: v × n"
+  [[x y] n]
+  [(* x n) (* y n)])
+
+(defn move [pos dir dist]
+  (+ pos (mult dir dist)))
+
 (defn manatthan-dist
   ([a b] (manatthan-dist (- a b)))
   ([[^int x ^int y]] (core/+ (abs x) (abs y))))

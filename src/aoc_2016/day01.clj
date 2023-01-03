@@ -1,6 +1,7 @@
 (ns aoc-2016.day01
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.string :refer [split]]
    [clojure.java.io :refer [input-stream]]
    [clojure.test :refer :all]))
@@ -17,8 +18,8 @@
 
 (defn rotate [dir left-or-right]
   (case left-or-right
-    "L" (rotate-left dir)
-    "R" (rotate-right dir)))
+    "L" (s2/rotate-left dir)
+    "R" (s2/rotate-right dir)))
 
 (def initial-pos [0 0])
 
@@ -32,7 +33,7 @@
          (map :turn moves)))))
 
 (defn make-move [pos {:keys [dir dist]}]
-  (move pos dir dist))
+  (s2/move pos dir dist))
 
 (defpart part1 [input]
   (->> input

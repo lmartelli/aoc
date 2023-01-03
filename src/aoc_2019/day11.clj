@@ -1,6 +1,7 @@
 (ns aoc-2019.day11
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [aoc.ocr :refer :all]
    [aoc-2019.day05 :refer [debug set-debug]]
    [aoc-2019.day07 :refer [terminated?]]
@@ -24,8 +25,8 @@
 
 (defn rotate [robot instr]
   (case instr
-    0 (update robot :dir rotate-left)
-    1 (update robot :dir rotate-right)))
+    0 (update robot :dir s2/rotate-left)
+    1 (update robot :dir s2/rotate-right)))
 
 (defn advance [robot]
   (let [dir (robot :dir)]
@@ -102,20 +103,6 @@
       ocr))
 
 ;; tests
-
-(deftest rotate-left-test
-  (are [dir rotated] (= rotated (rotate-left dir))
-       [0 -1] [-1 0]
-       [-1 0] [0 1]
-       [0 1] [1 0]
-       [1 0] [0 -1]))
-
-(deftest rotate-right-test
-  (are [dir rotated] (= rotated (rotate-right dir))
-       [0 -1] [1 0]
-       [1 0] [0 1]
-       [0 1] [-1 0]
-       [-1 0] [0 -1]))
 
 (deftest rotate-test
   (are [robot instr new-dir] (= (assoc robot :dir new-dir) (rotate robot instr))

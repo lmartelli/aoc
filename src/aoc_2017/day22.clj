@@ -1,6 +1,8 @@
 (ns aoc-2017.day22
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
+   [clojure.test :refer :all]))
 
 (defn center-index [coll]
   (/ (dec (count coll)) 2))
@@ -9,7 +11,9 @@
   {:map (array-2d-to-map (constantly true) {\# :infected \. :clean} rows)
    :center [(center-index (first rows)) (center-index rows)]})
 
-(puzzle-input-lines parse-map)
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       parse-map))
 
 ;; part 1
 
@@ -54,20 +58,21 @@
   (:infection-count
    (get-burst-iteration
      map center 10000
-     {:clean rotate-left
-      :infected rotate-right}
+     {:clean s2/rotate-left
+      :infected s2/rotate-right}
      {:clean :infected
       :infected :clean})))
 
 ;; part 2
 
+;; TODO: optimize
 
 (defpart part2 [{:keys [center map]}]
   (:infection-count
    (get-burst-iteration
      map center 10000000
-     {:clean rotate-left
-      :infected rotate-right
+     {:clean s2/rotate-left
+      :infected s2/rotate-right
       :weakened identity
       :flagged sub}
      {:clean :weakened
@@ -77,8 +82,8 @@
 
 ;; tests
 
-(def test-input
-  (parse-map
-    ["..#"
-     "#.."
-     "..."]))
+(deftest part1-test (part-test part1 5587))
+
+(deftest part2-test (part-test part2 2511944))
+
+

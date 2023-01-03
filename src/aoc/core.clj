@@ -114,7 +114,7 @@
      ~@expectations))
 
 (defmacro parse-input-string [input]
-  `(~'puzzle-input (io/input-stream (.getBytes ~input))))
+  `(~'puzzle-input (io/reader (.getBytes ~input))))
 
 (defn puzzle-input-string
   "Concatenates all the lines of the puzzle input into one string."
@@ -427,37 +427,6 @@
 ;; todo: move to space-2d
 (defn cos [v u]
   (/ (prod u v) (* (norm u) (norm v))))
-
-;; todo: move to space-2d
-(defn- transform-relative [p origin tx]
-  (-> p
-      (sub origin)
-      tx
-      (add origin)))
-
-;; todo: move to space-2d
-(defn rotate-left "Y axis points down"
-  ([[x y]] [y (- x)])
-  ([p center] (transform-relative p center rotate-left)))
-
-;; todo: move to space-2d
-(defn rotate-right "Y axis points down"
-  ([[x y]] [(- y)  x])
-  ([p center] (transform-relative p center rotate-right)))
-
-;; todo: move to space-2d
-(defn flip-vert "Y axis points down"
-  ([[x y]] [(- x) y])
-  ([p [cx cy]] (transform-relative p [cx 0] flip-vert)))
-
-;; todo: move to space-2d
-(defn flip-horiz "Y axis points down"
-  ([[x y]] [x (- y)])
-  ([p [cx cy]] (transform-relative p [0 cy] flip-horiz)))
-
-;; todo: move to space-2d
-(defn move [pos dir dist]
-  (add pos (mult dir dist)))
 
 ;; todo: move to space-2d
 (defn manatthan-dist

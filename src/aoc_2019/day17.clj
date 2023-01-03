@@ -1,12 +1,14 @@
 (ns aoc-2019.day17
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [aoc-2019.intcode :refer [run run-prog]]
    [clojure.core.async :as async :refer [>!! <!! poll! close! chan thread]]
    [clojure.string :refer [join]]
    [clojure.test :refer :all]))
 
-(puzzle-input-int-array)
+(defn puzzle-input [stream]
+  (puzzle-input-int-array stream))
 
 ;; part 1
 
@@ -63,8 +65,8 @@
 (defn find-direction [m pos dir]
   (cond
     (scaffold? m (add pos dir)) (advance m pos dir)
-    (scaffold? m (add pos (rotate-left dir))) "L"
-    (scaffold? m (add pos (rotate-right dir))) "R"
+    (scaffold? m (add pos (s2/rotate-left dir))) "L"
+    (scaffold? m (add pos (s2/rotate-right dir))) "R"
     :else nil))
 
 (defn make-path [m pos dir]
@@ -76,8 +78,8 @@
        (if (nil? next)
          path
          (case next
-           "L" (recur pos (rotate-left dir) (conj path next))
-           "R" (recur pos (rotate-right dir) (conj path next))
+           "L" (recur pos (s2/rotate-left dir) (conj path next))
+           "R" (recur pos (s2/rotate-right dir) (conj path next))
            (recur (add pos (mult dir next)) dir (conj path next))))))
    (partition 2)
    (mapv #(join "," %))))
@@ -194,14 +196,6 @@
     [0 1 2 3 4] [0 1 2 9]
     [0 1 2 3 4] [0 1 2 3 9]
     [0 1 2 3 4] [0 1 2 3 4 9]))
-
-(deftest make-sub-paths-test
-  (are [paths lengths sub-paths] (= sub-paths (make-sub-paths paths lengths))
-    [0 1 2 3 4 5] [] []
-    [0 1 2 3 4 5] [1] [[0]]
-    [0 1 2 3 4 5] [2] [[0 1]]
-    [0 1 2 3 4 5] [2 2] [[0 1] [2 3]]
-    [0 1 2 3 4 5] [2 2 1] [[0 1] [2 3] [4]]))
 
 (deftest length-valid?-test
   (are [path] (length-valid? path)

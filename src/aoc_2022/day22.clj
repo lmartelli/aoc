@@ -1,7 +1,7 @@
 (ns aoc-2022.day22
   (:require
    [aoc.core :refer :all]
-   [aoc.space-2d :as d2]
+   [aoc.space-2d :as s2]
    [clojure.test :refer :all]))
 
 (defn parse-path-element [s]
@@ -22,7 +22,7 @@
   (array-2d-to-map #{:wall :open} {\# :wall \. :open} lines))
 
 (defn print-board [board]
-  (d2/print board {:wall \# :open \.})
+  (s2/print board {:wall \# :open \.})
   (println))
 
 (defn print-state [{:keys [pos dir]} board]
@@ -32,12 +32,12 @@
 
 (defn wrap [{:keys [pos dir] :as state} board]
   (assoc state :pos 
-  (->> (iterate #(d2/- % dir) pos)
+  (->> (iterate #(s2/- % dir) pos)
        (find-first (complement board))
-       (d2/+ dir))))
+       (s2/+ dir))))
 
 (defn next-pos [{:keys [pos dir] :as state} board wrap]
-  (let [next-pos (d2/+ pos dir)]
+  (let [next-pos (s2/+ pos dir)]
     (if (board next-pos)
       (assoc state :pos next-pos)
       (wrap state board))))
@@ -52,7 +52,7 @@
   #_(print-state state board)
   (if (number? e)
     (nth (iterate #(step-forward % board wrap) state) e)
-    (update state :dir ({:right rotate-right, :left rotate-left} e))))
+    (update state :dir ({:right s2/rotate-right, :left s2/rotate-left} e))))
 
 (defn walk-path [initial-state path board wrap]
   (reduce
@@ -130,7 +130,7 @@
       (testing "Move forward without any obstacle (forward and backward)"
         (are [from dir step to]
             (and (= {:pos to :dir dir} (exec-path-element {:pos from :dir dir} step board wrap))
-                 (let [opposite-dir (d2/- dir)]
+                 (let [opposite-dir (s2/- dir)]
                    (= {:pos from :dir opposite-dir}
                       (exec-path-element {:pos to :dir opposite-dir} step board wrap))))
           [0 0] [0 1] 1 [0 1]
@@ -146,7 +146,7 @@
       (testing "Wraps at boundaries"
         (are [from dir step to]
             (and (= {:pos to :dir dir} (exec-path-element {:pos from :dir dir} step board wrap))
-                 (let [opposite-dir (d2/- dir)]
+                 (let [opposite-dir (s2/- dir)]
                    (= {:pos from :dir opposite-dir}
                       (exec-path-element {:pos to :dir opposite-dir} step board wrap))))
           [0 0] [0 -1] 1 [0 1]

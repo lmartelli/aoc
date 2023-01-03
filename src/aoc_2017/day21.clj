@@ -1,6 +1,7 @@
 (ns aoc-2017.day21
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.string :refer [split join]]
    [clojure.math.numeric-tower :refer [sqrt]]
    [clojure.test :refer :all]))
@@ -52,7 +53,7 @@
   (transform rotate-right block))
 
 (defn flip [block]
-  (transform flip-vert block))
+  (transform s2/flip-vert block))
 
 (defn rotations [block]
   (->> block (iterate rotate) (take 4)))

@@ -1,6 +1,6 @@
 (ns aoc-2016.day17
   (:require
-   [aoc.core :refer :all :exclude [move]]
+   [aoc.core :refer :all]
    [aoc.space-2d :as s2]
    [aoc.md5 :refer :all]
    [clojure.test :refer :all]))

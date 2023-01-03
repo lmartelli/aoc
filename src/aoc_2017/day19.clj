@@ -1,8 +1,11 @@
 (ns aoc-2017.day19
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [aoc.space-2d :as s2]))
 
-(puzzle-input-lines #(array-2d-to-map (complement #{\space}) %))
+(defn puzzle-input [stream]
+  (->> (line-seq  stream)
+       (array-2d-to-map (complement #{\space}))))
 
 ;; part 1
 
@@ -13,10 +16,10 @@
        (apply min-key second)))
 
 (defn find-dir [path-map pos prev-dir]
-  (let [turn-left (rotate-left prev-dir)]
+  (let [turn-left (s2/rotate-left prev-dir)]
     (if (path-map (add pos turn-left))
       turn-left
-      (rotate-right prev-dir))))
+      (s2/rotate-right prev-dir))))
 
 (defn advance [path-map [pos dir]]
   (case (path-map pos)
