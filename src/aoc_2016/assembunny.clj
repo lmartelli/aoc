@@ -20,6 +20,8 @@
 
 ;; Program running
 
+(def init-registers (constantly {:a 0 :b 0 :c 0 :d 0 :ip 0}))
+
 (defn eval-expr [registers expr]
   (if (keyword? expr) (registers expr) expr))
 
@@ -34,7 +36,7 @@
 (defn jump-if [pred]
   (fn [registers value offset]
     (update! registers :ip
-             #(+ % (if (pred (eval-expr registers value)) offset 1)))))
+             #(+ % (if (pred (eval-expr registers value)) (eval-expr registers offset) 1)))))
 
 (defn copy [registers value r]
   (assoc! registers r (eval-expr registers value)))

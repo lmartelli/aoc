@@ -8,8 +8,6 @@
 
 ;; part 1
 
-(def init-registers (constantly {:a 0 :b 0 :c 0 :d 0 :ip 0}))
-
 (defpart part1 [input]
   (-> (run-prog input (init-registers))
       :a))
