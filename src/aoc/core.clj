@@ -228,6 +228,9 @@
 (defn digit [^Character c]
   (Character/digit c 10))
 
+(defn digit? [^Character c]
+  (Character/isDigit c))
+
 (defn digit-seq
   "Parses s as a sequence of digits.
   \"123456\" will return (1 2 3 4 5 6)."
