@@ -35,8 +35,11 @@
 (defmacro $ "Evaluates a value (literal int or register)"
   [arg] `(eval-arg ~'registers ~arg))
 
-(defmacro update-reg [reg f param]
-  `(assoc ~'registers ~reg (~f ($ ~reg) ($ ~param))))
+(defmacro update-reg
+  ([reg f]
+   `(update ~'registers ~reg (fnil ~f 0)))
+  ([reg f param]
+   `(update ~'registers ~reg (fnil ~f 0) ($ ~param))))
 
 (defmacro set-reg [reg value]
   `(assoc ~'registers ~reg ($ ~value)))
@@ -49,8 +52,8 @@
     (defop sub [reg y] (update-reg reg - y))
     (defop mul [reg y] (update-reg reg * y))
     (defop mod [reg y] (update-reg reg mod y))
-    (defop jnz [t offset] (if-not (zero? ($ t)) (set-reg :jmp offset) registers))
-    (defop jgz [t offset] (if (pos? ($ t)) (set-reg :jmp offset) registers))]))
+    (defop jnz [t offset] (if-not (zero? ($ t)) ($ offset) 1))
+    (defop jgz [t offset] (if (pos? ($ t)) ($ offset) 1))]))
 
 (def debug? (atom false))
 
@@ -72,10 +75,10 @@
 
 (defn step-instr [registers prog instr-set]
   (let [instr (get-instr registers prog)
-        next-state (exec-instr instr registers instr-set)]
-    (-> next-state
-        (update :ip + (or (:jmp next-state) 1))
-        (dissoc :jmp))))
+        jump-offset-or-registers (exec-instr instr registers instr-set)]
+    (if (integer? jump-offset-or-registers)
+      (update registers :ip + jump-offset-or-registers)
+      (update jump-offset-or-registers :ip inc))))
 
 (defn run-prog-until [registers prog instr-set pred]
   (->> (iterate #(step-instr % prog instr-set) registers)
@@ -84,39 +87,48 @@
 (defn terminated? [registers prog]
   (not (contains? prog (registers :ip))))
 
-(defn run-prog [prog instr-set]
-  (run-prog-until {:ip 0} prog instr-set terminated?))
+(defn run-prog
+  ([prog] (run-prog prog basic-instr-set))
+  ([prog instr-set]
+   (run-prog-until {:ip 0} prog instr-set terminated?)))
 
 ;; tests
 
 (deftest exec-instr-test
-  (are [instr registers expected] (= expected (exec-instr instr registers basic-instr-set))
-    [:set :a 42] {} {:a 42}
-    [:set :a :b] {:b 42} {:a 42 :b 42}
-    [:add :a 3] {} {:a 3}
-    [:add :a 3] {:a 5} {:a 8}
-    [:add :a :b] {:a 5} {:a 5}
-    [:add :a :b] {:a 5 :b -1} {:a 4 :b -1}
-    [:sub :a 3] {} {:a -3}
-    [:sub :a 3] {:a 5} {:a 2}
-    [:sub :a :b] {:a 5} {:a 5}
-    [:sub :a :b] {:a 5 :b -1} {:a 6 :b -1}
-    [:mul :a 3] {} {:a 0}
-    [:mul :a 3] {:a 5} {:a 15}
-    [:mul :a :b] {} {:a 0}
-    [:mul :a :b] {:b 5} {:a 0 :b 5}
-    [:mul :a :b] {:a 3 :b 5} {:a 15 :b 5}
-    [:jgz  0 3] {} {}
-    [:jgz -1 3] {} {}
-    [:jgz  1 3] {} {:jmp 3}
-    [:jgz  1 :a] {:a -2} {:a -2 :jmp -2}
-    [:jgz :t :a] {:a -2 :t  0} {:a -2 :t  0}
-    [:jgz :t :a] {:a -2 :t -1} {:a -2 :t -1}
-    [:jgz :t :a] {:a -2 :t  1} {:a -2 :t  1 :jmp -2}
-    [:jnz  0 3] {} {}
-    [:jnz -1 3] {} {:jmp 3}
-    [:jnz  1 3] {} {:jmp 3}
-    [:jnz  1 :a] {:a -2} {:a -2 :jmp -2}
-    [:jnz :t :a] {:a -2 :t  0} {:a -2 :t  0}
-    [:jnz :t :a] {:a -2 :t -1} {:a -2 :t -1 :jmp -2}
-    [:jnz :t :a] {:a -2 :t  1} {:a -2 :t  1 :jmp -2}))
+  (testing "Registers manipulation"
+    (are [instr registers expected] (= expected (exec-instr instr registers basic-instr-set))
+      [:set :a 42] {} {:a 42}
+      [:set :a :b] {:b 42} {:a 42 :b 42}
+      [:add :a 3] {} {:a 3}
+      [:add :a 3] {:a 5} {:a 8}
+      [:add :a :b] {:a 5} {:a 5}
+      [:add :a :b] {:a 5 :b -1} {:a 4 :b -1}
+      [:sub :a 3] {} {:a -3}
+      [:sub :a 3] {:a 5} {:a 2}
+      [:sub :a :b] {:a 5} {:a 5}
+      [:sub :a :b] {:a 5 :b -1} {:a 6 :b -1}
+      [:mul :a 3] {} {:a 0}
+      [:mul :a 3] {:a 5} {:a 15}
+      [:mul :a :b] {} {:a 0}
+      [:mul :a :b] {:b 5} {:a 0 :b 5}
+      [:mul :a :b] {:a 3 :b 5} {:a 15 :b 5}))
+  (testing "Jumps"
+    (are [instr registers expected] (= expected (exec-instr instr registers basic-instr-set))
+      [:jgz  0 3] {} 1
+      [:jgz -1 3] {} 1
+      [:jgz  1 3] {} 3
+      [:jgz  1 :a] {:a -2} -2
+      [:jgz :t :a] {:a -2 :t  0} 1
+      [:jgz :t :a] {:a -2 :t -1} 1
+      [:jgz :t :a] {:a -2 :t  1} -2
+      [:jnz  0 3] {} 1
+      [:jnz -1 3] {} 3
+      [:jnz  1 3] {} 3
+      [:jnz  1 :a] {:a -2} -2
+      [:jnz :t :a] {:a -2 :t  0} 1
+      [:jnz :t :a] {:a -2 :t -1} -2
+      [:jnz :t :a] {:a -2 :t  1} -2)))
+
+(deftest run-prog-test
+  (is (= {:ip 32, :b 65, :c 65, :f 0, :d 65, :e 65, :g 0, :h 1}
+         (run-prog (puzzle-input (clojure.java.io/reader "test/aoc_2017/instr.input"))))))
