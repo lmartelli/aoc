@@ -39,10 +39,15 @@
   ([reg f]
    `(update ~'registers ~reg (fnil ~f 0)))
   ([reg f param]
-   `(update ~'registers ~reg (fnil ~f 0) ($ ~param))))
+   `(update ~'registers ~reg (fnil ~f 0) ($ ~param)))
+  ([reg f p1 p2]
+   `(update ~'registers ~reg (fnil ~f 0) ($ ~p1) ($ ~p2))))
 
 (defmacro set-reg [reg value]
   `(assoc ~'registers ~reg ($ ~value)))
+
+(defmacro jump-if [condition offset]
+  `(if ~condition ($ ~offset) 1))
 
 (def basic-instr-set
   (into
@@ -52,8 +57,8 @@
     (defop sub [reg y] (update-reg reg - y))
     (defop mul [reg y] (update-reg reg * y))
     (defop mod [reg y] (update-reg reg mod y))
-    (defop jnz [t offset] (if-not (zero? ($ t)) ($ offset) 1))
-    (defop jgz [t offset] (if (pos? ($ t)) ($ offset) 1))]))
+    (defop jnz [t offset] (jump-if (not= 0 ($ t)) offset))
+    (defop jgz [t offset] (jump-if (pos? ($ t)) offset))]))
 
 (def debug? (atom false))
 
