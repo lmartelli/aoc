@@ -3,24 +3,19 @@
    [aoc.core :refer :all]
    [aoc-2017.instr :refer :all]))
 
-(puzzle-input-parse-lines parse-instr)
+;; Use aoc-2017.instr/puzzle-input
 
 ;; part 1
 
-(def mul-count (atom 0))
-
-(defn wrap-op [op-fn]
-  )
-
 (defpart part1 [prog]
-  (reset! mul-count 0)
-  (run-prog
-    prog
-    (update basic-instr-set :mul
-            #(fn [& args]
-               (swap! mul-count inc)
-               (apply % args))))
-  @mul-count)
+  (let [mul-count (atom 0)]
+    (run-prog
+      prog
+      (update basic-instr-set :mul
+              #(fn [& args]
+                 (swap! mul-count inc)
+                 (apply % args))))
+    @mul-count))
 
 ;; part 2
 

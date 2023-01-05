@@ -16,6 +16,23 @@
       (map-indexed (fn [x val] [[x y] val]) row))
     (range) rows))
 
+(defn read-line [y line]
+  (for [[c x] (map vector line (range))
+        :when (= c \#)]
+    [x y]))
+
+(defn parse-2d-map-positions
+  "returns positions of `char` in a 2D map made of rows"
+  ([lines] (parse-2d-map-positions lines \#))
+  ([lines char]
+   (mapcat
+     (fn [y line]
+       (for [[x c] (map-indexed vector line)
+            :when (= c char)]
+        [x y]))
+     (range)
+     lines)))
+
 (defn + [[ax ay] [bx by]]
   [(core/+ ax bx) (core/+ ay by)])
 

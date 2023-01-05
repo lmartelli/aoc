@@ -1,25 +1,14 @@
 (ns aoc-2019.day10
   (:require
    [aoc.core :refer :all]
-   [clojure.java.io :as io]
+   [aoc.space-2d :as s2]
    [clojure.test :refer :all]
    [clojure.algo.generic.math-functions :refer [atan2]]
    [clojure.math.combinatorics :refer [permutations nth-permutation count-permutations]]))
 
-(defn read-line [line y]
-  (for [[c x] (map vector line (range))
-        :when (= c \#)]
-    [x y]))
-
-(defn read-lines [lines]
-  (mapcat read-line lines (range)))
-
-(defn read-map [reader]
-  (-> reader
-      line-seq
-      read-lines))
-
-(puzzle-input-parse-stream read-map)
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (s2/parse-2d-map-positions)))
 
 ;; part 1
 
@@ -121,10 +110,6 @@
   (is (= [[0 0] [4 0]]
          (read-line "#...#" 0))))
 
-(deftest read-lines-1
-  (is (= [[0 0] [1 1] [2 1]]
-         (read-lines ["#...." ".##"]))))
-
 (deftest range-contains?-true
   (are [a b c] (true? (and (range-contains? a b c) (range-contains? b a c)))
     0 2 1
@@ -158,32 +143,25 @@
     [0 0] [5 0] [-1 0]
     [4 4] [3 2] [4 3]))
 
-(def test-map-small (read-lines
-           [".#..#"
-            "....."
-            "#####"
-            "....#"
-            "...##"]))
-
 (deftest find-best-small
   (is (= [[3 4] 8]
-         (find-best test-map-small))))
+         (find-best (test-data "s")))))
 
 (deftest find-best-medium1
   (is (= [[5 8] 33]
-         (find-best (read-map "2019-10-test-m1.txt")))))
+         (find-best (test-data "m1")))))
 
 (deftest find-best-medium2
   (is (= [[1 2] 35]
-         (find-best (read-map "2019-10-test-m2.txt")))))
+         (find-best (test-data "m2")))))
 
 (deftest find-best-medium3
   (is (= [[6 3] 41]
-         (find-best (read-map "2019-10-test-m3.txt")))))
+         (find-best (test-data "m3")))))
 
 (deftest find-best-large
   (is (= [[11 13] 210]
-         (find-best (read-map "2019-10-test-l1.txt")))))
+         (find-best (test-data "l")))))
 
 (deftest phase-test-1-point
   (are [point expected] (== expected (phase point))

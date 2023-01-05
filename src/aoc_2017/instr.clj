@@ -15,6 +15,10 @@
       (cons (keyword op)
             (map parse-arg args)))))
 
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (mapv parse-instr)))
+
 ;; part 1
 
 (defmacro defop

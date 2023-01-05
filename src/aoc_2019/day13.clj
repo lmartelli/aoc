@@ -6,7 +6,10 @@
    [clojure.core.async :as async :refer [>!! poll! close! chan]]
    [clojure.test :refer :all]))
 
-(puzzle-input-int-array)
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (mapcat parse-ints)
+       (into [])))
 
 ;; part 1
 

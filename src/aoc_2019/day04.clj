@@ -4,7 +4,11 @@
    [clojure.string :refer [split]]
    [clojure.test :refer :all]))
 
-(puzzle-input-parse #(->> (split % #"-") (map parse-int)))
+(defn puzzle-input [stream]
+  (as-> (line-seq stream) $
+    (first $)
+    (split $ #"-")
+    (map parse-int $)))
 
 ;; part 1
 

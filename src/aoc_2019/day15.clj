@@ -6,7 +6,10 @@
    [clojure.set :refer [intersection union difference]]
    [clojure.test :refer :all]))
 
-(puzzle-input-int-array)
+(defn puzzle-input [stream]
+  (->> (first (line-seq stream))
+       parse-ints
+       (into [])))
 
 ;; part 1
 

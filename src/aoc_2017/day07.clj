@@ -2,14 +2,17 @@
   (:require
    [aoc.core :refer :all]
    [clojure.string :refer [split]]
-   [clojure.set :refer [difference]]))
+   [clojure.set :refer [difference]]
+   [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines
- #(let [[_ prog weight children] (re-matches #"(\w+) \((\d+)\)(?: -> (.*))?" %)]
-    (if children
-      [prog {:weight (parse-int weight), :children (split children #", *")}]
-      [prog {:weight (parse-int weight)}]))
- #(into {} %))
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (re-parse-lines
+         #"(\w+) \((\d+)\)(?: -> (.*))?"
+         #(if %3
+            [%1 {:weight (parse-int %2), :children (split %3 #", *")}]
+            [%1 {:weight (parse-int %2)}]))
+       (into {})))
 
 ;; part 1
 
@@ -48,3 +51,5 @@
           (recur (tower unbalanced-name)))))))
 
 ;; tests
+
+(deftest part1-test (part-test part1 "tknk"))

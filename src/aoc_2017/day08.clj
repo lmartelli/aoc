@@ -2,11 +2,13 @@
   (:require
    [aoc.core :refer :all]))
 
-(puzzle-input-parse-lines
- #(let [[_ target-reg instr param test-reg test-op test-value]
-        (re-matches #"(\w+) (inc|dec) (-?\d+) if (\w+) (>|<|>=|<=|==|!=) (-?\d+)" %)]
-    {:instr (list (symbol instr) (symbol target-reg) (parse-int param))
-     :cond (list (symbol test-op) (symbol test-reg) (parse-int test-value))}))
+(defn puzzle-input [stream]
+  (puzzle-input-parse-lines
+    stream
+    #(let [[_ target-reg instr param test-reg test-op test-value]
+           (re-matches #"(\w+) (inc|dec) (-?\d+) if (\w+) (>|<|>=|<=|==|!=) (-?\d+)" %)]
+       {:instr (list (symbol instr) (symbol target-reg) (parse-int param))
+        :cond (list (symbol test-op) (symbol test-reg) (parse-int test-value))}))  )
 
 (defmacro $
   "Gets value of a register, defaulting to 0."

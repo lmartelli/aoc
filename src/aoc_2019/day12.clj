@@ -1,12 +1,12 @@
 (ns aoc-2019.day12
   (:require
    [aoc.core :refer :all]
-   [clojure.math.numeric-tower :refer [abs lcm]]
+   [clojure.math.numeric-tower :refer [lcm]]
    [clojure.test :refer :all]))
 
-;; {:pos [x,y,...] :velocity [x,y,...]}
-
-(puzzle-input-parse-lines #(mapv parse-int (rest (re-matches #"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>" %))))
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (map (comp vec parse-ints))))
 
 ;; part 1
 

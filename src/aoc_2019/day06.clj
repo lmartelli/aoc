@@ -1,8 +1,11 @@
 (ns aoc-2019.day06
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines #(rest (re-matches #"(.*)\)(.*)" %)))
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (re-parse-lines #"(.*)\)(.*)" vector)))
 
 ;; part 1
 
@@ -53,3 +56,7 @@
 
 (defpart part2 [input]
   (dist (build-orbit-map input) "YOU" "SAN"))
+
+;; Tests
+
+(deftest part1-test (part-test part1 42))

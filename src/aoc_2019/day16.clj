@@ -4,7 +4,10 @@
    [clojure.math.numeric-tower :refer [abs]]
    [clojure.test :refer :all]))
 
-(puzzle-input-parse digit-seq)
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       first
+       digit-seq))
 
 (def base-pattern [0 1 0 -1])
 
@@ -67,3 +70,15 @@
          (apply str))))
 
 ;; tests
+
+(deftest part1-test
+  (are [input expected] (= expected (part1 (parse-input-string input)))
+    "80871224585914546619083218645595" "24176176"
+    "19617804207202209144916044189917" "73745418"
+    "69317163492948606335995924319873" "52432133"))
+
+(deftest part2-test
+  (are [input expected] (= expected (part2 (parse-input-string input)))
+    "03036732577212944063491565474664" "84462026"
+    "02935109699940807407585447034323" "78725270"
+    "03081770884921959731165446850517" "53553731"))

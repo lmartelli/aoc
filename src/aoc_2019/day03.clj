@@ -19,7 +19,9 @@
         [[0 0] []])
        second))
 
-(puzzle-input-parse-lines parse-wire)
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (map parse-wire)))
 
 ;; part 1
 
@@ -131,6 +133,9 @@
 (deftest nearest-intersection-with-dist-test
   (are [w1 w2 d]
       (= d (nearest-intersection (parse-wire w1) (parse-wire w2) dist))
+    "R8,U5,L5,D3"
+    "U7,R6,D4,L4"
+    6
     "R75,D30,R83,U83,L12,D49,R71,U7,L72"
     "U62,R66,U55,R34,D71,R55,D58,R83"
     159

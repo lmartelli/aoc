@@ -3,7 +3,8 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-int-array)
+(defn puzzle-input [stream]
+  (puzzle-input-int-array stream))
 
 ;; part 1
 

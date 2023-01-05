@@ -3,7 +3,9 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines parse-int)
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (map parse-int)))
 
 ;; part 1
 
@@ -30,7 +32,6 @@
 (defpart part2 [input]
   (get-total-fuel input get-fuel2))
 
-
 ;; tests
 
 (deftest get-fuel-test
@@ -46,3 +47,7 @@
     14 2
     1969 966
     100756 50346))
+
+(deftest part1-test (part-test part1 34241))
+
+(deftest part2-test (part-test part2 51316))
