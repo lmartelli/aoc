@@ -544,7 +544,7 @@
        (BigInteger. 1)
        (format (str "%0" (* 2 (count bytes))  "x"))))
 
-(defn signum [n]
+(defn signum ^long [n]
   (cond
     (zero? n) 0
     (pos? n) 1

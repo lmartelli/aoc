@@ -4,6 +4,7 @@
    [clojure.core :as core]
    [aoc.core :refer [signum min-max range-inc]]
    [aoc.algo :as algo]
+   [clojure.math.numeric-tower :refer [round]]
    [clojure.string :as str]
    [clojure.test :refer :all]))
 
@@ -15,11 +16,6 @@
     (fn [y row]
       (map-indexed (fn [x val] [[x y] val]) row))
     (range) rows))
-
-(defn read-line [y line]
-  (for [[c x] (map vector line (range))
-        :when (= c \#)]
-    [x y]))
 
 (defn parse-2d-map-positions
   "returns positions of `char` in a 2D map made of rows"
@@ -100,7 +96,18 @@
               (cond
                 (= x1 x2) (map #(vector x1 %) (range y1 y2 (signum (core/- y2 y1))))
                 (= y1 y2) (map #(vector % y1) (range x1 x2 (signum (core/- x2 x1))))
-                :else (throw (Exception. (str "Can only draw horizontal or vertical segments: " [x1 y1] " -> " [x2 y2]))))
+                :else (let [slope (/ (core/- y2 y1) (core/- x2 x1))]
+                        (case (signum (core/- (abs slope) 1))
+                          0 (map #(vector %1 %2)
+                                 (range x1 x2 (signum (core/- x2 x1)))
+                                 (range y1 y2 (signum (core/- y2 y1))))
+                          1 (map #(vector (core/+ x1 (-> (/ (* (signum (core/- y2 y1)) %1) slope) round int)) %2)
+                                 (range)
+                                 (range y1 y2 (signum (core/- y2 y1))))
+                          -1 (map #(vector %1 (core/+ y1 (-> (* (* (signum (core/- x2 x1)) %2) slope) round int)))
+                                  (range x1 x2 (signum (core/- x2 x1)))
+                                  (range))
+                          )))
               (segment-points other))))))
 
 (defn draw-points
@@ -125,7 +132,7 @@
    (fn [paper pos]
      (assoc paper pos ink))
    paper
-   (segment-points from to)))
+   (segment-points [from to])))
 
 (defn box [[x1 y1] [x2 y2]]
   [[x1 y1] [x2 y1] [x2 y2] [x1 y2]])
@@ -142,7 +149,6 @@
   (let [[[x-min x-max] [y-min y-max]] (x-and-y-ranges positions)]
     (box [(dec x-min) (dec y-min)] [(inc x-max) (inc y-max)])))
 
-
 (defn find-min-steps-in-maze
   "`wall-positions` should be a collection of wall positions"
   [from to wall-positions]
@@ -152,23 +158,6 @@
                       :neighbours direct-neighbours
                       :neighbour-allowed? (not (walls neighbour-pos)))
         :nb-steps)))
-
-(defn print
-  ([paper] (print paper identity))
-  ([paper xf]
-   (let [positions (keys paper)
-         [x-range y-range] (x-and-y-ranges positions)]
-     (print paper xf (apply range-inc x-range) (apply range-inc y-range))))
-  ([paper x-range y-range]
-   (print paper identity x-range y-range))
-  ([paper xf x-range y-range]
-   (run! (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) x-range)
-                      str/join
-                      println))
-         y-range)))
-
-(defn print-maze [wall-positions]
-  (print (draw-points \█ wall-positions)))
 
 (defn print-to-lines
   ([paper] (print-to-lines paper identity))
@@ -183,6 +172,12 @@
                      str/join
                      ))
         y-range)))
+
+(defn print [paper & args]
+  (run! println (apply print-to-lines paper args)))
+
+(defn print-maze [wall-positions]
+  (print (draw-points \█ wall-positions)))
 
 ;; Tests
 
@@ -211,3 +206,36 @@
         [0 0] [2 4]
         [4 -1] [1 0]))))
 
+(deftest draw-tests
+  (let [ink \█
+        from [0 0]]
+    (testing "Segment"
+      (are [x y expected] (and (= expected
+                                  (-> (draw-segment {} ink [from [x y]]) print-to-lines)
+                                  (-> (draw-segment {} ink [[x y] from]) print-to-lines))
+                               (= (reverse expected)
+                                  (print-to-lines (draw-segment {} ink [from [x (core/- y)]]))
+                                  (print-to-lines (draw-segment {} ink [[x (core/- y)] from]))))
+        0 0 ["█"]
+        3 0 ["████"]
+        0 3 ["█"
+             "█"
+             "█"
+             "█"]
+        3 3 ["█   "
+             " █  "
+             "  █ "
+             "   █"]
+        7 3 ["██      "
+             "  ██    "
+             "    ██  "
+             "      ██"]
+        3 7 ["█   "
+             "█   "
+             " █  "
+             " █  "
+             "  █ "
+             "  █ "
+             "   █"
+             "   █"]
+        ))))
