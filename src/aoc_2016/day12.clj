@@ -1,22 +1,22 @@
 (ns aoc-2016.day12
   (:require
    [aoc.core :refer :all]
-   [aoc-2016.assembunny :refer :all]
+   [aoc.cpu :refer :all]
+   [aoc-2016.assembunny :as assembunny]
    [clojure.test :refer :all]))
 
-;; Use aoc-2016.assembunny/puzzle-input
+;; Use aoc.cpu/puzzle-input
 
 ;; part 1
 
-(defpart part1 [input]
-  (-> (run-prog input (init-registers))
+(defpart part1 [prog]
+  (-> (run-prog {} prog assembunny/instruction-set)
       :a))
 
 ;; part 2
 
-(defpart part2 [input]
-  (-> (run-prog input
-                (-> (init-registers) (assoc :c 1)))
+(defpart part2 [prog]
+  (-> (run-prog {:c 1} prog assembunny/instruction-set)
       :a))
 
 ;; tests
