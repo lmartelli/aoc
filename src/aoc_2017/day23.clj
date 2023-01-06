@@ -1,30 +1,22 @@
 (ns aoc-2017.day23
   (:require
    [aoc.core :refer :all]
+   [aoc.cpu :refer :all]
    [aoc-2017.instr :refer :all]))
 
-;; Use aoc-2017.instr/puzzle-input
+;; Use aoc.cpu/puzzle-input
 
 ;; part 1
 
 (defpart part1 [prog]
-  (let [mul-count (atom 0)]
-    (run-prog
-      prog
-      (update basic-instr-set :mul
-              #(fn [& args]
-                 (swap! mul-count inc)
-                 (apply % args))))
-    @mul-count))
+  (->> (trace-instr {:ip 0} prog basic-instr-set)
+       (filter (fn [[instr]] (= :mul instr)))
+       count))
 
 ;; part 2
 
 (defpart part2 [prog]
-  (:a
-   (run-prog-until
-     {:ip 0 :a 1}
-     prog
-     basic-instr-set
-     terminated?)))
+  (-> (run-prog {:a 1} prog basic-instr-set)
+      :a))
 
 ;; tests

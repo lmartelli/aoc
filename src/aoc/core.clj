@@ -294,6 +294,12 @@
 (defn find-last [f seq]
   (last (take-while f seq)))
 
+(defn take-until [pred [x & more :as xs]]
+  (cond
+    (empty? xs) nil
+    (pred x) (seq [x])
+    :else (lazy-seq (cons x (take-until pred more)))))
+
 (defn combinations-with-sum
   "Combinations of n positive integers constrained by a sum"
   [n sum]
@@ -559,3 +565,8 @@
 (defn debug-val
   ([x] (println x) x)
   ([x msg] (println msg x) x))
+
+(defn queue
+  ([] (clojure.lang.PersistentQueue/EMPTY))
+  ([coll]
+    (reduce conj clojure.lang.PersistentQueue/EMPTY coll)))

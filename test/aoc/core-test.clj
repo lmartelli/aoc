@@ -197,3 +197,8 @@
 (deftest find-first-test
   (are [coll pred expected] (= expected (find-first pred coll))
     (take-nth 5 (range)) #(> % 10) 15))
+
+(deftest take-until-test
+  (are [coll pred expected] (= expected (take-until pred coll))
+    [] true? nil
+    (range) #(= 3 %) [0 1 2 3]))
