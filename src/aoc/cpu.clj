@@ -12,7 +12,7 @@
     (parse-int str)))
 
 (defn parse-instr [line]
-  (let [[op & args] (split line #" ")]
+  (let [[op & args] (split line #"[ ,]+")]
     (vec
       (cons (keyword op)
             (map parse-arg args)))))

@@ -1,68 +1,29 @@
 (ns aoc-2015.day23
   (:require
    [aoc.core :refer :all]
-   [clojure.string :refer [split]]
+   [aoc.cpu :refer :all]
    [clojure.test :refer :all]))
-
-(defn keyword-or-int [s]
-  (if (letter? (first s))
-    (keyword s)
-    (parse-int s)))
-
-(defn puzzle-input [stream]
-  (->> stream
-       line-seq
-       (mapv (fn [line]
-               (->> (split line #"[, ]+")
-                    (mapv keyword-or-int))))))
 
 ;; part 1
 
-(defn update-register [f]
-  (fn [registers r]
-    (-> registers
-        (update r f)
-        (update :ip inc))))
-
-(defn jump-if [pred]
-  (fn [registers r offset]
-    (update registers :ip
-            #(+ % (if (pred (registers r)) offset 1)))))
-
-(defn jump [registers offset]
-  (update registers :ip + offset))
-
 (def instructions
-  {:hlf (update-register #(quot % 2))
-   :tpl (update-register #(* % 3))
-   :inc (update-register inc)
-   :jmp jump
-   :jie (jump-if even?)
-   :jio (jump-if #(= 1 %))})
+  {:hlf (instr [r] (update-reg r #(quot % 2)))
+   :tpl (instr [r] (update-reg r #(* % 3)))
+   :inc (instr [r] (update-reg r inc))
+   :jmp (instr [offset] offset)
+   :jie (instr [tst offset] (jump-if offset even? tst))
+   :jio (instr [tst offset] (jump-if offset #(= 1 %) tst))})
 
-(defn exec-instr [registers [instr & operands]]
-  (apply (instructions instr) registers operands))
-
-(def init-registers (constantly {:a 0 :b 0 :ip 0}))
-
-(defn run-prog [prog registers]
-  (->> (iterate
-        (fn [registers]
-          (exec-instr registers (get prog (registers :ip))))
-        registers)
-       (find-first #(not (<= 0 (% :ip) (dec (count prog)))))))
-
-(defpart part1 [input]
-  (-> (run-prog input (init-registers))
+(defpart part1 [prog]
+  (-> (run-prog {} prog instructions)
       :b))
 
 ;; part 2
 
-(defpart part2 [input]
-  (-> (run-prog input (-> (init-registers) (assoc :a 1)))
-        :b))
+(defpart part2 [prog]
+  (-> (run-prog {:a 1} prog instructions)
+      :b))
 
 ;; tests
 
-(deftest run-prog-test
-  (is (= {:a 2 :b 0 :ip 4} (run-prog (puzzle-input (test-input))))))
+(deftest basic-prog-test (part-test #(run-prog % {:ip 0, :a 0 }) {:a 2 :ip 4}))
