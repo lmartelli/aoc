@@ -15,21 +15,20 @@
   [r]
   `(get ~'registers ~r 0))
 
-(defmacro $fn
-  "Defines a function with an implicit 1st param `register`"
+(defmacro instr
+  "Defines a function with an implicit 1st param `registers`"
   [[& params] body]
   (list 'fn (vec (cons 'registers params)) body))
 
 (def ops
-  {:== ($fn [r v] (= ($ r) v))
-   :!= ($fn [r v] (not= ($ r) v))
-   :< ($fn [r v] (< ($ r) v))
-   :> ($fn [r v] (> ($ r) v))
-   :<= ($fn [r v] (<= ($ r) v))
-   :>= ($fn [r v] (>= ($ r) v))
-   :inc ($fn [r v] (assoc registers r (+ ($ r) v)))
-   :dec ($fn [r v] (assoc registers r (- ($ r) v)))
-   })
+  {:== (instr [r v] (= ($ r) v))
+   :!= (instr [r v] (not= ($ r) v))
+   :< (instr [r v] (< ($ r) v))
+   :> (instr [r v] (> ($ r) v))
+   :<= (instr [r v] (<= ($ r) v))
+   :>= (instr [r v] (>= ($ r) v))
+   :inc (instr [r v] (assoc registers r (+ ($ r) v)))
+   :dec (instr [r v] (assoc registers r (- ($ r) v)))})
 
 (defn call [registers [op reg param]]
   ((ops (keyword op)) registers reg param))
