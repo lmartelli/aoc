@@ -134,4 +134,4 @@
 
 (deftest adapt-screen-cmds-test
   (is (= [[1 2 :empty] [3 4 :wall] [5 6 :block] [7 8 :paddle] [9 10 :ball]]
-         (adapt-screen-cmds [1 2 0, 3 4 1, 5 6 2, 7 8 3, 9 10 4]))))
+         (into [] adapt-screen-cmds [1 2 0, 3 4 1, 5 6 2, 7 8 3, 9 10 4]))))
