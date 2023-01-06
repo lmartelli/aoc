@@ -99,11 +99,11 @@
 
 (def adapt-screen-cmds
   (comp
-   (partition-all 3)
-   (map (fn [[x y n]]
-          (if (= [-1 0] [x y])
-            n
-            [x y (tile-types n)])))))
+    (partition-all 3)
+    (map (fn [[x y n]]
+           (if (= [-1 0] [x y])
+             n
+             [x y (tile-types n)])))))
 
 (defpart part2 [input]
   (let [out (chan 10000 adapt-screen-cmds)
