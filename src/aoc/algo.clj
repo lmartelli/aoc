@@ -49,8 +49,10 @@
       (if-let [start (visited-keys k)]
         {:start-pos start
          :start-value (visited-values start)
+         :repeat-pos pos
          :repeat-value current
-         :length (- pos start)}
+         :length (- pos start)
+         :values visited-values}
         (recur (assoc visited-keys k pos)
                (conj visited-values current)
                (inc pos)

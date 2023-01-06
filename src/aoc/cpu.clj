@@ -47,11 +47,16 @@
 (defmacro set-reg [reg value]
   `(assoc ~'registers ~reg ($ ~value)))
 
+(defmacro nop []
+  'registers)
+
 (defmacro jump-if
   ([offset predicate arg]
    `(if (~predicate ($ ~arg)) ($ ~offset) 1))
   ([offset predicate arg1 arg2]
    `(if (~predicate ($ ~arg1) ($ ~arg2)) ($ ~offset) 1)))
+
+(defmacro jump [offset] `($ ~offset))
 
 (defmacro defops
   "Defines an instruction set.
