@@ -5,13 +5,13 @@
 (defn puzzle-input [stream]
   (puzzle-input-int-array stream))
 
-(defn get-digit [n pos]
+(defn get-digit ^long [n pos]
   (mod (reduce quot n (repeat (dec pos) 10)) 10))
 
-(defn param-mode [instr n]
+(defn param-mode ^long [instr n]
   (get-digit instr (+ 2 n)))
 
-(defn op-code [instr]
+(defn op-code ^long [^long instr]
   (mod instr 100))
 
 (def debug? false)
