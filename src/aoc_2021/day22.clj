@@ -5,19 +5,18 @@
    [clojure.math.combinatorics :refer :all]
    [clojure.test :refer :all]))
 
-(defn cuboid [v]
+(defn cuboid
+  "Converts [xmin xmax ymin ymax zmin zmax] to [[xmin xmax] [ymin ymax] [zmin zmax]]"
+  [v]
   (if v
-    (->> v
-         (partition 2)
+    (->> (partition 2 v)
          (mapv vec))))
 
 (defn puzzle-input [stream]
   (puzzle-input-parse-lines
     stream
-    #(let [[_ op & cuboid-values]
-           (re-matches #"(on|off) x=(-?\d+)\.\.(-?\d+),y=(-?\d+)\.\.(-?\d+),z=(-?\d+)\.\.(-?\d+)" %)]
-       [(keyword op)
-        (cuboid (map parse-int cuboid-values))])))
+    #(vector (keyword (re-find #"on|off" %))
+             (cuboid (parse-ints %)))))
 
 ;; part 1
 

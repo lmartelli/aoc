@@ -185,10 +185,10 @@
      (str/split input (re-pattern sep)))))
 
 (defn parse-ints [s]
-  (map parse-int (re-seq #"-?\d+" s)))
+  (mapv parse-int (re-seq #"-?\d+" s)))
 
 (defn parse-pos-ints [s]
-  (map parse-int (re-seq #"\d+" s)))
+  (mapv parse-int (re-seq #"\d+" s)))
 
 (defn parse-points [s]
   (->> (parse-ints s)

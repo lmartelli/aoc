@@ -10,7 +10,7 @@
   (->> (line-seq stream)
        (split-seq empty?)
        (map (fn [[_ & coords]]
-              (map (comp #(mapv parse-int %) #(split % #",")) coords)))))
+              (map parse-ints coords)))))
 
 ;; part 1
 

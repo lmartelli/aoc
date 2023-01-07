@@ -6,10 +6,7 @@
 (defn puzzle-input [stream]
   (puzzle-input-parse-lines
     stream
-    (fn [line]
-      (-> (re-find #": (\d+)" line)
-          (nth 1)
-          parse-int))))
+    #(re-parse % #": (\d+)" parse-int)))
 
 ;; part 1
 

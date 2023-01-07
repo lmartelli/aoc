@@ -4,10 +4,9 @@
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
-  (->> (puzzle-input-string stream)
-       (re-find #"x=(-?\d+)\.\.(-?\d+), y=(-?\d+)\.\.(-?\d+)")
-       rest
-       (map parse-int)
+  (->> (line-seq stream)
+       first
+       parse-ints
        (partition 2)))
 
 ;; part 1
