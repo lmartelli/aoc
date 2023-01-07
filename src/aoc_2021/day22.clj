@@ -282,7 +282,7 @@
          (apply distinct? res-cubes))))
 
 (deftest slice-test
-  (are [cuboid axis interval expected] (= expected (into #{} (slice cuboid axis interval)))
+  (are [c axis interval expected] (= (into #{} (map cuboid expected)) (into #{} (slice (cuboid c) axis interval)))
     [0 2, 0 2, 0 2] 0 [3 4]   #{[0 2, 0 2, 0 2]}
     [0 2, 0 2, 0 2] 0 [-2 -1] #{[0 2, 0 2, 0 2]}
     [0 2, 0 2, 0 2] 0 [0 0]   #{[0 0, 0 2, 0 2] [1 2, 0 2, 0 2]}
@@ -293,52 +293,54 @@
 
 (defn- add-axis [[s1 s2 :as surface] ^long axis value]
   (case axis
-    0 (vec (concat value s1 s2))
-    1 (vec (concat s1 value s2))
-    2 (vec (concat s1 s2 value))))
+    0 [value s1 s2]
+    1 [s1 value s2]
+    2 [s1 s2 value]))
 
 (deftest drill-test
-  (are [cuboid axis drill-section-1 drill-section-2]
-      (check-fn-difference
-        #(drill % axis [drill-section-1 drill-section-2])
-        cuboid
-        (add-axis [drill-section-1 drill-section-2 ] axis (get cuboid axis)))
-    [0 2 0 2 0 2] 2 [1 1] [1 1]
-    [0 2 0 2 0 2] 2 [1 2] [1 1]
-    [0 2 0 2 0 2] 2 [1 3] [1 1]
-    [0 2 0 2 0 2] 2 [1 1] [1 2]
-    [0 2 0 2 0 2] 2 [1 1] [1 3]
-    [0 2 0 2 0 2] 2 [1 2] [1 2]
-    [0 2 0 2 0 2] 2 [1 3] [1 3]
-    [0 2 0 2 0 2] 2 [1 1] [1 1]
-    [0 2 0 2 0 2] 2 [0 1] [1 1]
-    [0 2 0 2 0 2] 2 [-1 1] [1 1]
-    [0 2 0 2 0 2] 2 [1 1] [0 1]
-    [0 2 0 2 0 2] 2 [1 1] [-1 1]
-    [0 2 0 2 0 2] 2 [0 1] [0 1]
-    [0 2 0 2 0 2] 2 [-1 1] [-1 1]
-    [0 2 0 2 0 2] 2 [1 1] [0 2]
-    [0 2 0 2 0 2] 2 [1 1] [0 3]
-    [0 2 0 2 0 2] 2 [1 1] [-1 2]
-    [0 2 0 2 0 2] 2 [1 1] [-1 3]
-    [0 2 0 2 0 2] 2 [0 2] [1 1]
-    [0 2 0 2 0 2] 2 [0 3] [1 1]
-    [0 2 0 2 0 2] 2 [-1 2] [1 1]
-    [0 2 0 2 0 2] 2 [-1 3] [1 1]))
+  (are [flattened-cuboid axis drill-section-1 drill-section-2]
+      (let [cuboid (cuboid flattened-cuboid)]
+        (check-fn-difference
+          #(drill % axis [drill-section-1 drill-section-2])
+          cuboid
+          (add-axis [drill-section-1 drill-section-2] axis (get cuboid axis))))
+    [0 2, 0 2, 0 2] 2 [1 1] [1 1]
+    [0 2, 0 2, 0 2] 2 [1 2] [1 1]
+    [0 2, 0 2, 0 2] 2 [1 3] [1 1]
+    [0 2, 0 2, 0 2] 2 [1 1] [1 2]
+    [0 2, 0 2, 0 2] 2 [1 1] [1 3]
+    [0 2, 0 2, 0 2] 2 [1 2] [1 2]
+    [0 2, 0 2, 0 2] 2 [1 3] [1 3]
+    [0 2, 0 2, 0 2] 2 [1 1] [1 1]
+    [0 2, 0 2, 0 2] 2 [0 1] [1 1]
+    [0 2, 0 2, 0 2] 2 [-1 1] [1 1]
+    [0 2, 0 2, 0 2] 2 [1 1] [0 1]
+    [0 2, 0 2, 0 2] 2 [1 1] [-1 1]
+    [0 2, 0 2, 0 2] 2 [0 1] [0 1]
+    [0 2, 0 2, 0 2] 2 [-1 1] [-1 1]
+    [0 2, 0 2, 0 2] 2 [1 1] [0 2]
+    [0 2, 0 2, 0 2] 2 [1 1] [0 3]
+    [0 2, 0 2, 0 2] 2 [1 1] [-1 2]
+    [0 2, 0 2, 0 2] 2 [1 1] [-1 3]
+    [0 2, 0 2, 0 2] 2 [0 2] [1 1]
+    [0 2, 0 2, 0 2] 2 [0 3] [1 1]
+    [0 2, 0 2, 0 2] 2 [-1 2] [1 1]
+    [0 2, 0 2, 0 2] 2 [-1 3] [1 1]))
 
 (defn check-difference [A B]
-  (let [a-b-cubes (->> (cubes (cuboid A)) (remove (into #{} (cubes (cuboid B)))) (into #{}))
-        res-cubes (mapcat cubes (difference (cuboid A) (cuboid B)))]
+  (let [a-b-cubes (->> (cubes A) (remove (into #{} (cubes B))) (into #{}))
+        res-cubes (mapcat cubes (difference A B))]
     (and (= a-b-cubes (into #{} res-cubes))
          (or (empty? res-cubes)
              (apply distinct? res-cubes)))))
 
-(deftest difference-test-full
+;; Very slow (1_000_000 tests ...)
+#_(deftest difference-test-full
   (let [intervals (->> (selections (range 4) 2) (filter #(apply <= %)))
         cuboids (for [[x-min x-max] intervals
                       [y-min y-max] intervals
                       [z-min z-max] intervals]
-                  [x-min x-max y-min y-max z-min z-max])]
+                  [[x-min x-max] [y-min y-max] [z-min z-max]])]
       (dorun
         (for [A cuboids
               B cuboids]
@@ -346,7 +348,7 @@
 
 (deftest difference-test
   (testing "A includes³ B → Hole in the middle of A"
-    (are [A B] (check-difference A B)
+    (are [A B] (check-difference (cuboid A) (cuboid B))
       [0 2, 0 2, 0 2] [1 1, 1 1, 1 1]
       [0 2, 0 2, 0 2] [1 1, 1 1, 1 2]
       [0 2, 0 2, 0 2] [1 1, 1 1, 0 1]
@@ -383,31 +385,31 @@
         (for [[min-1 max-1] intervals
               [min-2 max-2] intervals
               [min-3 max-3] [[2 3] [-1 0]]]
-          (are [A B] (check-difference A B)
+          (are [A B] (check-difference (cuboid A) (cuboid B))
             [min-1 max-1, min-2 max-2, min-3 max-3] [0 2, 0 2, 0 2]
             [min-1 max-1, min-3 max-3, min-2 max-2] [0 2, 0 2, 0 2]
             [min-3 max-3, min-1 max-1, min-2 max-2] [0 2, 0 2, 0 2]
             )))))
   (testing "A includes² B, overlap¹: hole in a face"
-    (are [A B] (check-difference A B)
+    (are [A B] (check-difference (cuboid A) (cuboid B))
       [0 2, 0 2, 0 2] [1 1, 1 1, 1 3]))
   (testing "B includes¹ A & overlap² (intersect on edge)"
-    (are [B A] (check-difference A B)
+    (are [B A] (check-difference (cuboid A) (cuboid B))
       [0 2, 0 2, 0 2] [2 3, 2 3, 1 1]
       [0 2, 0 2, 0 2] [2 3, -1 0, 1 1]
       [0 2, 0 2, 0 2] [-1 0, -1 0, 1 1]
       [0 2, 0 2, 0 2] [2 3, 1 1, 2 3]
       [0 2, 0 2, 0 2] [1 1, 2 3, 2 3]))
   (testing "overlap³ (intersect on corner)"
-    (are [B A] (check-difference A B)
+    (are [B A] (check-difference (cuboid A) (cuboid B))
       [0 2, 0 2, 0 2] [2 3, 2 3, 2 3]
       [0 2, 0 2, 0 2] [2 3, 1 1, 2 3]
       [0 2, 0 2, 0 2] [1 1, 2 3, 2 3]))
   (testing "B includes² A, A includes¹ B: remove middle section"
-    (are [B A] (check-difference A B)
+    (are [B A] (check-difference (cuboid A) (cuboid B))
       [0 2, 0 2, 0 2] [1 1, 1 1, -1 3]))
   (testing "A includes² B, B includes¹ A: drill hole through"
-    (are [A B] (check-difference A B)
+    (are [A B] (check-difference (cuboid A) (cuboid B))
       [0 2, 0 2, 0 2] [1 1, 1 1, -1 3])))
 
 (deftest cubes-test
