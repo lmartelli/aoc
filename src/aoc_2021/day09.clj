@@ -1,6 +1,7 @@
 (ns aoc-2021.day09
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.set :refer [difference]]
    [clojure.test :refer :all]))
 
@@ -12,17 +13,14 @@
 (defn dim [heightmap]
   [(count heightmap) (count (first heightmap))])
 
-(defn neighbours [[x y] [width height]]
-  (->> [[(dec x) y] [(inc x) y] [x (dec y)] [x (inc y)]]
-       (filter (fn [[x y]] (and (< -1 x width) (< -1 y height))))))
-
 (defn find-low-points [heightmap]
   (let [[width height] (dim heightmap)]
     (for [x (range width)
           y (range height)
-          :let [h (get-in heightmap [x y])]
-          :when (->> (neighbours [x y] [width height])
-                     (map #(get-in heightmap %))
+          :let [pos [x y]
+                h (get-in heightmap pos)]
+          :when (->> (s2/direct-neighbours pos)
+                     (keep #(get-in heightmap %))
                      (every? #(> % h) ))]
       [x y])))
 
@@ -36,8 +34,9 @@
 (defn up-hill-neighbours [boundary heightmap]
   (let [w×h (dim heightmap)]
     (->> (mapcat (fn [pos]
-                   (->> (neighbours pos w×h)
-                        (filter #(> 9 (get-in heightmap %) (get-in heightmap pos)))))
+                   (->> (s2/direct-neighbours pos)
+                        (filter #(if-let [neighbour-height (get-in heightmap %)]
+                                   (> 9 neighbour-height (get-in heightmap pos))))))
                  boundary)
          (into #{}))))
 
