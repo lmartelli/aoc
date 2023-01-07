@@ -291,7 +291,7 @@
     [0 2, 0 2, 0 2] 0 [2 3]   #{[0 1, 0 2, 0 2] [2 2, 0 2, 0 2]}
     [0 2, 0 2, 0 2] 0 [1 1]   #{[0 0, 0 2, 0 2] [1 1, 0 2, 0 2] [2 2, 0 2, 0 2]}))
 
-(defn- add-axis [[s1 s2 :as surface] axis value]
+(defn- add-axis [[s1 s2 :as surface] ^long axis value]
   (case axis
     0 (vec (concat value s1 s2))
     1 (vec (concat s1 value s2))
