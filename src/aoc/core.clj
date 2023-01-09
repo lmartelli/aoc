@@ -570,3 +570,7 @@
   ([] (clojure.lang.PersistentQueue/EMPTY))
   ([coll]
     (reduce conj clojure.lang.PersistentQueue/EMPTY coll)))
+
+(defn char-offset
+  ([origin] (fn [x] (char-offset x origin)))
+  ([x origin] (- (int x) (int origin))))
