@@ -1,6 +1,7 @@
 (ns aoc-2021.day22
   (:require
    [aoc.core :refer :all]
+   [aoc.range :as r]
    [clojure.set :as set]
    [clojure.math.combinatorics :refer :all]
    [clojure.test :refer :all]))
@@ -20,15 +21,8 @@
 
 ;; part 1
 
-(def restricted-volume (cuboid [-50 50 -50 50 -50 50]))
-
-(defn interval-intersection [[a-min a-max] [b-min b-max]]
-  (if (or (>= b-min a-max) (<= b-max a-min))
-    nil
-    [(max a-min b-min) (min a-max b-max)]))
-
 (defn cuboid-intersection [A B]
-  (let [res (mapv interval-intersection A B)]
+  (let [res (mapv r/intersection A B)]
     (if (some nil? res)
       nil
       res)))
@@ -39,48 +33,8 @@
         z (range zmin zmax)]
     [x y z]))
 
-(defn slice-intervals
-  "Returns [(intersection a b) & (difference a b)]"
-  [a b]
-  (let [i (interval-intersection a b)]
-    (if (nil? i)
-      [nil a]
-      (let [[i-min i-max] i
-            [a-min a-max] a
-            [b-min b-max] b]
-        (if (= i-min a-min)
-          (if (= i-max a-max)
-            [i]
-            [i [i-max a-max]])
-          (if (= i-max a-max)
-            [i [a-min i-min]]
-            [i [a-min i-min] [i-max a-max]]))))))
-
-(defn slice-intervals
-  "Returns [(intersection a b) & (difference a b)]"
-  [a b]
-  (let [i (interval-intersection a b)]
-    (if (nil? i)
-      [nil a]
-      (let [[i-min i-max] i
-            [a-min a-max] a
-            [b-min b-max] b]
-        (cond
-          ;; a: |     |
-          ;; i:   | |
-          (< a-min i-min i-max a-max) [i [a-min i-min] [i-max a-max]]
-          ;; a: |     |
-          ;; i:   |   |
-          (> i-min a-min) [i [a-min i-min]]
-          ;; a: |     |
-          ;; i: |   |
-          (< i-max a-max) [i [i-max a-max]]
-          ;; a: |     |
-          ;; i: |     |
-          :esle [i])))))
-
 (defn cuboid-difference [A B]
-  (let [slices (map slice-intervals A B)]
+  (let [slices (map r/slice A B)]
     (if (some (fn [[intersection]] (nil? intersection)) slices)
       [A]
       (->> (map-indexed vector slices)
@@ -120,7 +74,7 @@
        (reduce +)))
 
 (defpart part1 [steps]
-  (->> (map #(update % 1 cuboid-intersection restricted-volume) steps)
+  (->> (map #(update % 1 cuboid-intersection (into [] (repeat 3 [-50 50]))) steps)
        (filter (fn [[op cuboid]] cuboid))
        (apply-steps [])
        sum-volumes))
@@ -164,15 +118,13 @@
              (apply distinct? res-cubes)))))
 
 (deftest difference-test-full
-  (let [intervals (->> (selections (range 4) 2) (filter #(apply <= %)))
-        cuboids (for [[x-min x-max] intervals
-                      [y-min y-max] intervals
-                      [z-min z-max] intervals]
-                  [[x-min x-max] [y-min y-max] [z-min z-max]])]
+  (let [intervals (->> (selections (range 4) 2) (filter #(apply < %)))
+        cuboids (->> (cartesian-product intervals intervals intervals)
+                     (map vec))]
     (dorun
       ;; It will take some time if you consider all basic cuboids for A & B
-      (for [A (random-sample 0.1 cuboids)
-            B (random-sample 0.1 cuboids)]
+      (for [A (random-sample 0.2 cuboids)
+            B (random-sample 0.2 cuboids)]
         (is (check-difference A B))))))
 
 (deftest cuboid-difference-test
@@ -209,7 +161,7 @@
       [0 1, 0 1, 0 1] [0 1, 2 3, 0 1]
       [0 1, 0 1, 0 1] [0 1, 0 1, 2 3]))
   (testing "B includes² A & overlap¹: chop"
-    (let [intervals (->> (selections (range 3) 2) (filter #(apply <= %)))]
+    (let [intervals (->> (selections (range 4) 2) (filter #(apply < %)))]
       (dorun
         (for [[min-1 max-1] intervals
               [min-2 max-2] intervals
