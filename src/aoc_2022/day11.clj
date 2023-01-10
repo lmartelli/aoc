@@ -40,7 +40,7 @@
 (defn round [state rules]
   (reductions
     (fn [state monkey-num]
-      (monkey-play state monkey-num (get rules monkey-num) max-worryness))
+      (monkey-play state monkey-num (get rules monkey-num)))
     state
     (range (count state))))
 
