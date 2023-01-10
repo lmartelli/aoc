@@ -3,7 +3,6 @@
    [aoc.core :refer :all]
    [aoc.space-2d :as s2]
    [clojure.string :refer [split]]
-   [clojure.java.io :refer [input-stream]]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
