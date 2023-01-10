@@ -1,6 +1,7 @@
 (ns aoc-2015.day18
   (:require
-   [aoc.core :refer :all]))
+   [aoc.core :refer :all]
+   [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
   (-> (line-seq stream)
@@ -57,11 +58,10 @@
 
 ;; tests
 
-(def test-data
-  (array-2d-to-map
-   [".#.#.#"
-    "...##."
-    "#....#"
-    "..#..."
-    "#.#..#"
-    "####.."]))
+(deftest count-alive-after-test
+  (let [init-state (test-data)]
+    (are [n expected] (= expected (count-alive-after init-state n game-of-life))
+      1 11
+      2 8
+      3 4
+      4 4)))

@@ -1,6 +1,7 @@
 (ns aoc-2021.day13
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [aoc.ocr :refer :all]
    [clojure.string :refer [split]]
    [clojure.test :refer :all]))
@@ -33,16 +34,13 @@
 
 ;; part 2
 
-(defn plot [points]
-  (let [width (apply max (map first points))
-        height (apply max (map second points))]
-    (map (fn [y]
-           (apply str (map (fn [x] (if (points [x y]) \# \space)) (range-inc width))))
-         (range-inc height))))
-
-(defpart part2 [{:keys [:coords :folds]}]
+(defn fold-and-show [{:keys [:coords :folds]}]
   (-> (reduce fold coords folds)
-      plot
+      s2/draw-points
+      s2/print-to-lines))
+
+(defpart part2 [input]
+  (-> (fold-and-show input)
       ocr))
 
 ;; tests
@@ -56,5 +54,13 @@
     [[0 0]] :x 1 [[0 0]]
     [[3 4]] :x 2 [[1 4]]
     [[3 4]] :y 2 [[3 0]]))
+
+  (deftest part2-test
+  (is (= ["#####"
+          "#   #"
+          "#   #"
+          "#   #"
+          "#####"]
+         (fold-and-show (test-data)))))
 
 (deftest part1-test (part-test part1 17))

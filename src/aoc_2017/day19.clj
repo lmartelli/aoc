@@ -1,7 +1,8 @@
 (ns aoc-2017.day19
   (:require
    [aoc.core :refer :all]
-   [aoc.space-2d :as s2]))
+   [aoc.space-2d :as s2]
+   [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
   (->> (line-seq  stream)
@@ -48,3 +49,7 @@
        count))
 
 ;; tests
+
+(deftest part1-test (part-test part1 "ABCDEF"))
+
+(deftest part2-test (part-test part2 38))

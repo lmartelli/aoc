@@ -111,6 +111,7 @@
               (segment-points other))))))
 
 (defn draw-points
+  ([points] (draw-points \# points))
   ([ink points] (draw-points {} ink points))
   ([paper ink points]
    (reduce
