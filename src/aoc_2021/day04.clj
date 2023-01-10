@@ -21,7 +21,7 @@
   (apply map vector board))
 
 (defn remove-number [board number]
-  (map #(filter (comp not #{number}) %1) board))
+  (map #(remove #{number} %) board))
 
 (defn win? [board]
   (= [] (find-first empty? board)))
