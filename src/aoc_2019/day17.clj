@@ -58,15 +58,15 @@
 
 (defn advance [m pos dir]
   (loop [dist 1]
-    (if (not (scaffold? m (add pos (mult dir (inc dist)))))
+    (if (not (scaffold? m (s2/+ pos (s2/mult dir (inc dist)))))
       dist
       (recur (inc dist)))))
 
 (defn find-direction [m pos dir]
   (cond
-    (scaffold? m (add pos dir)) (advance m pos dir)
-    (scaffold? m (add pos (s2/rotate-left dir))) "L"
-    (scaffold? m (add pos (s2/rotate-right dir))) "R"
+    (scaffold? m (s2/+ pos dir)) (advance m pos dir)
+    (scaffold? m (s2/+ pos (s2/rotate-left dir))) "L"
+    (scaffold? m (s2/+ pos (s2/rotate-right dir))) "R"
     :else nil))
 
 (defn make-path [m pos dir]
@@ -80,7 +80,7 @@
          (case next
            "L" (recur pos (s2/rotate-left dir) (conj path next))
            "R" (recur pos (s2/rotate-right dir) (conj path next))
-           (recur (add pos (mult dir next)) dir (conj path next))))))
+           (recur (s2/+ pos (s2/mult dir next)) dir (conj path next))))))
    (partition 2)
    (mapv #(join "," %))))
 

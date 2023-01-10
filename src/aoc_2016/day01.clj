@@ -46,7 +46,7 @@
 (defn decompose-move [pos {:keys [dir dist]}]
   (rest
    (reductions
-    (fn [pos _] (add pos dir))
+    (fn [pos _] (s2/+ pos dir))
     pos
     (range dist))))
 

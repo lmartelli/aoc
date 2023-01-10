@@ -1,6 +1,7 @@
 (ns aoc-2019.day03
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.string :refer [split]]
    [clojure.math.numeric-tower :refer [abs]]
    [clojure.test :refer :all]))
@@ -9,13 +10,13 @@
 
 (defn parse-vector [s]
   (let [[_ dir dist] (re-matches #"([RLUD])(\d+)" s)]
-    (mult (directions dir) (parse-int dist))))
+    (s2/mult (directions dir) (parse-int dist))))
 
 (defn parse-wire [l]
   (->> (split l #",")
        (map parse-vector)
        (reduce
-        (fn [[pos segments] v] [(add pos v) (conj segments [pos v])])
+        (fn [[pos segments] v] [(s2/+ pos v) (conj segments [pos v])])
         [[0 0] []])
        second))
 
@@ -72,7 +73,7 @@
        first-if-all-same))
 
 (defn in-segment? [p [start vect]]
-  (if-let [coef (parallel? (sub p start) vect)]
+  (if-let [coef (parallel? (s2/- p start) vect)]
     (< 0 coef 1)))
 
 (defn signal-delay
@@ -80,7 +81,7 @@
   ([point wire]
    (let [before-point (take-while #(not (in-segment? point %)) wire)]
      (signal-delay
-      (conj (map second before-point) (sub point (first (nth wire (count before-point))))))))
+      (conj (map second before-point) (s2/- point (first (nth wire (count before-point))))))))
   ([point wire1 & wires]
    (reduce + (map #(signal-delay point %) (conj wires wire1)))))
 
@@ -145,11 +146,11 @@
 
 (deftest in-segment?-test
   (are [p start vector] (and (in-segment? p [start vector])
-                             (in-segment? p [(add start vector) (mult vector -1)]))
+                             (in-segment? p [(s2/+ start vector) (s2/mult vector -1)]))
     [1 1] [0 1] [2 0]
     [1 1] [1 0] [0 2])
   (are [p start vector] (and (not (in-segment? p [start vector]))
-                             (not (in-segment? p [(add start vector) (mult vector -1)])))
+                             (not (in-segment? p [(s2/+ start vector) (s2/mult vector -1)])))
     [1 1] [0 1] [0 2]
     [1 1] [1 0] [2 0]))
 

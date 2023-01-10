@@ -1,6 +1,7 @@
 (ns aoc-2015.day18
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -13,9 +14,7 @@
   (= \# state))
 
 (defn neighbours [m coord]
-  (map
-   #(m (add coord %))
-   [[0 1] [0 -1] [1 0] [-1 0] [1 1] [-1 -1] [1 -1] [-1 1]]))
+  (map m (s2/all-neighbours coord)))
 
 (defn alive-neighbours [m coord]
   (->> (neighbours m coord)

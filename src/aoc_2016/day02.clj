@@ -1,6 +1,7 @@
 (ns aoc-2016.day02
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -23,7 +24,7 @@
        (map directions)
        (reduce
         (fn [pos move]
-          (let [new-pos (add pos move)]
+          (let [new-pos (s2/+ pos move)]
             (if (contains? keyboard new-pos)
               new-pos
               pos)))

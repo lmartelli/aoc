@@ -1,6 +1,7 @@
 (ns aoc-2019.day15
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [aoc-2019.intcode :refer [run run-prog]]
    [clojure.core.async :as async :refer [>!! <!! poll! close! chan thread]]
    [clojure.set :refer [intersection union difference]]
@@ -22,7 +23,7 @@
 (defn step-back [in out pos direction]
   (>!! in (reverse-directions direction))
   (when-not (= (<!! out) :moved) (throw (Exception. "Failed to step back!!!")))
-  (sub pos (moves direction)))
+  (s2/- pos (moves direction)))
 
 (defn find-shortest-path [in out direction shortest-path path pos area]
   (if (or (> direction 4) ;; dead-end
@@ -32,7 +33,7 @@
       (let [prev-dir (peek path)
             prev-pos (step-back in out pos prev-dir)]
         (recur in out (inc prev-dir) shortest-path (pop path) prev-pos area)))
-    (let [new-pos (add pos (moves direction))]
+    (let [new-pos (s2/+ pos (moves direction))]
       (if (contains? area new-pos)
         (recur in out (inc direction) shortest-path path pos area)
         (let [new-path (conj path direction)]

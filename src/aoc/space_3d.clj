@@ -4,6 +4,7 @@
    [clojure.core :as core]
    [aoc.core :refer [parse-int signum re-seq-parse]]
    [aoc.algo :as algo]
+   [clojure.math.numeric-tower :refer [sqrt]]
    [clojure.string :as str]
    [clojure.test :refer :all]))
 
@@ -22,6 +23,15 @@
 (defn manatthan-dist
   ([a b] (manatthan-dist (- a b)))
   ([[^int x ^int y ^int z]] (core/+ (abs x) (abs y) (abs z))))
+
+(defn prod "Scalar product of 2 vectors" [[ux uy uz] [vx vy vz]]
+  (core/+ (* ux vx) (* uy vy) (* uz vz)))
+
+(defn norm [[x y z]]
+  (sqrt (core/+ (* x x) (* y y) (* z z))))
+
+(defn cos [v u]
+  (/ (prod u v) (* (norm u) (norm v))))
 
 (defn direct-neighbours [[^int x ^int y ^int z]]
   (list [x (inc y) z]

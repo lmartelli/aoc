@@ -1,12 +1,13 @@
 (ns aoc-2019.day12
   (:require
    [aoc.core :refer :all]
+   [aoc.space-3d :as s3]
    [clojure.math.numeric-tower :refer [lcm]]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
   (->> (line-seq stream)
-       (map (comp vec parse-ints))))
+       (map parse-ints)))
 
 ;; part 1
 
@@ -18,8 +19,8 @@
 (defn gravity
   ([pos planets]
    (reduce
-    add
-    (map #(mapv sign (sub % pos)) planets))))
+    s3/+
+    (map #(mapv sign (s3/- % pos)) planets))))
 
 (defn apply-gravity
   ([p planets] (update p :velocity add (gravity (p :pos) (map :pos planets))))

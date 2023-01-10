@@ -1,6 +1,7 @@
 (ns aoc-2017.day14
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [aoc-2017.knot-hash :refer :all]
    [aoc-2017.day12 :refer [groups]]
    [clojure.test :refer :all]))
@@ -28,7 +29,7 @@
 
 (defn neighbours [coord]
   (map
-   #(add coord %)
+   #(s2/+ coord %)
    [[0 1] [0 -1] [1 0] [-1 0]]))
 
 (defn build-adjacency-map [bitmap]

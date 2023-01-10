@@ -18,7 +18,7 @@
 
 (defn find-dir [path-map pos prev-dir]
   (let [turn-left (s2/rotate-left prev-dir)]
-    (if (path-map (add pos turn-left))
+    (if (path-map (s2/+ pos turn-left))
       turn-left
       (s2/rotate-right prev-dir))))
 
@@ -26,8 +26,8 @@
   (case (path-map pos)
     nil nil
     \+ (let [new-dir (find-dir path-map pos dir)]
-         [(add pos new-dir) new-dir])
-    [(add pos dir) dir]))
+         [(s2/+ pos new-dir) new-dir])
+    [(s2/+ pos dir) dir]))
 
 (defn path [path-map]
   (->> (iterate #(advance path-map %) [(find-start path-map) [0 1]])

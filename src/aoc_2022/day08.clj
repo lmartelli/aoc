@@ -1,6 +1,7 @@
 (ns aoc-2022.day08
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.math.combinatorics :refer :all]
    [clojure.test :refer :all]))
 
@@ -53,7 +54,7 @@
 (defn update-scenic-scores [scenic-scores from-trees to-pos]
   (reduce
    (fn [scenic-scores [pos height]]
-     (update-in scenic-scores pos (fnil * 1) (manatthan-dist pos to-pos)))
+     (update-in scenic-scores pos (fnil * 1) (s2/manatthan-dist pos to-pos)))
    scenic-scores
    from-trees))
 

@@ -1,6 +1,7 @@
 (ns aoc-2017.day11
   (:require
    [aoc.core :refer :all]
+   [aoc.space-2d :as s2]
    [clojure.math.numeric-tower :refer [abs]]
    [clojure.string :refer [split]]))
 
@@ -30,7 +31,7 @@
 
 (defn dist [[x y]]
   (if (same-sign? x y)
-    (manatthan-dist [x y])
+    (s2/manatthan-dist [x y])
     (max (abs x) (abs y))))
 
 (defpart part1 [input]

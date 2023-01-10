@@ -42,7 +42,7 @@
 
 (defn transform [tx block]
   (let [size (get-size block)
-        origin (center [(dec size) (dec size)])]
+        origin (s2/center [(dec size) (dec size)])]
     (reduce
       (fn [res coord]
         (set-pixel res (tx coord origin) (get-pixel block coord)))
@@ -50,7 +50,7 @@
       (indexes size))))
 
 (defn rotate [block]
-  (transform rotate-right block))
+  (transform s2/rotate-right block))
 
 (defn flip [block]
   (transform s2/flip-vert block))

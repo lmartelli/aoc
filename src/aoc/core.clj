@@ -388,44 +388,6 @@
 
 ;; vector
 
-(defn add "Vector addition"
-  [a & rest]
-  (apply mapv + a rest))
-
-(defn sub "Vector subtraction"
-  [a & rest]
-  (apply mapv - a rest))
-
-(defn mult "Vector multiplication by a number: v × n"
-  [v n]
-  (mapv #(* % n) v))
-
-(defn div "Vector division by a number: v × 1/n"
-  [v n]
-  (mapv #(/ % n) v))
-
-;; todo: move to space-2d
-(defn center [v]
-  (mult v (/ 1 2)))
-
-;; todo: move to space-2d
-(defn prod "Scalar product of 2 vectors" [u v]
-  (reduce + (map * u v)))
-
-;; todo: move to space-2d
-(defn norm [v]
-  (sqrt (reduce + (map square v))))
-
-;; todo: move to space-2d
-(defn cos [v u]
-  (/ (prod u v) (* (norm u) (norm v))))
-
-;; todo: move to space-2d
-(defn manatthan-dist
-  ([a b] (manatthan-dist (sub a b)))
-  ([p] (->> p
-            (map abs)
-            (reduce +))))
 
 (defn remove-index [v index]
   (vec

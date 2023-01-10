@@ -1,6 +1,7 @@
 (ns aoc-2017.day20
   (:require
    [aoc.core :refer :all]
+   [aoc.space-3d :as s3]
    [clojure.math.combinatorics :refer [combinations]]
    [clojure.math.numeric-tower :refer [sqrt]]
    [clojure.string :refer [split]]))
@@ -18,16 +19,16 @@
 (defpart part1 [particles]
   (->> particles
        (zipmap (range))
-       (apply min-key (comp manatthan-dist :acceleration val))
+       (apply min-key (comp s3/manatthan-dist :acceleration val))
        key))
 
 ;; part 2
 
 (defn update-velocity [p]
-  (update p :velocity add (p :acceleration)))
+  (update p :velocity s3/+ (p :acceleration)))
 
 (defn update-position [p]
-  (update p :position add (p :velocity)))
+  (update p :position s3/+ (p :velocity)))
 
 (defn update-particles [particles]
   (map (comp update-position update-velocity) particles))
@@ -52,9 +53,9 @@
   (let [vectors (->> (vals p) (remove (eq [0 0 0])))]
     (case (count vectors)
       3 (->> (combinations vectors 2)
-             (map #(apply cos %))
+             (map #(apply s3/cos %))
              range-width)
-      2 (as-> (apply cos vectors) $
+      2 (as-> (apply s3/cos vectors) $
           (square $)
           (- 1 $)
           (sqrt $))

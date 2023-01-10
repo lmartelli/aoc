@@ -11,13 +11,13 @@
 ;; part 1
 
 (defn inc-last [m pos dir]
-  (-> (add pos (sub dir))
+  (-> (s2/+ pos (s2/- dir))
       m
       inc))
 
 (defn get-next-dir [m pos dir]
   (let [rotated (s2/rotate-left dir)]
-    (if (m (add pos rotated))
+    (if (m (s2/+ pos rotated))
       dir
       rotated)))
 
@@ -25,7 +25,7 @@
   (->> (reductions
         (fn [{:keys [:m :pos :dir]} _]
           (let [n (m pos)]
-            (let [next-pos (add pos dir)]
+            (let [next-pos (s2/+ pos dir)]
               {:m (assoc m next-pos (compute-next m next-pos dir))
                :pos next-pos
                :dir (get-next-dir m next-pos dir)})))

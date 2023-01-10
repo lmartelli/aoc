@@ -4,7 +4,7 @@
    [clojure.core :as core]
    [aoc.core :refer [signum min-max range-inc]]
    [aoc.algo :as algo]
-   [clojure.math.numeric-tower :refer [round]]
+   [clojure.math.numeric-tower :refer [round sqrt]]
    [clojure.string :as str]
    [clojure.test :refer :all]))
 
@@ -29,8 +29,14 @@
      (range)
      lines)))
 
-(defn + [[ax ay] [bx by]]
-  [(core/+ ax bx) (core/+ ay by)])
+(defn +
+  ([[ax ay] [bx by]]
+   [(core/+ ax bx) (core/+ ay by)])
+  ([a b & more]
+   (reduce
+     +
+     (+ a b)
+     more)))
 
 (defn -
   ([[ax ay]]
@@ -53,16 +59,19 @@
   ([p center] (transform-relative p center rotate-right)))
 
 (defn flip-vert "Y axis points down"
-  ([[x y]] [(- x) y])
+  ([[x y]] [(core/- x) y])
   ([p [cx cy]] (transform-relative p [cx 0] flip-vert)))
 
 (defn flip-horiz "Y axis points down"
-  ([[x y]] [x (- y)])
+  ([[x y]] [x (core/- y)])
   ([p [cx cy]] (transform-relative p [0 cy] flip-horiz)))
 
 (defn mult "Vector multiplication by a number: v × n"
   [[x y] n]
   [(* x n) (* y n)])
+
+(defn center [v]
+  (mult v (/ 1 2)))
 
 (defn move [pos dir dist]
   (+ pos (mult dir dist)))
@@ -70,6 +79,15 @@
 (defn manatthan-dist
   ([a b] (manatthan-dist (- a b)))
   ([[^int x ^int y]] (core/+ (abs x) (abs y))))
+
+(defn prod "Scalar product of 2 vectors" [[ux uy] [vx vy]]
+  (core/+ (* ux vx) (* uy vy)))
+
+(defn norm [[x y]]
+  (sqrt (core/+ (* x x) (* y y))))
+
+(defn cos [v u]
+  (/ (prod u v) (* (norm u) (norm v))))
 
 (defn direct-neighbours
   ([[^int x ^int y]]
@@ -240,3 +258,97 @@
              "   █"
              "   █"]
         ))))
+
+
+(deftest add-test
+  (are [in expected] (= expected (apply + in))
+       [[-1 3] [2 -5]] [1 -2]
+       [[-1 3] [0 0]]  [-1 3]
+       [[1 2] [3 4] [5 6]]  [9 12]))
+
+(deftest mult-test
+  (are [v n expected] (= expected (mult v n))
+    [1 2]  0 [0 0]
+    [1 2]  1 [1 2]
+    [1 2]  3 [3 6]
+    [1 2] -1 [-1 -2]))
+
+(deftest rotate-left-absolute-test
+  (are [v rotated] (= rotated (rotate-left v))
+    [ 0  0] [ 0  0]
+    [ 3 -2] [-2 -3]
+    [ 3  2] [ 2 -3]
+    [-3  2] [ 2  3]
+    [-3 -2] [-2  3]))
+
+(deftest rotate-left-relative-test
+  (are [v rotated] (= rotated (rotate-left v [1 1]))
+    [ 0  0] [ 0  2]
+    [ 3 -2] [-2 -1]
+    [ 3  2] [ 2 -1]
+    [-3  2] [ 2  5]
+    [-3 -2] [-2  5]))
+
+(deftest rotate-right-absolute-test
+  (are [rotated v] (= rotated (rotate-right v))
+    [ 0  0] [ 0  0]
+    [ 3 -2] [-2 -3]
+    [ 3  2] [ 2 -3]
+    [-3  2] [ 2  3]
+    [-3 -2] [-2  3]))
+
+(deftest rotate-left-relative-test
+  (are [rotated v] (= rotated (rotate-right v [1 1]))
+    [ 0  0] [ 0  2]
+    [ 3 -2] [-2 -1]
+    [ 3  2] [ 2 -1]
+    [-3  2] [ 2  5]
+    [-3 -2] [-2  5]))
+
+(deftest flip-vert-absolute-test
+  (are [v flipped] (= flipped (flip-vert v))
+    [ 0  0] [ 0  0]
+    [ 3  0] [-3  0]
+    [ 3  3] [-3  3]
+    [ 0  3] [ 0  3]
+    [-3  3] [ 3  3]
+    [-3  0] [ 3  0]
+    [-3 -3] [ 3 -3]
+    [ 0 -3] [ 0 -3]
+    [ 3 -3] [-3 -3]))
+
+(deftest flip-vert-rel-test
+  (are [v flipped] (= flipped (flip-vert v [1 2]))
+    [ 0  0] [ 2  0]
+    [ 3  0] [-1  0]
+    [ 3  3] [-1  3]
+    [ 0  3] [ 2  3]
+    [-3  3] [ 5  3]
+    [-3  0] [ 5  0]
+    [-3 -3] [ 5 -3]
+    [ 0 -3] [ 2 -3]
+    [ 3 -3] [-1 -3]))
+
+(deftest flip-horiz-absolute-test
+  (are [v flipped] (= flipped (flip-horiz v))
+    [ 0  0] [ 0  0]
+    [ 3  0] [ 3  0]
+    [ 3  3] [ 3 -3]
+    [ 0  3] [ 0 -3]
+    [-3  3] [-3 -3]
+    [-3  0] [-3  0]
+    [-3 -3] [-3  3]
+    [ 0 -3] [ 0  3]
+    [ 3 -3] [ 3  3]))
+
+(deftest flip-horiz-absolute-test
+  (are [v flipped] (= flipped (flip-horiz v [1 2]))
+    [ 0  0] [ 0  4]
+    [ 3  0] [ 3  4]
+    [ 3  3] [ 3  1]
+    [ 0  3] [ 0  1]
+    [-3  3] [-3  1]
+    [-3  0] [-3  4]
+    [-3 -3] [-3  7]
+    [ 0 -3] [ 0  7]
+    [ 3 -3] [ 3  7]))
