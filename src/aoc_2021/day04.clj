@@ -115,11 +115,11 @@
   (are [board number expected] (= expected (remove-number-2 board number))
     {:board {0 [0 0], 1 [0 1], 2 [1 0], 3 [1 1]} :completed {}}
     3
-    {:board {0 [0 0], 1 [0 1], 2 [1 0]} :completed {1 1, -1 1}}
+    {:board {0 [0 0], 1 [0 1], 2 [1 0]} :completed {1 1, -2 1}}
 
-    {:board {0 [0 0], 1 [0 1], 2 [1 0]} :completed {1 1, -1 1}}
+    {:board {0 [0 0], 1 [0 1], 2 [1 0]} :completed {1 1, -2 1}}
     1
-    {:board {0 [0 0], 2 [1 0]} :completed {0 1, 1 1, -1 2}}))
+    {:board {0 [0 0], 2 [1 0]} :completed {0 1, 1 1, -2 2}}))
 
 (deftest win-2?-test
   (are [board] (not (win-2? board))

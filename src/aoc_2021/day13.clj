@@ -48,14 +48,13 @@
 ;; tests
 
 (deftest fold-test
-  (are [points axis pos expected] (->> [expected (fold [axis pos] points)] (map #(into #{} %)) (apply =))
+  (are [points axis pos expected] (= (set expected) (set (fold points [axis pos])))
     [[0 0]] :x 0 [[0 0]]
     [[0 0]] :y 0 [[0 0]]
     [[0 1]] :x 0 [[0 1]]
     [[0 1]] :y 0 [[0 -1]]
-    [[0 0]] :x 1 [[2 0]]
+    [[0 0]] :x 1 [[0 0]]
     [[3 4]] :x 2 [[1 4]]
-    [[3 4]] :y 2 [[3 0]]
-    ))
+    [[3 4]] :y 2 [[3 0]]))
 
 (deftest part1-test (part-test part1 17))
