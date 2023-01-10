@@ -30,35 +30,53 @@
            (find-first #(>= (val %) 12))
            key))
 
-(defn overlapping-beacons
-  [scan ref-scan]
+(defn overlapping-scans
+  [ref-scan scan]
   (->> (for [oriented-scan (->> (orientations scan))
              :let [translation (overlapping-translation oriented-scan ref-scan)]
              :when translation]
-         [ref-scan (map #(s3/- % translation) oriented-scan)])
+         [translation (map #(s3/- % translation) oriented-scan)])
        first))
 
-(defn find-overlapping-pair [scans]
+(defn merge-overlapping-pair [scans]
   (-> (for [[a b] (combinations scans 2)
-            :let [[overlap-a overlap-b :as overlap] (overlapping-beacons a b)]
+            :let [[T transformed-a :as overlap] (overlapping-scans b a)]
             :when overlap]
          (conj (filter (complement #{a b}) scans)
-               (into #{} (concat overlap-a overlap-b))))
+               (into #{} (concat transformed-a b))))
       first))
 
 (defn merge-scans [scans]
   (println "Scanners to merge" (count scans))
   (cond (= 1 (count scans)) (first scans)
         (nil? scans) "Error: no overlapping pair found"
-        :else (merge-scans (find-overlapping-pair scans))))
+        :else (merge-scans (merge-overlapping-pair scans))))
 
 (defpart part1 [scans]
   (count (merge-scans scans)))
 
 ;; part 2
 
+(defn find-overlapping-pair [ref-scans scans]
+  (println "find-overlapping-pair" (count ref-scans) "/" (count scans))
+  (first
+    (for [[ref-pos ref-scan] ref-scans, scan scans
+          :let [[T transformed-scan] (overlapping-scans ref-scan scan)]
+          :when T]
+      (do
+        [(assoc ref-scans T transformed-scan) (remove #{scan} scans)]))))
+
+(defn scans-relative-positions
+  ([[ref-scans scans]]
+   (if (empty? scans)
+     (keys ref-scans)
+     (scans-relative-positions
+       (find-overlapping-pair ref-scans scans)))))
+
 (defpart part2 [scans]
-  )
+  (->> (combinations (scans-relative-positions [{[0 0 0] (first scans)} (rest scans)]) 2)
+       (map #(apply s3/manatthan-dist %))
+       (apply max)))
 
 ;; tests
 

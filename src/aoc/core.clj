@@ -574,3 +574,9 @@
 (defn char-offset
   ([origin] (fn [x] (char-offset x origin)))
   ([x origin] (- (int x) (int origin))))
+
+(defn tails [xs]
+  (lazy-seq
+    (if (empty? xs)
+      [[]]
+      (cons xs (lazy-cat (tails (rest xs)))))))

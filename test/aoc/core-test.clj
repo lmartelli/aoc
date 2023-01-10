@@ -202,3 +202,9 @@
   (are [coll pred expected] (= expected (take-until pred coll))
     [] true? nil
     (range) #(= 3 %) [0 1 2 3]))
+
+(deftest tails-test
+  (are [xs expected] (= expected (tails xs))
+    [] [[]]
+    [1] [[1] []]
+    [1 2] [[1 2] [2] []]))
