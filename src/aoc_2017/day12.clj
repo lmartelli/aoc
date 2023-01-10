@@ -2,13 +2,12 @@
   (:require
    [aoc.core :refer :all]
    [clojure.string :refer [split]]
-   [clojure.set :reger [difference]]))
+   [clojure.test :refer :all]))
 
-(puzzle-input-parse-lines
- (fn [line]
-   (let [[left-hand right-hand] (split line #" <-> ")]
-     [(parse-int left-hand) (map parse-int (split right-hand #", "))]))
- #(into {} %))
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (map (comp (juxt first rest) parse-ints))
+       (into {})))
 
 ;; part 1
 
@@ -36,3 +35,7 @@
   (count (groups input)))
 
 ;; tests
+
+(deftest part1-test (part-test part1 6))
+
+(deftest part2-test (part-test part2 2))

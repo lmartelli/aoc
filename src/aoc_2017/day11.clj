@@ -4,7 +4,10 @@
    [clojure.math.numeric-tower :refer [abs]]
    [clojure.string :refer [split]]))
 
-(puzzle-input-string #(map keyword (split % #",")))
+(defn puzzle-input [stream]
+  (->> (first (line-seq stream))
+       (re-seq #"[a-z]+")
+       (map keyword)))
 
 ;; part 1
 

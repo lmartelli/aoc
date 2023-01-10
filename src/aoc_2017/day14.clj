@@ -5,7 +5,8 @@
    [aoc-2017.day12 :refer [groups]]
    [clojure.test :refer :all]))
 
-(puzzle-input-string)
+(defn puzzle-input [stream]
+  (first (line-seq stream)))
 
 ;; part 1
 

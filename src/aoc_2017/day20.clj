@@ -5,16 +5,13 @@
    [clojure.math.numeric-tower :refer [sqrt]]
    [clojure.string :refer [split]]))
 
-(defn parse-vector [str]
-  (as-> (subs str 3 (dec (count str))) <>
-    (split <> #",")
-    (mapv parse-int <>)))
-
-(puzzle-input-split-lines
- #", "
- (fn [vectors]
-   (->> (map parse-vector vectors)
-        (zipmap [:position :velocity :acceleration]))))
+(defn puzzle-input [stream]
+  (->> (line-seq stream)
+       (map (fn [line]
+              (->> (parse-ints line)
+                   (partition 3)
+                   (map vec)
+                   (zipmap [:position :velocity :acceleration]))))))
 
 ;; part 1
 
