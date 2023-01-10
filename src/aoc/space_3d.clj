@@ -7,6 +7,12 @@
    [clojure.string :as str]
    [clojure.test :refer :all]))
 
+(defn parse-point [s]
+  (->> (re-seq #"-?\d+" s)
+       (map parse-int)
+       (take 3)
+       (apply vector)))
+
 (defn + [[ax ay az] [bx by bz]]
   [(core/+ ax bx) (core/+ ay by) (core/+ az bz)])
 
@@ -25,8 +31,8 @@
         [x y (inc z)]
         [x y (dec z)]))
 
-(defn parse-point [s]
-  (->> (re-seq #"-?\d+" s)
-       (map parse-int)
-       (take 3)
-       (apply vector)))
+(defn rotate-x [[x y z]] [x z (core/- y)])
+
+(defn rotate-y [[x y z]] [z y (core/- x)])
+
+(defn rotate-z [[x y z]] [y (core/- x) z])

@@ -1,9 +1,9 @@
 (ns aoc-2021.day19
   (:require
    [aoc.core :refer :all]
+   [aoc.space-3d :as s3]
    [clojure.string :refer [split]]
    [clojure.math.combinatorics :refer [combinations]]
-   [clojure.set :refer [intersection]]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
@@ -14,24 +14,12 @@
 
 ;; part 1
 
-(defn rotate-x [points]
-  (map (fn [[x y z]] [x z (- y)]) points))
-
-(defn rotate-x-2 [points]
-  (map (fn [[x y z]] [x (- y) (- z)]) points))
-
-(defn rotate-y [points]
-  (map (fn [[x y z]] [z y (- x)]) points))
-
-(defn rotate-z [points]
-  (map (fn [[x y z]] [y (- x) z]) points))
-
 (defn orientations [points]
   (->> (reductions
-         (fn [points f] (f points))
+         (fn [points f] (map f points))
          points
-         [rotate-z rotate-z rotate-z rotate-x rotate-x-2])
-       (mapcat #(->> (iterate rotate-y %) (take 4)))))
+         [s3/rotate-z s3/rotate-z s3/rotate-z s3/rotate-x (comp s3/rotate-x s3/rotate-x)])
+       (mapcat #(->> (iterate (partial map s3/rotate-y) %) (take 4)))))
 
 (defn relative-to [origin points]
   (map #(sub % origin) points))
@@ -75,7 +63,6 @@
         (let [found (conj (filter (complement #{a b}) scans)
                           (into #{} (concat overlap-a overlap-b)))]
           (println "Found overlapping pair")
-          ;;(clojure.pprint/pprint found)
           found))
       first))
 
