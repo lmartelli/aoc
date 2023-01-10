@@ -99,9 +99,9 @@
                        (<= y-min y y-max)))))))
 
 (defn all-neighbours [[^int x ^int y]]
-  (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]
-        [(inc x) (inc y)] [(inc x) (dec y)]
-        [(dec x) (inc y)] [(dec x) (dec y)]))
+  [[x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]
+   [(inc x) (inc y)] [(inc x) (dec y)]
+   [(dec x) (inc y)] [(dec x) (dec y)]])
 
 (defn segment-points [[start-pos & other :as points]]
   (lazy-seq
