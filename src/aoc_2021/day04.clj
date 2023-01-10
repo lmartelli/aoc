@@ -6,19 +6,15 @@
 
 (defn build-boards [lines]
   (->> lines
-       (filter #(not (blank? %1)))
-       (map #(parse-int-array (trim %1) " +"))
-       (partition 5)))
+       (split-seq blank?)
+       (map #(map parse-ints %))))
 
 (defn puzzle-input [stream]
-  (let [[rnd-num-line & boards-lines] (line-seq stream)]
-    { :random-numbers (parse-int-array rnd-num-line)
+  (let [[rnd-num-line _ & boards-lines] (line-seq stream)]
+    {:random-numbers (parse-ints rnd-num-line)
      :boards (build-boards boards-lines)}))
 
 ;; part 1
-
-(defn transpose [board]
-  (apply map vector board))
 
 (defn remove-number [board number]
   (map #(remove #{number} %) board))

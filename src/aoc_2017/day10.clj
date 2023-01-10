@@ -6,7 +6,7 @@
 
 (defn puzzle-input [stream]
   (-> (puzzle-input-string stream)
-      parse-int-array))
+      parse-ints))
 
 ;; part 1
 

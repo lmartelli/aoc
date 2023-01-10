@@ -3,13 +3,11 @@
    [aoc.core :refer :all]
    [aoc.space-2d :as s2]
    [aoc.ocr :refer :all]
-   [clojure.string :refer [split]]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
-  (let [lines (line-seq stream)
-        [coords folds] (split-seq empty? lines)]
-    {:coords (into #{} (map parse-int-array  coords))
+  (let [[coords folds] (split-seq empty? (line-seq stream))]
+    {:coords (into #{} (map parse-ints coords))
      :folds (map #(let [[_ axis pos] (re-find #"(x|y)=(\d+)" %)]
                     [(keyword axis) (parse-int pos)])
                  folds)}))

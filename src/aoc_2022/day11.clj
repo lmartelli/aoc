@@ -19,7 +19,7 @@
        (split-seq empty?)
        (map #(str/join "\n" (rest %)))
        (re-parse-lines #".*items: (.*)\n.*new = ([a-z0-9]+) (\+|\*) ([a-z0-9]+)\n.*divisible by (\d+)\n.*true:.*(\d+)\n.*false:.*(\d+)"
-                       #(hash-map :items (parse-int-array %1 ", *")
+                       #(hash-map :items (parse-ints %1)
                                   :update-worryness (update-worryness-fn (map token [%3 %2 %4]))
                                   :divisor (parse-int %5)
                                   :next-monkey-fn (next-monkey-fn (parse-int %5) (parse-int %6) (parse-int %7))))
