@@ -36,9 +36,8 @@
   (apply min-key count col))
 
 (defpart part2 [{:keys [molecule replacements]}]
-  (-> (iterate #(smallest (replace-molecule % (map reverse replacements)))
+  (->> (iterate #(smallest (replace-molecule % (map reverse replacements)))
                molecule)
-      (positions #(= % "e"))
-      first))
+      (first-index #(= % "e"))))
 
 ;; tests

@@ -314,15 +314,6 @@
      {}
      entries)))
 
-(defn positions [col pred]
-  (keep-indexed
-    (fn [index item]
-      (when (pred item) index))
-    col))
-
-(defn first-position [col pred]
-  (first (positions col pred)))
-
 (defn indices [pred col]
   (keep-indexed
     (fn [index item]
