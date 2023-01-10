@@ -188,8 +188,7 @@
    (print-to-lines paper identity x-range y-range))
   ([paper xf x-range y-range]
    (map (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) x-range)
-                     str/join
-                     ))
+                     str/join))
         y-range)))
 
 (defn print [paper & args]

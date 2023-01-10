@@ -27,10 +27,10 @@
   (map (fn [move dir] (assoc move :dir dir))
        moves
        (rest
-        (reductions
-         #(rotate %1 %2)
-         [0 1]
-         (map :turn moves)))))
+         (reductions
+           #(rotate %1 %2)
+           [0 1]
+           (map :turn moves)))))
 
 (defn make-move [pos {:keys [dir dist]}]
   (s2/move pos dir dist))
