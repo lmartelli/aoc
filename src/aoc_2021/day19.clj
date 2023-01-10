@@ -2,7 +2,6 @@
   (:require
    [aoc.core :refer :all]
    [aoc.space-3d :as s3]
-   [clojure.string :refer [split]]
    [clojure.math.combinatorics :refer [combinations]]
    [clojure.test :refer :all]))
 
@@ -14,60 +13,41 @@
 
 ;; part 1
 
+(defn transformation [f]
+  (fn [points] (set (map f points))))
+
 (defn orientations [points]
   (->> (reductions
-         (fn [points f] (map f points))
+         #(%2 %1)
          points
-         [s3/rotate-z s3/rotate-z s3/rotate-z s3/rotate-x (comp s3/rotate-x s3/rotate-x)])
-       (mapcat #(->> (iterate (partial map s3/rotate-y) %) (take 4)))))
+         (map transformation [s3/rotate-z s3/rotate-z s3/rotate-z s3/rotate-x (comp s3/rotate-x s3/rotate-x)]))
+       (mapcat #(->> % (iterate (transformation s3/rotate-y)) (take 4)))))
 
-(defn relative-to [origin points]
-  (map #(sub % origin) points))
-
-(defn relative-to-first [points]
-  (relative-to (first points) points))
-
-(defn relative-to-each [points]
-  (map #(relative-to % points) points))
-
-(defn intersection-count-greater-than-or-equal [a b n]
-  (let [set-a (into #{} a)]
-    (and
-      (>= (count b) n)
-      (reduce
-        (fn [[found remaining] x]
-          (if (set-a x)
-            (if (= (inc found) n)
-              (reduced true)
-              [(inc found) (dec remaining)])
-            (if (< remaining (- n found))
-              (reduced false)
-              [found (dec remaining)])))
-        [0 (dec (count b))]
-        b)
-      )))
+(defn overlapping-translation [scan-a scan-b]
+  (some->> (for [ta scan-a, tb scan-b]
+             (s3/- ta tb))
+           frequencies
+           (find-first #(>= (val %) 12))
+           key))
 
 (defn overlapping-beacons
-  [beacons-a beacons-b]
-  (->> (for [a (->> (orientations beacons-a)
-                    (mapcat #(relative-to-each %)))
-             b (relative-to-each beacons-b)]
-         [a b])
-       (find-first (fn [[a b]] (intersection-count-greater-than-or-equal a b 12)))))
+  [scan ref-scan]
+  (->> (for [oriented-scan (->> (orientations scan))
+             :let [translation (overlapping-translation oriented-scan ref-scan)]
+             :when translation]
+         [ref-scan (map #(s3/- % translation) oriented-scan)])
+       first))
 
 (defn find-overlapping-pair [scans]
   (-> (for [[a b] (combinations scans 2)
-            :let [overlap (overlapping-beacons a b)
-                  [overlap-a overlap-b] overlap]
+            :let [[overlap-a overlap-b :as overlap] (overlapping-beacons a b)]
             :when overlap]
-        (let [found (conj (filter (complement #{a b}) scans)
-                          (into #{} (concat overlap-a overlap-b)))]
-          (println "Found overlapping pair")
-          found))
+         (conj (filter (complement #{a b}) scans)
+               (into #{} (concat overlap-a overlap-b))))
       first))
 
 (defn merge-scans [scans]
-  (println (count scans))
+  (println "Scanners to merge" (count scans))
   (cond (= 1 (count scans)) (first scans)
         (nil? scans) "Error: no overlapping pair found"
         :else (merge-scans (find-overlapping-pair scans))))
@@ -77,20 +57,10 @@
 
 ;; part 2
 
-(defpart part2 [numbers]
+(defpart part2 [scans]
   )
 
 ;; tests
-
-(deftest intersection-count-greater-than-test
-  (are [a b n expected] (= expected (intersection-count-greater-than-or-equal a b n))
-    [1] [2] 1 false
-    [1] [1] 1 true
-    [2 1] [1] 1 true
-    [2 1] [1] 2 false
-    [2 1] [3 1] 1 true
-    [1 2 3 4] [7 5 4 9 1 8 2 6] 3 true
-    ))
 
 (deftest part1-test (part-test part1 79))
 
