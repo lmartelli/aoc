@@ -17,6 +17,14 @@
       (map-indexed (fn [x val] [[x y] val]) row))
     (range) rows))
 
+(defn row-col-and-values-seq
+  "Generates a sequence of [[row col] value] in *reading order* (top-top-bottom, left-to-roght)."
+  [rows]
+  (mapcat
+    (fn [y row]
+      (map-indexed (fn [x val] [[y x] val]) row))
+    (range) rows))
+
 (defn parse-2d-map-positions
   "returns positions of `char` in a 2D map made of rows"
   ([lines] (parse-2d-map-positions lines \#))
@@ -196,6 +204,10 @@
 
 (defn print-maze [wall-positions]
   (print (draw-points \█ wall-positions)))
+
+(defn print-2d-map [rows]
+  (doseq [row rows]
+    (println (str/join row))))
 
 ;; Tests
 

@@ -86,12 +86,10 @@
 (defn string->stream
   ([^String s] (string->stream s "UTF-8"))
   ([^String s ^String encoding]
-   (-> s
-       (.getBytes encoding)
-       (java.io.ByteArrayInputStream.))))
+   (io/reader (.getBytes s encoding))))
 
 (defmacro parse-input-lines [lines]
-  `(~'puzzle-input (string->stream (str/join "\n" lines))))
+  `(~'puzzle-input (string->stream (str/join "\n" ~lines))))
 
 (defmacro my-data []
   `(~'puzzle-input (puzzle-input-stream *ns*)))
@@ -323,6 +321,16 @@
 (defn first-index [pred col]
   (first (indices pred col)))
 
+(defn indices-and-vals [pred col]
+  (keep-indexed
+    (fn [index item]
+      (when (pred item) [index item]))
+    col))
+
+(defn first-index-and-val [pred col]
+  (first (indices-and-vals pred
+                           col)))
+
 (defn range-inc
   ([to] (range-inc 0 to))
   ([from to]
@@ -525,3 +533,9 @@
     (if (empty? xs)
       [[]]
       (cons xs (lazy-cat (tails (rest xs)))))))
+
+(defn scatter [n coll]
+  (map #(->> coll
+             (drop %)
+             (take-nth n))
+       (range n)))

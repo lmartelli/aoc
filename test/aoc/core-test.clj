@@ -115,3 +115,20 @@
     [] [[]]
     [1] [[1] []]
     [1 2] [[1 2] [2] []]))
+
+
+(deftest scatter-test
+  (testing "n=1 → collection itself"
+    (are [coll] (= [coll] (scatter 1 coll ))
+      []
+      [1]
+      [1 2]
+      [1 2 3]))
+  (testing "empty coll → n empty colls"
+    (are [n expected] (= expected (scatter n []))
+      1 [[]]
+      2 [[] []]))
+  (testing "general case"
+    (are [n coll expected] (= expected (scatter n coll))
+      2 (range 5) [[0 2 4] [1 3]]
+      3 (range 9) [[0 3 6] [1 4 7] [2 5 8]])))
