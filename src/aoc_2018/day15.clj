@@ -82,20 +82,6 @@
   (let [targets (get-targets state unit-type)]
     (into (sorted-set) (mapcat #(free-neighbours cave-map %) targets))))
 
-(defn choose-destination [state & {:keys [start destinations]}]
-  (some (:last-visited
-         (algo/explore
-           :start start
-           :neighbours #(free-neighbours (state :cave-map) %)
-           :stop? (some last-visited destinations)))
-        destinations))
-
-(defn get-closest-destination [state unit]
-  (choose-destination
-    state
-    :start (unit :pos)
-    :destinations (get-destinations state (unit :type))))
-
 (defn targets-in-range [state {:keys [pos type] :as unit}]
   (keep #(if-let [target (unit-at state %)]
            (if (not= type (target :type))
@@ -105,13 +91,47 @@
 (defn has-target-in-range? [state unit]
   (not-empty (targets-in-range state unit)))
 
-(defn get-move [state {unit-pos :pos :as unit}]
+(defn build-path [dest visited]
+  (loop [cur dest
+         path (list dest)]
+    (if-let [prev (visited cur)]
+      (recur prev (conj path prev))
+      path)))
+
+(defn min-pos [a b]
+  (cond
+    (nil? a) b
+    (nil? b) a
+    (pos? (compare a b)) b
+     :else a))
+
+(defn bfs-path [&{:keys [start neighbours destinations]}]
+  (loop [last-visited #{start}
+         visited {start nil}]
+    (if-let [dest (some last-visited destinations)]
+      (build-path dest visited)
+      (if (empty? last-visited)
+        nil
+        (recur
+          (set (remove #(contains? visited %) (mapcat neighbours last-visited)))
+          (reduce
+            (fn [new-visited cur-pos]
+              (reduce
+                (fn [new-visited next-pos]
+                  (update new-visited next-pos min-pos cur-pos))
+                new-visited
+                (remove #(contains? visited %) (neighbours cur-pos))))
+            visited
+            last-visited))))))
+
+(defn get-move [state unit]
   (if-not (has-target-in-range? state unit)
-    (if-let [destination (get-closest-destination state unit)]
-      (choose-destination
-        state
-        :start destination
-        :destinations (free-neighbours (state :cave-map) unit-pos)))))
+    (let [destinations (get-destinations state (unit :type))]
+      (if-not (empty? destinations)
+        (some-> (bfs-path :start (unit :pos)
+                          :destinations destinations
+                          :neighbours #(free-neighbours (state :cave-map) %))
+                (nth 1))))))
 
 (defn move [state {:keys [pos type] :as unit} to]
   (let [new-unit (assoc unit :pos to)]
@@ -182,8 +202,8 @@
           (map :hit-points)
           (reduce +))))
 
-(defn battle [init-state]
-  (let [[index final-state]  (first-index-and-val combat-ends?
+(defn battle [init-state & {early-stop? :early-stop? :or {early-stop? (constantly false)}}]
+  (let [[index final-state]  (first-index-and-val (some-fn early-stop? combat-ends?)
                                                   (rounds init-state))
         nb-full-rounds (dec index)]
     {:nb-full-rounds (dec index)
@@ -213,19 +233,13 @@
           3
           (fn [attack-power]
             (println "Trying Elves attack power" attack-power)
-            (battle (init-state input #(if (= % :elf) attack-power 3))))
+            (battle (init-state input #(if (= % :elf) attack-power 3))
+                    :stop? #(< (count-units % :elf) nb-elves)))
           #(= nb-elves (count-units (% :final-state) :elf)))]
     (assoc battle-result :attack-power attack-power)))
 
 (defpart part2 [input]
-  (let [nb-elves (count-units (init-state input) :elf)
-        [attack-power {:keys [nb-full-rounds final-state outcome]}]
-        (algo/find-min-parameter
-          3
-          (fn [attack-power]
-            (println "Trying Elves attack power" attack-power)
-            (battle (init-state input #(if (= % :elf) attack-power 3))))
-          #(= nb-elves (count-units (% :final-state) :elf)))]
+  (let [{:keys [attack-power final-state nb-full-rounds outcome]} (find-min-attack-power input)]
     (println "Elves attack power" attack-power)
     (println "Battle ends after" nb-full-rounds "rounds")
     (print-state final-state)
@@ -270,26 +284,23 @@
     (testing "Units prioritize destinations in reading order"
       (are [target-type expected] (= expected (seq (get-destinations state target-type)))
         :elf [[1 3] [1 5] [2 2] [2 5] [3 1] [3 3]]
-        :goblin [[1 2] [2 1]]))
-    (testing "Units choose destination by distance, then reading order"
-      (are [pos expected] (= expected (get-closest-destination state (at pos)))
-        [1 1] [1 3]
-        [1 4] [1 2]
-        [3 2] [1 2]
-        [3 5] nil))
-    (testing "Unit with an enemy in range does not move"
-      (let [state (test-state ["...."
-                               ".GE."
-                               "...."])]
-        (are [pos] (nil? (get-move state (unit-at state pos)))
-          [1 1]
-          [1 2])))
-    (testing "Units move 1 step to get closer to their destination, prioritizing by reading order"
-      (are [pos expected] (= expected (get-move state (at pos)))
-        [1 1] [1 2]
-        [1 4] [1 3]
-        [3 2] [2 2]
-        [3 5] nil))))
+        :goblin [[1 2] [2 1]])))
+  (testing "Unit with an enemy in range does not move"
+    (let [state (test-state ["...."
+                             ".GE."
+                             "...."])]
+      (are [pos] (nil? (get-move state (unit-at state pos)))
+        [1 1]
+        [1 2])))
+  (testing "Units move 1 step to get closer to it's target, prioritizing by reading order"
+    (let [state (test-state ["E....."
+                             "....."
+                             "G.E.G"])]
+      (are [unit-pos expected] (= expected (get-move state (unit-at state unit-pos)))
+        [2 2] [2 1]
+        [2 0] [1 0]
+        [2 4] [2 3]
+        [0 0] [1 0]))))
 
 (deftest attack-test
   (testing "A unit does not attack if it has no target in range"
@@ -515,3 +526,24 @@
      "#.....G.#       #.......#   "
      "#########       #########   "]
     1140)) 
+
+(deftest bfs-path-test
+  (testing "Single path"
+    (are [start destinations expected]
+        (= expected (bfs-path :start start :destinations destinations :neighbours s2/direct-neighbours))
+      [0 0] [[0 0]] [[0 0]]
+      [0 0] [[0 1]] [[0 0] [0 1]]
+      [0 0] [[0 2]] [[0 0] [0 1] [0 2]]))
+  (testing "Prefer reading order if multiple directions are available"
+    (are [start destinations expected]
+        (= expected (bfs-path :start start :destinations destinations :neighbours s2/direct-neighbours))
+      [0 0] [[1 1]] [[0 0] [0 1] [1 1]]
+      [0 0] [[-1 -1]] [[0 0] [-1 0] [-1 -1]]
+      [0 0] [[1 2]] [[0 0] [0 1] [0 2] [1 2]]))
+  (testing "Choose 1st destination in the list"
+    (are [start destinations expected]
+        (= expected (bfs-path :start start :destinations destinations :neighbours s2/direct-neighbours))
+      [0 0] [[0 2] [2 0]] [[0 0] [0 1] [0 2]]
+      [0 0] [[2 0] [0 2]] [[0 0] [1 0] [2 0]]))
+  (testing "Returns nil if no destination is reachable"
+    (is (nil? (bfs-path :start [0 0] :destinations [[1 1] [2 2]] :neighbours (constantly []))))))
