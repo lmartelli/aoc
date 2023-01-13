@@ -1,5 +1,7 @@
 (ns aoc.algo
   (:require
+   [aoc.core :refer [remove-keys multimap-invert]]
+   [clojure.set :refer [map-invert]]
    [clojure.test :refer :all]))
 
 (def ^:dynamic *debug* false)
@@ -156,7 +158,56 @@
           (remove (fn [[vertice neighbours]] (or (empty? neighbours) (= nil-vertice vertice))))
           (into {})))))
 
+(defn- unique-mappings
+  "Returns s submap of the multimap, for which keys have a single value"
+  [multimap]
+  (persistent!
+    (reduce
+      (fn [m [k [v & more]]]
+        (if (nil? more)
+          (assoc! m k v)
+          m))
+      (transient {})
+      multimap)))
+
+(defn- filter-mappings
+  [multimap resolved-keys resolved-vals]
+  "Remove values present in `resolved-val` and keys present in `resolved-keys`"
+  (-> multimap
+      (update-vals #(if (> (count %) 1) (remove resolved-vals %) %))
+      (remove-keys resolved-keys)))
+
+(defn resolve-bijection
+  "Given `mm`, a multimap k → vs of possible values for `(m x)`,
+  find a bijection `m` such that `(m k)` is in `(mm k)`.
+  Returns nil if no such bijection can be deduced."
+  [mm]
+  (loop [bijection {}
+         k->vs mm
+         v->ks (multimap-invert mm)]
+    (if (= (count mm) (count bijection))
+      bijection
+      (let [new-unique-keys (merge
+                             (unique-mappings k->vs)
+                             (map-invert (unique-mappings v->ks)))]
+        (if (empty? new-unique-keys)
+          nil
+          (let [bijection (merge bijection new-unique-keys)
+                v->k (map-invert bijection)]
+        (recur
+          bijection
+          (filter-mappings k->vs bijection v->k)
+          (filter-mappings v->ks v->k bijection))))))))
+
 ;; Tests
+
+(deftest resolve-bijection-test
+  (testing "Bijection can be deduced"
+    (are [input expected] (= expected (resolve-bijection input))
+      {1 [2]} {1 2}
+      {1 [:a], 2 [:a :b], 3 [:a :c]} {1 :a, 2 :b, 3 :c}))
+  (testing "Bijection cannot be deduced"
+    (is (nil? (resolve-bijection {1 [:a :b], 2 [:a :b]})))))
 
 (deftest find-min-test
   (are [start] (= [36 1296] (find-min-parameter start #(* % %) #(>= % 1234)))

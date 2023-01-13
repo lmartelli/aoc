@@ -73,6 +73,11 @@
        (if (nil? suffix) "" (str "_" suffix))
        ".input")))))
 
+(defmacro def-input-parser [[arg] & body]
+  `(defn ~'puzzle-input [~'stream]
+     (as-> (line-seq ~'stream) ~arg
+       ~@body)))
+
 (defmacro test-input
   "Gets an input stream for the test data of puzzle of the current namespace
   (from file test/aoc_<year>/day<day>[_<suffix>].input)"
@@ -303,15 +308,6 @@
 (defn get-wrap [v index]
   (get v (mod index (count v))))
 
-(defn multimap
-  ([entries] (multimap entries nil))
-  ([entries empty-coll]
-   (reduce
-     (fn [m [key value]]
-       (update m key (fnil conj empty-coll) value))
-     {}
-     entries)))
-
 (defn indices [pred col]
   (keep-indexed
     (fn [index item]
@@ -385,17 +381,49 @@
 (defn contains [x]
   (fn [s] (contains? s x)))
 
-(defn map-vals
-  [f m] (into {} (map (fn [[k v]] [k (f v)]) m)))
+;; TODO: used clojure.core/update-vals
+(defn map-vals [f m]
+  (into {} (map (fn [[k v]] [k (f v)]) m)))
 
-(defn map-keys
-  [f m] (into {} (map (fn [[k v]] [(f k) v]) m)))
+;; TODO: used clojure.core/update-keys
+(defn map-keys [f m]
+  (into {} (map (fn [[k v]] [(f k) v]) m)))
+
+(defn remove-keys [m pred]
+  (-> (reduce
+        (fn [m k]
+          (if (pred k)
+            (dissoc! m k)
+            m))
+        (transient m)
+        (keys m))
+      persistent!))
 
 (defn filter-vals
   [pred m] (into {} (filter (fn [[k v]] (pred v)) m)))
 
-;; vector
+;; multimaps
 
+(defn multimap
+  ([entries] (multimap entries nil))
+  ([entries empty-coll]
+   (persistent!
+     (reduce
+       (fn [m [key value]]
+         (update! m key (fnil conj empty-coll) value))
+       (transient {})
+       entries))))
+
+(defn multimap-invert
+  ([m] (multimap-invert m '()))
+  ([m empty-coll]
+   (multimap
+     (mapcat (fn [[k vs]]
+               (map #(vector % k) vs))
+             m)
+     empty-coll)))
+
+;; vector
 
 (defn remove-index [v index]
   (vec

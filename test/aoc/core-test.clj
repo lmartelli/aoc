@@ -34,8 +34,14 @@
            (puzzle-input-filename "2017" "9")))))
 
 (deftest multimap-test
-  (is (= {:a '(3 1), :b '(2)}
-         (multimap [[:a 1] [:b 2] [:a 3]]))))
+  (testing "Creation"
+    (is (= {:a [3 1], :b [2]}
+           (multimap [[:a 1] [:b 2] [:a 3]])))
+    (is (= {:a #{1 2 3 4 5}, :b #{2}}
+           (multimap [[:a 1] [:a 5] [:b 2] [:a 3] [:a 2] [:a 4] [:a 1]] #{}))))
+  (testing "Inverting"
+    (is (= {1 #{1 2}, 2 #{1 4}, 3 #{2 4}, 7 #{3}, 5 #{4}}
+           (multimap-invert {1 [1 2], 2 [1 3], 3 [7], 4 [2 3 5]} #{})))))
 
 (deftest array-2d-to-map-test
   (is (= {[0 0] \1, [1 0] \2, [2 0] \3, [0 1] \a, [1 1] \b, [2 1] \c}
@@ -132,3 +138,8 @@
     (are [n coll expected] (= expected (scatter n coll))
       2 (range 5) [[0 2 4] [1 3]]
       3 (range 9) [[0 3 6] [1 4 7] [2 5 8]])))
+
+(deftest remove-keys-test
+  (are [m pred expected] (= expected (remove-keys m pred))
+    {1 :a, 2 :b, 3 :c} odd? {2 :b}
+    {1 :a, 2 :b, 3 :c} even? {1 :a, 3 :c}))
