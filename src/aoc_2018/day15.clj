@@ -91,46 +91,14 @@
 (defn has-target-in-range? [state unit]
   (not-empty (targets-in-range state unit)))
 
-(defn build-path [dest visited]
-  (loop [cur dest
-         path (list dest)]
-    (if-let [prev (visited cur)]
-      (recur prev (conj path prev))
-      path)))
-
-(defn min-pos [a b]
-  (cond
-    (nil? a) b
-    (nil? b) a
-    (pos? (compare a b)) b
-     :else a))
-
-(defn bfs-path [&{:keys [start neighbours destinations]}]
-  (loop [last-visited #{start}
-         visited {start nil}]
-    (if-let [dest (some last-visited destinations)]
-      (build-path dest visited)
-      (if (empty? last-visited)
-        nil
-        (recur
-          (set (remove #(contains? visited %) (mapcat neighbours last-visited)))
-          (reduce
-            (fn [new-visited cur-pos]
-              (reduce
-                (fn [new-visited next-pos]
-                  (update new-visited next-pos min-pos cur-pos))
-                new-visited
-                (remove #(contains? visited %) (neighbours cur-pos))))
-            visited
-            last-visited))))))
-
 (defn get-move [state unit]
   (if-not (has-target-in-range? state unit)
     (let [destinations (get-destinations state (unit :type))]
       (if-not (empty? destinations)
-        (some-> (bfs-path :start (unit :pos)
-                          :destinations destinations
-                          :neighbours #(free-neighbours (state :cave-map) %))
+        (some-> (algo/bfs-path :start (unit :pos)
+                               :destinations destinations
+                               :neighbours #(free-neighbours (state :cave-map) %)
+                               :pred-choice :min)
                 (nth 1))))))
 
 (defn move [state {:keys [pos type] :as unit} to]
@@ -526,24 +494,3 @@
      "#.....G.#       #.......#   "
      "#########       #########   "]
     1140)) 
-
-(deftest bfs-path-test
-  (testing "Single path"
-    (are [start destinations expected]
-        (= expected (bfs-path :start start :destinations destinations :neighbours s2/direct-neighbours))
-      [0 0] [[0 0]] [[0 0]]
-      [0 0] [[0 1]] [[0 0] [0 1]]
-      [0 0] [[0 2]] [[0 0] [0 1] [0 2]]))
-  (testing "Prefer reading order if multiple directions are available"
-    (are [start destinations expected]
-        (= expected (bfs-path :start start :destinations destinations :neighbours s2/direct-neighbours))
-      [0 0] [[1 1]] [[0 0] [0 1] [1 1]]
-      [0 0] [[-1 -1]] [[0 0] [-1 0] [-1 -1]]
-      [0 0] [[1 2]] [[0 0] [0 1] [0 2] [1 2]]))
-  (testing "Choose 1st destination in the list"
-    (are [start destinations expected]
-        (= expected (bfs-path :start start :destinations destinations :neighbours s2/direct-neighbours))
-      [0 0] [[0 2] [2 0]] [[0 0] [0 1] [0 2]]
-      [0 0] [[2 0] [0 2]] [[0 0] [1 0] [2 0]]))
-  (testing "Returns nil if no destination is reachable"
-    (is (nil? (bfs-path :start [0 0] :destinations [[1 1] [2 2]] :neighbours (constantly []))))))
