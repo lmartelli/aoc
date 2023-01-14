@@ -143,3 +143,9 @@
   (are [m pred expected] (= expected (remove-keys m pred))
     {1 :a, 2 :b, 3 :c} odd? {2 :b}
     {1 :a, 2 :b, 3 :c} even? {1 :a, 3 :c}))
+
+(deftest with-default-test
+  (let [m (with-default {:a 1} :default)]
+    (are [k expected] (= expected (m k))
+      :a 1
+      :missing :default)))

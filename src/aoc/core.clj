@@ -6,7 +6,8 @@
    [clojure.math.numeric-tower :refer [abs sqrt]]
    [clj-http.client :as http]
    [clojure.core.async :as async :refer [poll!]]
-   [clojure.pprint :refer [cl-format]]))
+   [clojure.pprint :refer [cl-format]]
+   [potemkin :as p]))
 
 ;; puzzle input downloading
 
@@ -567,3 +568,16 @@
              (drop %)
              (take-nth n))
        (range n)))
+
+(p/def-map-type MapWithDefault [m map-default]
+  (get [_ k default-value]
+       (get m k map-default))
+  (assoc [_ k v]
+         (MapWithDefault. (assoc m k v) map-default))
+  (dissoc [_ k]
+          (MapWithDefault. (dissoc m k) map-default))
+  (keys [_]
+        (keys m)))
+
+(defn with-default [m default]
+  (MapWithDefault. m default))

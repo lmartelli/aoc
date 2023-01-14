@@ -3,8 +3,8 @@
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(defn puzzle-input [stream]
-  (puzzle-input-string stream))
+(def-input-parser [lines]
+  lines)
 
 ;; part 1
 

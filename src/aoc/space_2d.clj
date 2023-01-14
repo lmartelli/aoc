@@ -145,6 +145,7 @@
      paper
      points)))
 
+;; TODO: rename to draw-lines
 (defn draw-segments [paper ink points]
   (draw-points paper ink (segment-points points)))
 
@@ -154,12 +155,9 @@
 (defn draw-polygon [paper ink vertices]
   (draw-points paper ink (polygon-points vertices)))
 
+;; TODO: remove and use draw-segments (it's the same)
 (defn draw-segment [paper ink [from to]]
-  (reduce
-   (fn [paper pos]
-     (assoc paper pos ink))
-   paper
-   (segment-points [from to])))
+  (draw-points paper ink (segment-points [from to])))
 
 (defn box [[x1 y1] [x2 y2]]
   [[x1 y1] [x2 y1] [x2 y2] [x1 y2]])
