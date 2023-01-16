@@ -149,3 +149,19 @@
     (are [k expected] (= expected (m k))
       :a 1
       :missing :default)))
+
+(deftest split-line-blocks-test
+  (are [rows expected] (= expected (split-line-blocks rows))
+    ["a"] [["a"]]
+    ["a b"] [["a"] ["b"]]
+    ["a b"
+     "c d"] [["a"
+              "c"]
+             ["b"
+              "d"]]
+    ["12 a"
+     "34 b"] [["12"
+               "34"]
+              ["a"
+               "b"]]
+    ))

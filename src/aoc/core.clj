@@ -581,3 +581,11 @@
 
 (defn with-default [m default]
   (MapWithDefault. m default))
+
+(defn split-line-blocks
+  "Split lines into blocks of lines. Seperation is made on blank columns"
+  [rows]
+  (->> rows
+       transpose
+       (split-seq (comp str/blank? str/join))
+       (map (comp #(map str/join %) transpose))))

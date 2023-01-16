@@ -32,7 +32,11 @@
                 (apply conj ~'visited ~'new-positions)
                 (inc ~'nb-steps))))))
 
-(defn find-cycle [seq]
+(defn find-cycle
+  "Finds a cycle in an iterated sequence.
+
+  Returns a map with :start-pos :start-value and :length."
+  [seq]
   (loop [visited {}
          pos 0
          [current & more] seq]
@@ -41,6 +45,23 @@
        :start-value current
        :length (- pos start)}
       (recur (assoc visited current pos)
+             (inc pos)
+             more))))
+
+(defn nth-cycling-iteration
+  "Gets the `n` element in an iterated sequence that cycles"
+  [seq n]
+  (loop [visited {}
+         indexed []
+         pos 0
+         [current & more] seq]
+    (if-let [start (visited current)]
+      (indexed (+ start
+                  (-> n
+                      (- start)
+                      (mod (- pos start)))))
+      (recur (assoc visited current pos)
+             (conj indexed current)
              (inc pos)
              more))))
 
