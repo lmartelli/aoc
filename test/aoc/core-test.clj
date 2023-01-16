@@ -163,5 +163,10 @@
      "34 b"] [["12"
                "34"]
               ["a"
-               "b"]]
-    ))
+               "b"]]))
+
+(deftest vector-as-map-test
+  (are [v m] (= m (vector-as-map v))
+    [] {}
+    [:a] {0 :a}
+    [:a :b] {0 :a, 1 :b}))

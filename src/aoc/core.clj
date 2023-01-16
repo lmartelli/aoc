@@ -589,3 +589,10 @@
        transpose
        (split-seq (comp str/blank? str/join))
        (map (comp #(map str/join %) transpose))))
+
+(defn vector-as-map [vec]
+  (-> (reduce-kv
+        (fn [m i v] (assoc! m i v))
+        (transient {})
+        vec)
+      persistent!))

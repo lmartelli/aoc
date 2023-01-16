@@ -17,9 +17,12 @@
       (cons (keyword op)
             (map parse-arg args)))))
 
+(defn parse-prog [lines]
+  (mapv parse-instr lines))
+
 (defn puzzle-input [stream]
   (->> (line-seq stream)
-       (mapv parse-instr)))
+       parse-prog))
 
 (defmacro defop
   "Defines a function with an implicit 1st param `{:keys [registers last-freq]}`"
@@ -109,7 +112,7 @@
   Last value is when :ip is out of bounds.
   If provided, `stop?` must be a function of [registers instr],
   and allows to stop execution before normal termination."
-  [registers prog instr-set &{:keys [stop?] :or {stop? (constantly false)}}]
+  [registers prog instr-set &{:keys [stop? step-instr] :or {stop? (constantly false), step-instr step-instr}}]
   (->> (iterate #(step-instr % prog instr-set) (merge {:ip 0} registers))
        (take-until #(or (terminated? % prog)
                         (stop? % (prog (% :ip)))))))
@@ -117,24 +120,28 @@
 (defn trace-instr-and-registers
   "Returns sequence of [instr registers] until program terminates.
   Last value is when :ip is out of bounds."
-  [registers prog instr-set]
-  (->> (trace-registers registers prog instr-set)
+  [registers prog instr-set & {:keys [step-instr] :or {step-instr step-instr} :as options}]
+  (->> (trace-registers registers prog instr-set options)
        (map (juxt #(prog (:ip %)) identity))))
 
 (defn trace-instr
   "Returns sequence of instr executed until program terminates.
   Last value is when :ip is out of bounds."
-  [registers prog instr-set]
-  (->> (trace-registers registers prog instr-set)
+  [registers prog instr-set {:keys [step-instr] :or {step-instr step-instr} :as options}]
+  (->> (trace-registers registers prog instr-set options)
        (take-while #(not (terminated? % prog)))
        (map #(prog (:ip %)))))
 
 (defn run-prog
   "Terminates when IP points out of the program.
    If provided, `stop?` must be a function of [registers instr],
-   and allows to stop execution before normal termination."
-  ([registers prog instr-set &{:keys [stop?] :or {stop? (constantly false)}}]
-   (last (trace-registers (merge {:ip 0} registers) prog instr-set :stop? stop?))))
+   and allows to stop execution before normal termination.
+
+  If provided, `step-instr` should be a function of 3 arguments (`[registers prog instr-set]`)
+  that returns updated registers after execution of next instruction."
+  [registers prog instr-set &{:keys [stop? step-instr] :or {stop? (constantly false), step-instr step-instr} :as options}]
+  (last
+    (trace-registers (merge {:ip 0} registers) prog instr-set options)))
 
 ;; tests
 
