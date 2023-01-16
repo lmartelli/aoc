@@ -10,7 +10,7 @@
                  [org.clojure/data.json "0.2.7"]
                  [org.clojure/tools.namespace "1.3.0"]
                  [potemkin "0.4.6"]
-                 [quil "2.5.0"]
+                 [quil "3.1.0"]
                  [clj-http "3.10.0"]
                  [instaparse "1.4.10"]]
   :main ^:skip-aot aoc.core
