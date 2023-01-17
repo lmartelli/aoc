@@ -97,6 +97,18 @@
 (defn cos [v u]
   (/ (prod u v) (* (norm u) (norm v))))
 
+(defn north [[x y]]
+  [x (dec y)])
+
+(defn south [[x y]]
+  [x (inc y)])
+
+(defn east [[x y]]
+  [(inc x) y])
+
+(defn west [[x y]]
+  [(dec x) y])
+
 (defn direct-neighbours
   ([[^int x ^int y]]
    (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]))

@@ -154,6 +154,31 @@
               predecessors
               last-visited)))))))
 
+(defn bfs-max-steps
+  "Finds the number of steps to reach farthest node in a graph.
+  See also [[tree-depth]]"
+  [&{:keys [start neighbours]}]
+  (loop [last-visited #{start}
+         nb-steps 0]
+    (if (empty? last-visited)
+      (dec nb-steps)
+      (recur
+        (set (remove last-visited (mapcat neighbours last-visited)))
+        (inc nb-steps)))))
+
+(defn tree-depth
+  "`children` should be a map node -> childen
+  `root` is the node from which to compute the depth.
+  See also [[bfs-max-steps]]"
+  [&{:keys [root children]}]
+  (loop [last-visited [root]
+         depth 0]
+    (if (empty? last-visited)
+      (dec depth)
+      (recur
+        (mapcat children last-visited)
+        (inc depth)))))
+
 (defn make-adjacency-graph
   ([rows] (make-adjacency-graph rows nil))
   ([rows nil-vertice]
