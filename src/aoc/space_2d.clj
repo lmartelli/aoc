@@ -8,6 +8,14 @@
    [clojure.string :as str]
    [clojure.test :refer :all]))
 
+(defn positions-in-rect
+  "Enumerates [x y] positions inside a rectangle, from the top left to the bottom right,
+  in /reading order/ (left to right, top to bottom. x varies first)"
+  [[x1 y1] [x2 y2]]
+  (for [y (range-inc y1 y2)
+        x (range-inc x1 x2)]
+    [x y]))
+
 (defn pos-and-values-seq
   "Generates a sequence of [[x y] value] from a seq of seq (rows).
   Y axis is pointing down."
@@ -109,6 +117,11 @@
 (defn west [[x y]]
   [(dec x) y])
 
+(def up north)
+(def down south)
+(def left west)
+(def right east)
+
 (defn direct-neighbours
   ([[^int x ^int y]]
    (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]))
@@ -197,6 +210,8 @@
         :nb-steps)))
 
 (defn print-to-lines
+  "`paper is a map [x y] -> value`
+  `xf` produces transforms values into printable chars."
   ([paper] (print-to-lines paper identity))
   ([paper xf]
    (let [positions (keys paper)
