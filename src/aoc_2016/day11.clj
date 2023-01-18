@@ -44,15 +44,6 @@
   (mapcat (fn [n] (combinations items n))
           (range-inc (or min 0) (or max (count items)))))
 
-(defn loadable-seq [items]
-  (->> (subsets (to-seq items) :min 1 :max 2)
-       (map to-items)
-       (filter items-valid?)
-       (filter #(items-valid? (remove-items items %)))))
-
-(defn add-items [items-a items-b]
-  (merge-with into items-a items-b))
-
 (defn normalize-items [items]
   (reduce
    (fn [items empty-key]
@@ -64,6 +55,15 @@
 (defn remove-items [items removed-items]
   (-> (merge-with set/difference items removed-items)
       normalize-items))
+
+(defn loadable-seq [items]
+  (->> (subsets (to-seq items) :min 1 :max 2)
+       (map to-items)
+       (filter items-valid?)
+       (filter #(items-valid? (remove-items items %)))))
+
+(defn add-items [items-a items-b]
+  (merge-with into items-a items-b))
 
 (defn next-states [{:keys [floors floor] :as state}]
   (for [loaded (loadable-seq (floors floor))
