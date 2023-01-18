@@ -9,6 +9,7 @@
                  [org.clojure/core.async "0.6.532"]
                  [org.clojure/data.json "0.2.7"]
                  [org.clojure/tools.namespace "1.3.0"]
+                 [criterium "0.4.6"]
                  [potemkin "0.4.6"]
                  [quil "3.1.0"]
                  [clj-http "3.10.0"]

@@ -390,6 +390,7 @@
 (defn map-keys [f m]
   (into {} (map (fn [[k v]] [(f k) v]) m)))
 
+;; TODO: swap parameters
 (defn remove-keys [m pred]
   (-> (reduce
         (fn [m k]
@@ -399,6 +400,19 @@
         (transient m)
         (keys m))
       persistent!))
+
+(defn remove-kv [pred m]
+  (-> (reduce-kv
+        (fn [m k v]
+          (if (pred k v)
+            (dissoc! m k)
+            m))
+        (transient m)
+        m)
+      persistent!))
+
+(defn filter-kv [pred m]
+  (remove-kv (complement pred) m))
 
 (defn filter-vals
   [pred m] (into {} (filter (fn [[k v]] (pred v)) m)))

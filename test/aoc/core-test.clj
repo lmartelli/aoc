@@ -52,7 +52,7 @@
          (array-2d-to-map #(not= \space %) {\# :on \. :off} ["#.#" ".#."]))))
 
 (deftest split-seq-test
-  (are [seq pred expected] (= expected (split-seq seq pred))
+  (are [seq pred expected] (= expected (split-seq pred seq))
     [1 2 3] nil? [[1 2 3]]
     ["a" "b" "" "c" "d"] empty? [["a" "b"] ["c" "d"]]))
 
@@ -144,6 +144,14 @@
     {1 :a, 2 :b, 3 :c} odd? {2 :b}
     {1 :a, 2 :b, 3 :c} even? {1 :a, 3 :c}))
 
+(deftest remove-kv-test
+  (are [m pred expected] (= expected (remove-kv pred m))
+    {1 :a, 2 :b, 3 :c} (fn [k v] (= [k v] [2 :b])) {1 :a, 3 :c}))
+
+(deftest filter-kv-test
+  (are [m pred expected] (= expected (filter-kv pred m))
+    {1 :a, 2 :b, 3 :c} (fn [k v] (= [k v] [2 :b])) {2 :b}))
+
 (deftest with-default-test
   (let [m (with-default {:a 1} :default)]
     (are [k expected] (= expected (m k))
@@ -170,3 +178,4 @@
     [] {}
     [:a] {0 :a}
     [:a :b] {0 :a, 1 :b}))
+
