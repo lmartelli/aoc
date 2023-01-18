@@ -201,13 +201,13 @@
   ([paper xf]
    (let [positions (keys paper)
          [x-range y-range] (x-and-y-ranges positions)]
-     (print-to-lines paper xf (apply range-inc x-range) (apply range-inc y-range))))
+     (print-to-lines paper xf x-range y-range)))
   ([paper x-range y-range]
    (print-to-lines paper identity x-range y-range))
   ([paper xf x-range y-range]
-   (map (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) x-range)
+   (map (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) (apply range-inc x-range))
                      str/join))
-        y-range)))
+        (apply range-inc y-range))))
 
 (defn print [paper & args]
   (run! println (apply print-to-lines paper args)))
