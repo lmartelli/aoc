@@ -122,7 +122,6 @@
     [1] [[1] []]
     [1 2] [[1 2] [2] []]))
 
-
 (deftest scatter-test
   (testing "n=1 → collection itself"
     (are [coll] (= [coll] (scatter 1 coll ))
@@ -140,7 +139,7 @@
       3 (range 9) [[0 3 6] [1 4 7] [2 5 8]])))
 
 (deftest remove-keys-test
-  (are [m pred expected] (= expected (remove-keys m pred))
+  (are [m pred expected] (= expected (remove-keys pred m))
     {1 :a, 2 :b, 3 :c} odd? {2 :b}
     {1 :a, 2 :b, 3 :c} even? {1 :a, 3 :c}))
 

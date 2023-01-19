@@ -391,8 +391,7 @@
 (defn map-keys [f m]
   (into {} (map (fn [[k v]] [(f k) v]) m)))
 
-;; TODO: swap parameters
-(defn remove-keys [m pred]
+(defn remove-keys [pred m]
   (-> (reduce
         (fn [m k]
           (if (pred k)

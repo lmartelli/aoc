@@ -219,9 +219,9 @@
 (defn- filter-mappings
   [multimap resolved-keys resolved-vals]
   "Remove values present in `resolved-val` and keys present in `resolved-keys`"
-  (-> multimap
-      (update-vals #(if (> (count %) 1) (remove resolved-vals %) %))
-      (remove-keys resolved-keys)))
+  (as-> multimap $
+      (update-vals $ #(if (> (count %) 1) (remove resolved-vals %) %))
+      (remove-keys resolved-keys $)))
 
 (defn resolve-bijection
   "Given `mm`, a multimap k → vs of possible values for `(m x)`,
