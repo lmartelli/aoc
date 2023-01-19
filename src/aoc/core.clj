@@ -423,7 +423,11 @@
   (remove-kv (complement pred) m))
 
 (defn filter-vals
-  [pred m] (into {} (filter (fn [[k v]] (pred v)) m)))
+  "Filter entries of a map by keeping only those that match `pred`.
+  Returns a hash map.
+  `pred` must take 1 argument : the value"
+  [pred m]
+  (filter-kv (fn [k v] (pred v)) m))
 
 ;; multimaps
 
