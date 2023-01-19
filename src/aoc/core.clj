@@ -383,12 +383,20 @@
 (defn contains [x]
   (fn [s] (contains? s x)))
 
-;; TODO: used clojure.core/update-vals
-(defn map-vals [f m]
+(defn map-vals
+  "Updates the values of a map.
+  `f` must take 1 arg : the value.
+  Same as [[update-vals]] but arguments in different order
+  See also [[map-keys]]"
+  [f m]
   (into {} (map (fn [[k v]] [k (f v)]) m)))
 
-;; TODO: used clojure.core/update-keys
-(defn map-keys [f m]
+(defn map-keys
+  "Updates the keys of a map.
+  `f` must take 1 arg : the key.
+  Same as [[update-keys]] but arguments in different order
+  See also [[map-vals]]"
+  [f m]
   (into {} (map (fn [[k v]] [(f k) v]) m)))
 
 (defn remove-keys [pred m]
