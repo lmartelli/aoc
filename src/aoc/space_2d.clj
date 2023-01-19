@@ -136,6 +136,16 @@
 
 (def direction-fns-with-diags [north north-east east south-east south south-west west north-west])
 
+(def direction-vectors
+  {:north [0 -1]
+   :south [0 1]
+   :east [1 0]
+   :west [-1 0]
+   :north-east [1 -1]
+   :north-west [-1 -1]
+   :south-east [1 1]
+   :south-west [-1 1]})
+
 (defn direct-neighbours
   ([[^int x ^int y]]
    (list [x (inc y)] [x (dec y)] [(inc x) y] [(dec x) y]))
