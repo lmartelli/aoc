@@ -64,9 +64,9 @@
 
 (defn spells-event [state event spells]
   (reduce (spell-event event) state spells))
-  
+
 (defn update-timers [{:keys [active-spells] :as state}]
-  (let [aged-spells (map-vals dec active-spells)]
+  (let [aged-spells (update-vals active-spells dec)]
     (-> state
         (spells-event :expire (keys (filter (comp zero? val) aged-spells)))
         (assoc :active-spells (filter-vals pos? aged-spells)))))
