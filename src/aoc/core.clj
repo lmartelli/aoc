@@ -390,9 +390,9 @@
   "Updates the values of a map.
   `f` must take 1 arg : the value.
   Same as [[update-vals]] but arguments in different order
-  See also [[map-keys]]"
+  See also [[map-keys]], [[map-vals-kv]]"
   [f m]
-  (into {} (map (fn [[k v]] [k (f v)]) m)))
+  (update-vals m f))
 
 (defn map-vals-kv
   "Same as [[map-vals]] but `f` is invoked with key and value."
@@ -410,7 +410,7 @@
   Same as [[update-keys]] but arguments in different order
   See also [[map-vals]]"
   [f m]
-  (into {} (map (fn [[k v]] [(f k) v]) m)))
+  (update-keys m f))
 
 (defn remove-keys [pred m]
   (-> (reduce
