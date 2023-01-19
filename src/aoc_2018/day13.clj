@@ -92,6 +92,12 @@
 
 ;; part 2
 
+(defn printable-state [carts tracks]
+  (s2/print-to-lines (merge (map-vals first carts) tracks)))
+
+(defn print-state [carts tracks]
+  (run! println (printable-state carts tracks)))
+
 (defn tick2 [carts tracks]
   (-> (reduce
         (fn [[carts collisions] [pos :as cart]]
@@ -120,6 +126,6 @@
 
 ;; tests
 
-(deftest part1-test (part-test part1 "7,3"))
+(deftest part1-test (part-test part1 "1" "7,3"))
 
-(deftest part2-test (part-test part1 "6,4"))
+(deftest part2-test (part-test part2 "2"" 6,4"))
