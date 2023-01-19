@@ -336,6 +336,9 @@
      (range from (inc to))
      (range to (inc from)))))
 
+(defn range-inc? [[min max] x]
+  (<= min x max))
+
 (defn expand-bag [bag]
   (mapcat (fn [[k v]] (repeat v k)) bag))
 
@@ -390,6 +393,16 @@
   See also [[map-keys]]"
   [f m]
   (into {} (map (fn [[k v]] [k (f v)]) m)))
+
+(defn map-vals-kv
+  "Same as [[map-vals]] but `f` is invoked with key and value."
+  [f m]
+  (-> (reduce-kv
+        (fn [m k v]
+          (assoc! m k (f k v)))
+        (transient m)
+        m)
+      persistent!))
 
 (defn map-keys
   "Updates the keys of a map.

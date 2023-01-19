@@ -117,10 +117,24 @@
 (defn west [[x y]]
   [(dec x) y])
 
+(defn north-east [[x y]]
+  [(inc x) (dec y)])
+
+(defn north-west [[x y]]
+  [(dec x) (dec y)])
+
+(defn south-east [[x y]]
+  [(inc x) (inc y)])
+
+(defn south-west [[x y]]
+  [(dec x) (inc y)])
+
 (def up north)
 (def down south)
 (def left west)
 (def right east)
+
+(def direction-fns-with-diags [north north-east east south-east south south-west west north-west])
 
 (defn direct-neighbours
   ([[^int x ^int y]]

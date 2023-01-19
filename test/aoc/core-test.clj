@@ -96,6 +96,28 @@
     0 1 [0 1]
     0 2 [0 1 2]))
 
+(deftest range-inc?-test
+  (are [range x expected] (= expected (range-inc? range x))
+    [0 0] ##-Inf false
+    [0 0] -1 false
+    [0 0] 0 true
+    [0 0] 1 false
+    [0 0] ##Inf false
+    [0 1] ##-Inf false
+    [0 1] -1 false
+    [0 1] 0 true
+    [0 1] 1 true
+    [0 1] 2 false
+    [0 1] ##Inf false
+    [0 2] ##-Inf false
+    [0 2] -1 false
+    [0 2] 0 true
+    [0 2] 1 true
+    [0 2] 2 true
+    [0 2] 3 false
+    [0 2] ##Inf false
+    ))
+
 (deftest parse-points-test
   (are [s expected] (= expected (parse-points s))
     "" []
