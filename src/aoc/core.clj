@@ -180,8 +180,9 @@
   [bits]
   (parse-binary (apply str bits)))
 
-(defn parse-ints [s]
-  (mapv parse-int (re-seq #"-?\d+" s)))
+(defn parse-ints
+  ([s] (mapv parse-int (re-seq #"-?\d+" s)))
+  ([s f] (apply f (parse-ints s))))
 
 (defn parse-pos-ints [s]
   (mapv parse-int (re-seq #"\d+" s)))
