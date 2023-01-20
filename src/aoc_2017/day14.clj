@@ -6,8 +6,8 @@
    [aoc-2017.day12 :refer [groups]]
    [clojure.test :refer :all]))
 
-(defn puzzle-input [stream]
-  (first (line-seq stream)))
+(def-input-parser [lines]
+  (first lines))
 
 ;; part 1
 
@@ -27,18 +27,13 @@
 
 ;; part 2
 
-(defn neighbours [coord]
-  (map
-   #(s2/+ coord %)
-   [[0 1] [0 -1] [1 0] [-1 0]]))
-
 (defn build-adjacency-map [bitmap]
   (let [used (->> bitmap
                   (array-2d-to-map #{\1})
                   keys
                   set)]
     (->> used
-         (map #(vector % (filter used (neighbours %))))
+         (map #(vector % (filter used (s2/direct-neighbours %))))
          (into {}))))
 
 (defpart part2 [input]
@@ -50,5 +45,8 @@
 
 ;; tests
 
-(deftest neighbours-test
-  (is (= #{[2 7] [4 7] [3 6] [3 8]} (set (neighbours [3 7])))))
+(deftest part1-test
+  (is (= 8108 (part1 "flqrgnkx"))))
+
+(deftest part2-test
+  (is (= 1242 (part2 "flqrgnkx"))))
