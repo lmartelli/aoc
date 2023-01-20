@@ -27,10 +27,10 @@
 
 ;; tests
 
-(def test-data [16,1,2,0,4,2,7,1,2,14])
+(def data (parse-input-lines ["16,1,2,0,4,2,7,1,2,14"]))
 
 (deftest part1-test
-  (is (= 37 (part1 test-data))))
+  (is (= 37 (part1 data))))
 
 (deftest part2-test
-  (is (= 168 (part2 test-data))))
+  (is (= 168 (part2 data))))

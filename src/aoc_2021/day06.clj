@@ -37,10 +37,10 @@
 
 ;; tests
 
-(def test-data (init-population [3 4 3 1 2]))
+(def test-population (parse-input-lines ["3,4,3,1,2"]))
 
 (deftest part1-test
-  (is (= 5934 (part1 test-data))))
+  (is (= 5934 (part1 test-population))))
 
 (deftest part2-test
-  (is (= 26984457539 (part2 test-data))))
+  (is (= 26984457539 (part2 test-population))))
