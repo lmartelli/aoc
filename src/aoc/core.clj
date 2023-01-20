@@ -128,6 +128,12 @@
         str/join
         xf)))
 
+(defmacro defpart [name args & body]
+  `(def ~name
+     (fn
+       ([] (~name (my-data)))
+       (~args ~@body))))
+
 (defn re-parse [s regex f]
   (apply f (rest (or (re-find regex s) (throw (Exception. (str "Regex " regex " does not match: ``" s "''")))))))
 
@@ -168,32 +174,6 @@
    (puzzle-input-split-lines stream regex xf-line identity))
   ([stream regex]
    (puzzle-input-split-lines stream regex identity)))
-
-(defn parse-int
-  ([s] (Long/parseLong s))
-  ([s radix] (Long/parseLong s radix)))
-
-(defn parse-int-or-keyword
-  [s] (if (letter? (first s)) (keyword s) (parse-int s)))
-
-(defn parse-binary [s] (parse-int s 2))
-
-(defn bits-to-int
-  "Converts a sequence of bits to an integer"
-  [bits]
-  (parse-binary (apply str bits)))
-
-(defn parse-ints
-  ([s] (mapv parse-int (re-seq #"-?\d+" s)))
-  ([s f] (apply f (parse-ints s))))
-
-(defn parse-pos-ints [s]
-  (mapv parse-int (re-seq #"\d+" s)))
-
-(defn parse-points [s]
-  (->> (parse-ints s)
-       (partition 2)
-       (map vec)))
 
 (defn split-input [str regex xf]
   (->> (str/split str regex)
@@ -264,6 +244,32 @@
   [s]
   (mapv digit s))
 
+(defn parse-int
+  ([s] (Long/parseLong s))
+  ([s radix] (Long/parseLong s radix)))
+
+(defn parse-int-or-keyword
+  [s] (if (letter? (first s)) (keyword s) (parse-int s)))
+
+(defn parse-binary [s] (parse-int s 2))
+
+(defn bits-to-int
+  "Converts a sequence of bits to an integer"
+  [bits]
+  (parse-binary (apply str bits)))
+
+(defn parse-ints
+  ([s] (mapv parse-int (re-seq #"-?\d+" s)))
+  ([s f] (apply f (parse-ints s))))
+
+(defn parse-pos-ints [s]
+  (mapv parse-int (re-seq #"\d+" s)))
+
+(defn parse-points [s]
+  (->> (parse-ints s)
+       (partition 2)
+       (map vec)))
+
 (defn remove-nil [& colls]
   (apply map #(remove nil? %) colls))
 
@@ -272,12 +278,6 @@
     (if-let [val (poll! channel)]
       (recur (conj v val))
       v)))
-
-(defmacro defpart [name args & body]
-  `(def ~name
-     (fn
-       ([] (~name (my-data)))
-       (~args ~@body))))
 
 (defn array-2d-to-map
   "Converts a 2D array (a seq of seqs) to a map [x y] -> value.
@@ -528,6 +528,11 @@
     (if (= -1 index)
       nil
       index)))
+
+(defn starts-with? [seq sub-seq]
+  (and (>= (count seq) (count sub-seq))
+       (->> (map = seq sub-seq)
+            (not-any? false?))))
 
 (defn merge-lines
   ([separator empty-value merge-fn lines]

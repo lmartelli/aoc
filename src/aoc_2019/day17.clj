@@ -84,11 +84,6 @@
    (partition 2)
    (mapv #(join "," %))))
 
-(defn starts-with? [v v1]
-  (let [l (count v1)]
-    (and (<= l (count v))
-         (= (subvec v 0 l) v1))))
-
 (defn starts-with-any? 
   "Returns a used-sub-path-key or nil."
   [path sub-paths]
@@ -182,20 +177,6 @@
             [2 2] \#
             [0 3] \> [1 3] \# [2 3] \#}
            @m))))
-
-(deftest starts-with?-test
-  (are [v prefix] (starts-with? v prefix)
-    [0 1 2 3 4] [0]
-    [0 1 2 3 4] [0 1]
-    [0 1 2 3 4] [0 1 2]
-    [0 1 2 3 4] [0 1 2 3]
-    [0 1 2 3 4] [0 1 2 3 4])
-  (are [v prefix] (not (starts-with? v prefix))
-    [0 1 2 3 4] [9]
-    [0 1 2 3 4] [0 1 9]
-    [0 1 2 3 4] [0 1 2 9]
-    [0 1 2 3 4] [0 1 2 3 9]
-    [0 1 2 3 4] [0 1 2 3 4 9]))
 
 (deftest length-valid?-test
   (are [path] (length-valid? path)

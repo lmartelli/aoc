@@ -18,6 +18,14 @@
 
 ;; tests
 
-(deftest part1-test)
+(deftest part1-test
+  (test-with-lines
+    part1
+    [""]
+    expected))
 
-(deftest part2-test)
+(deftest part2-test
+  (test-with-lines
+    part2
+    [""]
+    expected))
