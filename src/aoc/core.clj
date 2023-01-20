@@ -383,7 +383,7 @@
 (defn max-val [m]
   (val (apply max-key val m)))
 
-(defn bin [ints]
+(defn bytes->bin [ints]
   (apply str (map #(cl-format nil "~8,'0',B" %) ints)))
 
 (defn range-width [coll]

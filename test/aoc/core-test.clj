@@ -200,3 +200,9 @@
     [:a] {0 :a}
     [:a :b] {0 :a, 1 :b}))
 
+
+(deftest bytes->bin-test
+  (are [bytes expected] (= expected (bytes->bin bytes))
+    [] ""
+    [129] "10000001"
+    [129 17] "1000000100010001"))

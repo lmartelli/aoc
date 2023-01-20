@@ -16,7 +16,7 @@
    (fn [key]
      (->> (range 128)
           (map #(str key "-" %))
-          (map (comp bin knot-hash))))))
+          (map (comp bytes->bin knot-hash))))))
    
 (defpart part1 [input]
   (->> input
