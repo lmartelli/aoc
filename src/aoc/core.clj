@@ -173,6 +173,9 @@
   ([s] (Long/parseLong s))
   ([s radix] (Long/parseLong s radix)))
 
+(defn parse-int-or-keyword
+  [s] (if (letter? (first s)) (keyword s) (parse-int s)))
+
 (defn parse-binary [s] (parse-int s 2))
 
 (defn bits-to-int
@@ -216,6 +219,22 @@
       (empty? remaining) (conj splitted current)
       (pred (first remaining)) (recur (conj splitted current) [] (rest remaining))
       :else (recur splitted (conj current (first remaining)) (rest remaining)))))
+
+;; math
+
+(defn square [n]
+  (* n n ))
+
+(defn multiple?
+  "Is `n` a multiple of `m` ?.
+  With one arg `m`, returns a function that tells if an integer is a multiple of `m`
+  (partial application of the 2nd arg)"
+  ([n m]
+   (zero? (mod n m)))
+  ([m] (fn [n] (multiple? n m))))
+
+(defn congruent? [a b n]
+  (= (mod a n) (mod b n)))
 
 ;; misc
 
@@ -375,14 +394,6 @@
 (defn eq [x]
   (fn [y] (= x y)))
 
-(defn square [n]
-  (* n n ))
-
-(defn multiple?
-  "Is n a multiple of m ?"
-  [n m]
-  (zero? (mod n m)))
-
 (defn contains [x]
   (fn [s] (contains? s x)))
 
@@ -441,6 +452,16 @@
   `pred` must take 1 argument : the value"
   [pred m]
   (filter-kv (fn [k v] (pred v)) m))
+
+(defn associate
+  "Builds a map of k → (f k)"
+  [f keys]
+  (-> (reduce
+        (fn [m k]
+          (assoc! m k (f k)))
+        (transient {})
+        keys)
+      persistent!))
 
 ;; multimaps
 
