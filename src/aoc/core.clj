@@ -109,9 +109,9 @@
   ([part suffix expected]
    `(is (= ~expected (~part (~'puzzle-input (test-input ~suffix)))))))
 
-(defmacro def-part-test [part expected]
-  `(deftest ~(symbol (str part "-test"))
-     (is (= ~expected (~part (~'puzzle-input (test-input)))))))
+(defmacro test-with-lines [part & inputs-and-expected]
+  `(are [~'lines ~'expected] (= ~'expected (~part (parse-input-lines ~'lines)))
+      ~@inputs-and-expected))
 
 (defmacro part-tests [part expectations]
   `(are [input-num expected] (= expected (~part (~'puzzle-input (test-input input-num))))
@@ -219,6 +219,14 @@
       (empty? remaining) (conj splitted current)
       (pred (first remaining)) (recur (conj splitted current) [] (rest remaining))
       :else (recur splitted (conj current (first remaining)) (rest remaining)))))
+
+;; string manipulations
+
+(defn tr [s replacements]
+  (->> s
+       (map (fn [c]
+              (or (replacements c) c)))
+       str/join))
 
 ;; math
 
@@ -385,6 +393,9 @@
 
 (defn bytes->bin [ints]
   (apply str (map #(cl-format nil "~8,'0',B" %) ints)))
+
+(defn format-bin [n num-bits]
+  (cl-format nil (str "~" num-bits ",'0',B") n))
 
 (defn range-width [coll]
   (if (empty? coll)

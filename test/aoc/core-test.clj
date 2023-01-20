@@ -200,9 +200,21 @@
     [:a] {0 :a}
     [:a :b] {0 :a, 1 :b}))
 
+(deftest tr-test
+  (are [s replacements expected] (= expected (tr s replacements))
+    "abc" {} "abc"
+    "abc" {\a \X} "Xbc"
+    "aba"  {\a \X} "XbX"
+    "abc" {\a 1, \b 2} "12c"))
 
 (deftest bytes->bin-test
   (are [bytes expected] (= expected (bytes->bin bytes))
     [] ""
     [129] "10000001"
     [129 17] "1000000100010001"))
+
+(deftest format-bin-test
+  (are [n len expected] (= expected (format-bin n len))
+    3 4 "0011"
+    3 8 "00000011"
+    254 8 "11111110"))
