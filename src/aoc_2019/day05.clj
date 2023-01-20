@@ -2,8 +2,8 @@
   (:require
    [aoc.core :refer :all]))
 
-(defn puzzle-input [stream]
-  (puzzle-input-int-array stream))
+(def-input-parser [[line]]
+  (parse-ints line))
 
 (defn get-digit ^long [n pos]
   (mod (reduce quot n (repeat (dec pos) 10)) 10))

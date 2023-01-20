@@ -4,8 +4,8 @@
    [clojure.math.numeric-tower :refer [abs]]
    [clojure.test :refer :all]))
 
-(defn puzzle-input [stream]
-  (puzzle-input-int-array stream))
+(def-input-parser [[line]]
+  (parse-ints line))
 
 ;; part 1
 

@@ -195,9 +195,6 @@
        (partition 2)
        (map vec)))
 
-(defn puzzle-input-int-array [stream]
-  (parse-ints (puzzle-input-string stream)))
-
 (defn split-input [str regex xf]
   (->> (str/split str regex)
        (map xf)))

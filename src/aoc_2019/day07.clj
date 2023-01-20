@@ -4,8 +4,8 @@
    [aoc-2019.day05 :refer [op-code param-mode debug set-debug]]
    [clojure.pprint :refer [pprint]]))
 
-(defn puzzle-input [stream]
-  (puzzle-input-int-array stream))
+(def-input-parser [[line]]
+  (parse-ints line))
 
 ;; part 1
 

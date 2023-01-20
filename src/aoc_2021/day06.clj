@@ -7,9 +7,8 @@
   (let [p (frequencies input)]
        (mapv #(get p %1 0) (range 9))))
 
-(defn puzzle-input [stream]
-  (-> (puzzle-input-int-array stream)
-      init-population))
+(def-input-parser [[line]]
+  (init-population (parse-ints line)))
 
 ;; part 1
 
