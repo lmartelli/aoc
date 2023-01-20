@@ -30,7 +30,7 @@
 
 (defn advance [robot]
   (let [dir (robot :dir)]
-    (update robot :pos add dir)))
+    (update robot :pos s2/+ dir)))
 
 (defn move-robot [robot instr]
   (-> robot
@@ -63,44 +63,18 @@
 
 ;; part 2
 
-(defn boundaries [coordinates]
-  (reduce
-   (fn [boundaries coord]
-     (-> boundaries
-         (update :left min (coord 0))
-         (update :right max (coord 0))
-         (update :top min (coord 1))
-         (update :bottom max (coord 1))))
-   {:left ##Inf, :right ##-Inf, :top ##Inf, :bottom ##-Inf}
-   coordinates))
-
-(defn paint-black-panel [panels [[x y] color]]
-  (assoc-in panels [y x] \#))
-
-(defn display-panels [lines]
-  (map #(apply str %) lines))
-
 (defn init-panels [width height]
   (vec (repeat height (vec (repeat width \space)))))
 
-(defn find-top-left [painted ])
-
 (defn paint-panels [painted-panels]
-  (let [black-panels (filter #(= 1 (val %)) painted-panels)
-        {top :top left :left bottom :bottom right :right} (boundaries (keys black-panels))
-        origin [left top]
-        width (inc (- right left))
-        height (inc (- bottom top))]
-    (reduce
-     paint-black-panel
-     (init-panels width height)
-     (map #(update % 0 sub origin) black-panels))))
+  (s2/print-to-lines painted-panels {0 \space, 1 \#}))
 
 (defpart part2 [input]
-  (-> (run-robot input 1)
-      :painted-panels
-      paint-panels
-      ocr))
+  (->> (run-robot input 1)
+       :painted-panels
+       (filter-vals (eq 1))
+       paint-panels
+       ocr))
 
 ;; tests
 
@@ -112,26 +86,5 @@
   (are [robot instr expected] (= expected (move-robot robot instr))
     {:pos [0 0] :dir [0 1]} 0 {:pos [1 0] :dir [1 0]}))
 
-(deftest boundaries-test
-  (is (= {:left -3 :right 2 :top -5 :bottom 4}
-         (boundaries [[1 2] [0 0] [-1 4] [2 -5] [-3 -3] [-3 -5]]))))
-
 (deftest init-panels-test
   (is (= [[\space \space \space] [\space \space \space]] (init-panels 3 2))))
-
-(deftest paint-panel-test
-  (let [init (init-panels 4 3)
-        = (fn [a b] (clojure.core/= a (display-panels b)))]
-    (is (= ["    "
-            "    "
-            "    "]
-           (display-panels (paint-panel init [[2 2] 0]))))
-    (is (= ["#   "
-            "    "
-            "    "]
-           (display-panels (paint-panel init [[0 0] 1]))))
-    (is (= ["    "
-            "  # "
-            "    "]
-           (display-panels (paint-panel init [[2 1] 1]))))
-    ))
