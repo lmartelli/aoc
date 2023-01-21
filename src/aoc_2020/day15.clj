@@ -8,33 +8,27 @@
 
 ;; part 1
 
-(defn turn [{:keys [turn last-spoken last-spoken-indices]}]
-  (let [spoken (- turn (get last-spoken-indices last-spoken turn))]
-    {:turn (inc turn)
-     :last-spoken spoken
-     :last-spoken-indices (assoc last-spoken-indices last-spoken turn)}))
-
-(defn state-seq [starting-numbers]
-  (iterate
-    turn
-    {:turn (dec (count starting-numbers))
-     :last-spoken (last starting-numbers)
-     :last-spoken-indices (zipmap (butlast starting-numbers) (range))}))
-
-(defn spoken-numbers [starting-numbers]
-  (concat
-    starting-numbers
-    (->> (state-seq starting-numbers)
-         (map :last-spoken)
-         (drop 1))))
+(defn nth-spoken-number [starting-numbers n]
+  (let [last-spoken-turns (int-array  (inc (apply max n starting-numbers)) -1)]
+    (dorun (map-indexed #(aset-int last-spoken-turns %2 (inc %1)) (butlast starting-numbers)))
+    (loop [turn (count starting-numbers)
+           last-spoken (int (last starting-numbers))]
+      (if (= turn n)
+        last-spoken
+        (let [last-spoken-turn (aget last-spoken-turns last-spoken)
+              spoken (if (= -1 last-spoken-turn) 0 (- turn last-spoken-turn))]
+          (aset-int last-spoken-turns last-spoken turn)
+          (recur
+            (inc turn)
+            spoken))))))
 
 (defpart part1 [starting-numbers]
-  (nth (spoken-numbers starting-numbers) (dec 2020)))
+  (nth-spoken-number starting-numbers 2020))
 
 ;; part 2
 
 (defpart part2 [starting-numbers]
-  (nth (spoken-numbers starting-numbers) (dec 30000000)))
+  (nth-spoken-number starting-numbers 30000000))
 
 ;; tests
 
@@ -53,5 +47,3 @@
     ["2,3,1"] 78
     ["3,2,1"] 438
     ["3,1,2"] 1836))
-
-(deftest part2-test)
