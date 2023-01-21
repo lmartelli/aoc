@@ -1,7 +1,7 @@
 (ns aoc.algo
   (:require
-   [aoc.core :refer [remove-keys multimap-invert]]
-   [clojure.set :refer [map-invert]]
+   [aoc.core :refer [remove-keys multimap multimap-invert map-vals]]
+   [clojure.set :refer [map-invert intersection]]
    [clojure.test :refer :all]))
 
 (def ^:dynamic *debug* false)
@@ -244,6 +244,14 @@
           bijection
           (filter-mappings k->vs bijection v->k)
           (filter-mappings v->ks v->k bijection))))))))
+
+(defn resolve-bijection-from-samples
+  "`samples` is a sequence of [key [val1 val2 ...]]."
+  [samples]
+  (->> samples
+       multimap
+       (map-vals (comp #(reduce intersection %) #(map set %)))
+       resolve-bijection))
 
 ;; Tests
 

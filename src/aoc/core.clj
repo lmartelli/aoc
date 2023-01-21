@@ -455,11 +455,16 @@
   (remove-kv (complement pred) m))
 
 (defn filter-vals
-  "Filter entries of a map by keeping only those that match `pred`.
-  Returns a hash map.
-  `pred` must take 1 argument : the value"
+  "Filter entries of a map by keeping only those whose val matches `pred`.
+  Returns a hash map."
   [pred m]
   (filter-kv (fn [k v] (pred v)) m))
+
+(defn filter-keys
+  "Filter entries of a map by keeping only those whose key matches `pred`.
+  Returns a hash map."
+  [pred m]
+  (filter-kv (fn [k v] (pred k)) m))
 
 (defn associate
   "Builds a map of k → (f k)"
