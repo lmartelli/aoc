@@ -48,13 +48,10 @@
 (defn sample-opcode [{[code] :instr :as sample}]
   code)
 
-(defn mappings-code->names [samples]
-  (-> (group-by sample-opcode samples)
-      (update-vals #(->> (map (comp set instr-matches) %)
-                         (reduce intersection)))))
-
 (defn resolve-op-codes [samples]
-  (algo/resolve-bijection (mappings-code->names samples)))
+  (algo/resolve-bijection-from-samples
+    (->> samples
+         (map (juxt sample-opcode instr-matches)))))
 
 (defpart part2 [{:keys [samples program]}]
   (let [op-codes (update-keys instruction-set (map-invert (resolve-op-codes samples)))]
