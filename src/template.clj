@@ -22,10 +22,10 @@
   (test-with-lines
     part1
     [""]
-    expected))
+    nil))
 
 (deftest part2-test
   (test-with-lines
     part2
     [""]
-    expected))
+    nil))
