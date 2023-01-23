@@ -34,7 +34,7 @@
     (range) rows))
 
 (defn parse-2d-map-positions
-  "returns positions of `char` in a 2D map made of rows"
+  "returns positions of `char` (# by default) in a 2D map made of rows"
   ([lines] (parse-2d-map-positions lines \#))
   ([lines char]
    (mapcat
@@ -85,6 +85,11 @@
 (defn mult "Vector multiplication by a number: v × n"
   [[x y] n]
   [(* x n) (* y n)])
+
+(defn relative-to-min "Translate points so that x-min = y-min = 0 "
+  [points]
+  (let [[[x-min] [y-min]] (x-and-y-ranges points)]
+    (map #(- % [x-min y-min]) points)))
 
 (defn center [v]
   (mult v (/ 1 2)))
@@ -208,6 +213,27 @@
 (defn draw-segment [paper ink [from to]]
   (draw-points paper ink (segment-points [from to])))
 
+(defn draw-line [paper ink from to]
+  (draw-points paper ink (segment-points [from to])))
+
+(defn draw-matrix [paper top-left m]
+  (->> (pos-and-values-seq m)
+       (map (fn [[pos v]]
+              [(+ top-left pos) v]))
+       (into paper)))
+
+(defn draw-text [paper top-left text]
+  (draw-matrix paper top-left [text]))
+
+(defn draw-box [paper [x1 y1 :as top-left] [x2 y2 :as bottom-right]]
+  (-> paper
+      (draw-line \━ [x1 y1] [x2 y1])
+      (draw-line \━ [x1 y2] [x2 y2])
+      (draw-line \┃ [x1 y1] [x1 y2])
+      (draw-line \┃ [x2 y1] [x2 y2])
+      (assoc [x1 y1] \┏ [x2 y1] \┓
+             [x1 y2] \┗ [x2 y2] \┛)))
+
 (defn box [[x1 y1] [x2 y2]]
   [[x1 y1] [x2 y1] [x2 y2] [x1 y2]])
 
@@ -218,6 +244,9 @@
        (apply min-max (remove nil? [y-max y-min y]))])
     [[] []]
     positions))
+
+(defn width-and-height [positions]
+  (map #(inc (abs (apply core/- %))) (x-and-y-ranges positions)))
 
 (defn outter-box [positions]
   (let [[[x-min x-max] [y-min y-max]] (x-and-y-ranges positions)]
@@ -235,7 +264,7 @@
 
 (defn print-to-lines
   "`paper is a map [x y] -> value`
-  `xf` produces transforms values into printable chars."
+  `xf` transforms values into printable chars."
   ([paper] (print-to-lines paper identity))
   ([paper xf]
    (let [positions (keys paper)
@@ -248,6 +277,20 @@
                      str/join))
         (apply range-inc y-range))))
 
+(defn print-to-matrix
+  "`paper is a map [x y] -> value`
+  `xf` transforms values."
+  ([paper] (print-to-matrix paper identity))
+  ([paper xf]
+   (let [positions (keys paper)
+         [x-range y-range] (x-and-y-ranges positions)]
+     (print-to-matrix paper xf x-range y-range)))
+  ([paper x-range y-range]
+   (print-to-matrix paper identity x-range y-range))
+  ([paper xf x-range y-range]
+   (map (fn [y] (mapv (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) (apply range-inc x-range)))
+        (apply range-inc y-range))))
+
 (defn print [paper & args]
   (run! println (apply print-to-lines paper args)))
 
@@ -257,6 +300,12 @@
 (defn print-2d-map [rows]
   (doseq [row rows]
     (println (str/join row))))
+
+(defn get-corners [m]
+  (let [[x-range y-range] (x-and-y-ranges (keys m))]
+    (for [x x-range
+          y y-range]
+      (m [x y]))))
 
 ;; Tests
 
@@ -412,3 +461,20 @@
     [-3 -3] [-3  7]
     [ 0 -3] [ 0  7]
     [ 3 -3] [ 3  7]))
+
+(deftest width-and-height-test
+  (are [points expected] (= expected (width-and-height (parse-2d-map-positions points)))
+    ["#"] [1 1]
+    ["..."
+     ".#."
+     "..."] [1 1]
+    ["...#"
+     ".#.."
+     "#..."] [4 3]
+    ))
+
+(deftest relative-to-min-test
+  (are [points expected] (= expected (relative-to-min points))
+    [[0 0] [0 1]] [[0 0] [0 1]]
+    [[4 5] [2 1]] [[2 4] [0 0]]
+    [[4 5] [-2 -1]] [[6 6] [0 0]]))

@@ -630,8 +630,9 @@
 (defn direction [from to]
   (signum (- to from)))
 
+;; TOOD: use aoc.matrix
 (defn transpose [rows]
-  (apply map vector rows))
+  (apply mapv vector rows))
 
 (defn truncate [n v]
   (subvec v 0 n))
