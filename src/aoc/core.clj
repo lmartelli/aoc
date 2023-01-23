@@ -113,6 +113,12 @@
   `(are [~'lines ~'expected] (= ~'expected (~part (parse-input-lines ~'lines)))
       ~@inputs-and-expected))
 
+(defmacro test-with-file
+  ([part expected]
+   `(is (= ~expected (~part (~'puzzle-input (test-input))))))
+  ([part suffix expected]
+   `(is (= ~expected (~part (~'puzzle-input (test-input ~suffix)))))))
+
 (defmacro part-tests [part expectations]
   `(are [input-num expected] (= expected (~part (~'puzzle-input (test-input input-num))))
      ~@expectations))
@@ -248,10 +254,21 @@
   ([s] (Long/parseLong s))
   ([s radix] (Long/parseLong s radix)))
 
-(defn parse-int-or-keyword
-  [s] (if (letter? (first s)) (keyword s) (parse-int s)))
+(def int-regex #"-?\d+")
 
-(defn parse-binary [s] (parse-int s 2))
+(defn parse-int-or [f s]
+  (if (re-matches int-regex s)
+    (parse-int s)
+    (f s)))
+
+(defn parse-int-or-string [s]
+  (parse-int-or identity s))
+
+(defn parse-int-or-keyword [s]
+  (if (letter? (first s)) (keyword s) (parse-int s)))
+
+(defn parse-binary [s]
+  (parse-int s 2))
 
 (defn bits-to-int
   "Converts a sequence of bits to an integer"
@@ -259,7 +276,7 @@
   (parse-binary (apply str bits)))
 
 (defn parse-ints
-  ([s] (mapv parse-int (re-seq #"-?\d+" s)))
+  ([s] (mapv parse-int (re-seq int-regex s)))
   ([s f] (apply f (parse-ints s))))
 
 (defn parse-pos-ints [s]
