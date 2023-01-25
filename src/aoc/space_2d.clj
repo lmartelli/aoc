@@ -86,11 +86,6 @@
   [[x y] n]
   [(* x n) (* y n)])
 
-(defn relative-to-min "Translate points so that x-min = y-min = 0 "
-  [points]
-  (let [[[x-min] [y-min]] (x-and-y-ranges points)]
-    (map #(- % [x-min y-min]) points)))
-
 (defn center [v]
   (mult v (/ 1 2)))
 
@@ -247,6 +242,11 @@
 
 (defn width-and-height [positions]
   (map #(inc (abs (apply core/- %))) (x-and-y-ranges positions)))
+
+(defn relative-to-min "Translate points so that x-min = y-min = 0 "
+  [points]
+  (let [[[x-min] [y-min]] (x-and-y-ranges points)]
+    (map #(- % [x-min y-min]) points)))
 
 (defn outter-box [positions]
   (let [[[x-min x-max] [y-min y-max]] (x-and-y-ranges positions)]

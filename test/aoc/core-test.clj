@@ -232,3 +232,13 @@
     [0 1 2 3 4] [0 1 2 9]
     [0 1 2 3 4] [0 1 2 3 9]
     [0 1 2 3 4] [0 1 2 3 4 9]))
+
+(deftest distinct-by-test
+  (are [coll f expected] (= expected (distinct-by f coll))
+    (range 10) #(mod % 3) [0 1 2]
+    [{:id 1 :name "x"}
+     {:id 2 :name "y"}
+     {:id 3 :name "x"}]
+    :name
+     [{:id 1 :name "x"}
+      {:id 2 :name "y"}]))

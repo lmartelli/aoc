@@ -5,7 +5,7 @@
    [quil.core :as q]
    [quil.middleware :as m]
    [quil.navigation-2d :as n2d]
-   [clojure.set :refer :all]
+   [clojure.set :refer :all :exclude [index]]
    [clojure.spec.alpha :as s]
    [clojure.spec.test.alpha :as stest]
    [clojure.test :refer :all]))

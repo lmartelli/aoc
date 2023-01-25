@@ -18,45 +18,12 @@
 
 (def borders
   (memoize
-    (fn [rows]
-      (let [transposed (m/transpose rows)]
-        {:up (str/join (first rows))
-         :down (str/join (peek rows))
+    (fn [tile-data]
+      (let [transposed (m/transpose tile-data)]
+        {:up (str/join (first tile-data))
+         :down (str/join (peek tile-data))
          :left (str/join (first transposed))
          :right (str/join (peek transposed))}))))
-
-(defn match-borders [ref-tile other-tile]
-  (when-let [matched (first
-                     (for [[ref-side ref-border] (borders ref-tile)
-                           [other-side other-border] (borders other-tile)
-                           :when (= ref-border other-border)]
-                       (do
-                         #_(println "border match" ref-side other-side ref-border)
-                         [ref-side other-side])))]
-    (let [[dir T]
-          (case matched
-            [:right :left ] [[1  0] identity]
-            [:right :up   ] [[1  0] m/transpose]
-            [:right :right] [[1  0] m/flip-cols]
-            [:right :down ] [[1  0] m/rotate-right]
-            [:left  :right] [[-1 0] identity]
-            [:left  :down ] [[-1 0] m/transpose]
-            [:left  :left ] [[-1 0] m/flip-cols]
-            [:left  :up   ] [[-1 0] m/rotate-right]
-            [:down  :up   ] [[0  1] identity]
-            [:down  :right] [[0  1] m/rotate-left]
-            [:down  :down ] [[0  1] m/flip-rows]
-            [:down  :left ] [[0  1] m/transpose]
-            [:up    :down ] [[0 -1] identity]
-            [:up    :left ] [[0 -1] m/rotate-left]
-            [:up    :up   ] [[0 -1] m/flip-rows]
-            [:up    :right] [[0 -1] m/transpose])]
-      [dir (T other-tile)])))
-
-(defn match-tiles [ref-tile other-tile]
-  (->> (map (fn [T] (T other-tile))
-            [identity m/flip-rows m/flip-cols])
-       (some #(match-borders ref-tile %))))
 
 (defn print-tile [data]
   (run! println (map str/join data)))
@@ -78,7 +45,7 @@
 
 (def opposite-side {:up :down, :down :up, :left :right, :right :left})
 
-(defn check-assembly [assembled pos data]
+(defn check-assembly [assembled {:keys [pos data]}]
   (doseq [[side f] {:up s2/up :down s2/down :right s2/right :left s2/left}
           :let [ref-pos (f pos)]]
     (when-let [{ref-data :data} (assembled ref-pos)]
@@ -96,29 +63,73 @@
     (print-assembled assembled)
     (throw (Exception. (str "assembled position already occupied" pos)))))
 
+(def cross {:up s2/up, :down s2/down, :left s2/left, :right s2/right})
+
+(defn orientate [{:keys [ref-side side flipped pos] :as tile}]
+  (let [base-tx (case [ref-side side]
+                  [:right :left ] identity
+                  [:right :up   ] m/transpose
+                  [:right :right] m/flip-cols
+                  [:right :down ] m/rotate-right
+                  [:left  :right] identity
+                  [:left  :down ] m/transpose
+                  [:left  :left ] m/flip-cols
+                  [:left  :up   ] m/rotate-right
+                  [:down  :up   ] identity
+                  [:down  :right] m/rotate-left
+                  [:down  :down ] m/flip-rows
+                  [:down  :left ] m/transpose
+                  [:up    :down ] identity
+                  [:up    :left ] m/rotate-left
+                  [:up    :up   ] m/flip-rows
+                  [:up    :right] m/transpose)
+        tx (if (not flipped)
+             base-tx
+             (case side
+               (:up :down)    (comp base-tx m/flip-cols)
+               (:left :right) (comp base-tx m/flip-rows)))]
+    #_(do
+      (println "New tile to assemble at" pos ". Orientate" [ref-side side] "flipped" flipped)
+      (print-tile (tile :data))
+      (println "==>")
+      (print-tile (tx (tile :data))))
+    (update tile :data tx)))
+
 (defn assemble
   "Returns a map pos -> {:id :data}"
   [tiles]
-  ;; Could improve performances by maintaining list of borders
-  ;; in already assemble tiles (to avoid trying to match assembled
-  ;; tile borders which are no longer free)
-  (loop [assembled {[0 0] (zipmap [:id :data] (first tiles))}
-         unassembled (dissoc tiles (key (first tiles)))]
-    (println "assembled" (count assembled))
-    #_(print-assembled assembled)
-    (if (empty? unassembled)
-      assembled
-      (let [[matched-pos matched-tile :as matched]
-            (first
-              (for [[ref-pos {ref-id :id ref-tile :data}] assembled,
-                    [other-id other-tile] unassembled
-                    :let [[dir tile :as matched] (match-tiles ref-tile other-tile)]
-                    :when matched]
-                [(s2/+ ref-pos dir) {:id other-id :data tile}]))]
-        #_(println "new match" (matched-tile :id) matched-pos)
-        (check-assembly assembled matched-pos (matched-tile :data))
-        (recur (conj assembled matched)
-               (dissoc unassembled (matched-tile :id)))))))
+  (let [id->borders (map-vals borders tiles) ;; id → {side → border}
+        border->tiles (->> (mapcat
+                             (fn [[id borders]]
+                               (mapcat
+                                 (fn [[side border]]
+                                   [[border {:id id :side side :flipped false}]
+                                    [(str/reverse border) {:id id :side side :flipped true}]])
+                                 borders))
+                             id->borders)
+                           multimap)
+        first-tile (zipmap [:id :data] (first tiles))
+        neighbours (fn [[pos id] already-assembled]
+                     (->> (borders ((already-assembled pos) :data))
+                          (keep (fn [[side border]]
+                                  (when-let [matched-tile (first (remove (comp (eq id) :id) (border->tiles border)))]
+                                    (let [matched-pos ((cross side) pos)]
+                                      (when (not (already-assembled matched-pos))
+                                        (assoc matched-tile :pos matched-pos :ref-side side :data (tiles (matched-tile :id))))))))))]
+    (loop [assembled {[0 0] first-tile}
+           last-assembled {[0 0] (first-tile :id)}]
+      #_(println "#assembled" (count assembled))
+      #_(print-assembled assembled)
+      (if (empty? last-assembled)
+        assembled
+        (let [neighbours (->> (mapcat #(neighbours % assembled) last-assembled)
+                              (distinct-by :pos)
+                              (map orientate))]
+          #_(doseq [tile neighbours]
+            (check-assembly assembled tile))
+          (recur
+            (into assembled (map #(vector(% :pos) (select-keys % [:id :data])) neighbours))
+            (map (juxt :pos :id) neighbours)))))))
 
 (defpart part1 [tiles]
   (->> (assemble tiles)
@@ -176,31 +187,6 @@
                    "#..#"
                    "...."
                    "###."]))))
-
-(deftest match-tiles-test
-  (are [tiles expected] (= expected (apply match-tiles (m/split-cols tiles)))
-    ["#...##.#.. ..###..###"
-     "..#.#..#.# ###...#.#."
-     ".###....#. ..#....#.."
-     "###.##.##. .#.#.#..##"
-     ".###.##### ##...#.###"
-     ".##.#....# ##.##.###."
-     "#...###### ####.#...#"
-     ".....#..## #...##..#."
-     "#.####...# ##..#....."
-     "#.##...##. ..##.#..#."] [[1 0] identity]
-
-    ["#...##.#.. #.##...##."
-     "..#.#..#.# ##..#.##.."
-     ".###....#. ##.####..."
-     "###.##.##. ####.#.#.."
-     ".###.##### .#.####..."
-     ".##.#....# .##..##.#."
-     "#...###### ....#..#.#"
-     ".....#..## ..#.#....."
-     "#.####...# ####.#...."
-     "#.##...##. ...#.#.#.#"] [[0 1] identity]
-    ))
 
 (deftest part1-test
   (test-with-file part1 20899048083289))

@@ -484,7 +484,7 @@
   (filter-kv (fn [k v] (pred k)) m))
 
 (defn associate
-  "Builds a map of k → (f k)"
+  "Builds a map of k → (f k). See also [[index]]"
   [f keys]
   (-> (reduce
         (fn [m k]
@@ -492,6 +492,27 @@
         (transient {})
         keys)
       persistent!))
+
+(defn index
+  "Builds a map of (f v) → v. See also [[associate]]"
+  [f vals]
+    (-> (reduce
+        (fn [m v]
+          (assoc! m (f v) v))
+        (transient {})
+        vals)
+      persistent!))
+
+(defn distinct-by [f coll]
+  (loop [seen #{}
+         res []
+         [x & more] coll]
+    (if (nil? x)
+      res
+      (let [k (f x)]
+        (if (seen k)
+          (recur seen res more)
+          (recur (conj seen k) (conj res x) more))))))
 
 ;; multimaps
 
