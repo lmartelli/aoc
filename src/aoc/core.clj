@@ -3,7 +3,7 @@
    [clojure.test :refer [deftest is are]]
    [clojure.java.io :as io]
    [clojure.string :as str]
-   [clojure.math.numeric-tower :refer [abs sqrt]]
+   [clojure.math.numeric-tower :refer [sqrt]]
    [clj-http.client :as http]
    [clojure.core.async :as async :refer [poll!]]
    [clojure.pprint :refer [cl-format]]
@@ -329,14 +329,24 @@
     nil
     seq))
 
-(defn find-last [f seq]
-  (last (take-while f seq)))
+(defn find-last [pred seq]
+  (last (take-while pred seq)))
 
 (defn take-until [pred [x & more :as xs]]
   (cond
     (empty? xs) nil
     (pred x) (seq [x])
     :else (lazy-seq (cons x (take-until pred more)))))
+
+(defn drop-until [pred coll]
+  (loop [[next & more :as cur] (seq coll)]
+    (cond
+      (empty? cur) cur
+      (pred next) more
+      :else (recur more))))
+
+(defn split-after [pred coll]
+  [(take-until pred coll) (drop-until pred coll)])
 
 (defn combinations-with-sum
   "Combinations of n positive integers constrained by a sum"
@@ -418,6 +428,18 @@
 
 (defn eq [x]
   (fn [y] (= x y)))
+
+(defn gt [x]
+  (fn [y] (> y x)))
+
+(defn lt [x]
+  (fn [y] (< y x)))
+
+(defn ge [x]
+  (fn [y] (>= y x)))
+
+(defn le [x]
+  (fn [y] (<= y x)))
 
 (defn contains [x]
   (fn [s] (contains? s x)))

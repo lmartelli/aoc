@@ -138,6 +138,22 @@
     [] true? nil
     (range) #(= 3 %) [0 1 2 3]))
 
+(deftest drop-until-test
+  (are [coll pred expected] (= expected (drop-until pred coll))
+    [] true? nil
+    (range 5) (eq 0) [1 2 3 4]
+    (range 5) (eq 1) [2 3 4]
+    (range 5) #(>= % 0) [1 2 3 4]
+    (range 5) (eq 6) nil))
+
+(deftest split-after-test
+  (are [coll pred expected] (= expected (split-after pred coll))
+    [] (constantly true) [nil nil]
+    (range 5) (constantly true) [[0] [1 2 3 4]]
+    (range 5) (eq 0) [[0] [1 2 3 4]]
+    (range 5) (eq 2) [[0 1 2] [3 4]]
+    (range 5) (constantly false) [[0 1 2 3 4] nil]))
+
 (deftest tails-test
   (are [xs expected] (= expected (tails xs))
     [] [[]]
