@@ -2,6 +2,7 @@
   (:require
    [aoc.core :refer :all]
    [aoc.space-2d :as s2]
+   [aoc.game-of-life :as gol]
    [clojure.test :refer :all]))
 
 (def-input-parser [lines]
@@ -62,32 +63,17 @@
 
 ;; part 2
 
-(defn count-alive-neighbours [alive? neighbours cell]
-  (->> (neighbours cell)
-       (filter alive?)
-       count))
-
-(defn next-gen [alive-cells neighbours]
-  (set
-    (concat
-      (->> alive-cells
-           (filter #(<= 1 (count-alive-neighbours alive-cells neighbours %) 2)))
-      (->> alive-cells
-           (mapcat neighbours)
-           (distinct)
-           (remove alive-cells)
-           (filter #(= 2 (count-alive-neighbours alive-cells neighbours %)))))))
-
-(defn nth-gen [gen-0 neighbours n]
-  (-> (iterate #(next-gen % neighbours) gen-0 )
-      (nth n)))
-
 (defn hex-neighbours [coord]
   (map #(% coord) [east north-east north-west west south-west south-east]))
 
 (defn count-nth-gen [paths n]
   (let [gen-0 (set (init-black-tiles paths))]
-    (count (nth-gen gen-0 hex-neighbours n))))
+    (count (gol/nth-gen
+             n
+             :gen-0 gen-0
+             :neighbours hex-neighbours
+             :liveness-pred #{1 2}
+             :birth-pred (eq 2)))))
 
 (defpart part2 [paths]
   (count-nth-gen paths 100))

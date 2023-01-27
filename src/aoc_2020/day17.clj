@@ -3,6 +3,7 @@
    [aoc.core :refer :all]
    [aoc.space-2d :as s2]
    [aoc.space-3d :as s3]
+   [aoc.game-of-life :as gol]
    [clojure.math.combinatorics :refer :all]
    [clojure.test :refer :all]))
 
@@ -22,22 +23,16 @@
              #(mapv (fn [f x] (f x)) % p)
              coord-modifiers)))))
 
-(defn exec-cycle [cubes neighbours]
-  (->> (mapcat neighbours cubes)
-       frequencies
-       (keep (fn [[p n]]
-               (if (cubes p)
-                 (when (<= 2 n 3) p)
-                 (when (= 3 n) p))))
-       (into #{})))  
-
 (defn count-active-cubes-after-boot-process [init-plane n]
   (let [cubes (-> (iterate add-dimension init-plane)
                   (nth (- n 2))
                   set)
         neighbours (neighbours-n-dim n)]
-    (-> (iterate #(exec-cycle % neighbours) cubes)
-        (nth 6)
+    (-> (gol/nth-gen 6
+                     :gen-0 cubes
+                     :neighbours neighbours
+                     :liveness-pred #{2 3}
+                     :birth-pred (eq 3))
         count)))
 
 (defpart part1 [init-plane]

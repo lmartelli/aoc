@@ -273,9 +273,11 @@
   ([paper x-range y-range]
    (print-to-lines paper identity x-range y-range))
   ([paper xf x-range y-range]
-   (map (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) (apply range-inc x-range))
-                     str/join))
-        (apply range-inc y-range))))
+   (if (empty? paper)
+     nil
+     (map (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) (apply range-inc x-range))
+                       str/join))
+          (apply range-inc y-range)))))
 
 (defn print-to-matrix
   "`paper is a map [x y] -> value`
@@ -365,8 +367,7 @@
              "  █ "
              "  █ "
              "   █"
-             "   █"]
-        ))))
+             "   █"]))))
 
 
 (deftest add-test
