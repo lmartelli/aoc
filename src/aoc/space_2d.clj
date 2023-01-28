@@ -253,16 +253,6 @@
                                            (map #(range-expand % 1)))]
     (box [x-min y-min] [x-max y-max])))
 
-(defn find-min-steps-in-maze
-  "`wall-positions` should be a collection of wall positions"
-  [from to wall-positions]
-  (let [walls (set wall-positions)]
-    (-> (algo/explore :start from
-                      :stop? (last-visited to)
-                      :neighbours direct-neighbours
-                      :neighbour-allowed? (not (walls neighbour-pos)))
-        :nb-steps)))
-
 (defn print-to-matrix
   "`paper is a map [x y] -> value`
   See also [[print-to-lines]]."
@@ -276,6 +266,16 @@
                             (get paper [x y] background))
                           (apply range-inc x-range))))
              (apply range-inc y-range))))))
+
+(defn find-min-steps-in-maze
+  "`wall-positions` should be a collection of wall positions"
+  [from to wall-positions]
+  (let [walls (set wall-positions)]
+    (-> (algo/explore :start from
+                      :stop? (last-visited to)
+                      :neighbours direct-neighbours
+                      :neighbour-allowed? (not (walls neighbour-pos)))
+        :nb-steps)))
 
 (defn print-to-lines
   "`paper is a map [x y] -> value`
