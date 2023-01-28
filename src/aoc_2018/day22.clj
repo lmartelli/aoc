@@ -19,7 +19,9 @@
 (def mouth [0 0])
 
 (defn printable-map [m]
-  (s2/print-to-lines m {:mouth \M :target \T :rock \. :wet \= :narrow \|}))
+  (->> m
+       (map-vals {:mouth \M :target \T :rock \. :wet \= :narrow \|})
+       (s2/print-to-lines)))
 
 (defn printable-cave-map [cave-map target]
   (-> cave-map

@@ -390,6 +390,9 @@
 (defn range-inc? [[min max] x]
   (<= min x max))
 
+(defn range-expand [[min max] n]
+  [(- min n) (+ max n)])
+
 (defn expand-bag [bag]
   (mapcat (fn [[k v]] (repeat v k)) bag))
 

@@ -67,7 +67,9 @@
   (vec (repeat height (vec (repeat width \space)))))
 
 (defn paint-panels [painted-panels]
-  (s2/print-to-lines painted-panels {0 \space, 1 \#}))
+  (->> painted-panels
+       (map-vals {0 \space, 1 \#})
+       (s2/print-to-lines)))
 
 (defpart part2 [input]
   (->> (run-robot input 1)

@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [+ -])
   (:require
    [clojure.core :as core]
-   [aoc.core :refer [signum min-max range-inc]]
+   [aoc.core :refer [signum min-max range-inc range-expand]]
    [aoc.algo :as algo]
    [clojure.math.numeric-tower :refer [round sqrt]]
    [clojure.string :as str]
@@ -34,7 +34,7 @@
     (range) rows))
 
 (defn parse-2d-map-positions
-  "returns positions of `char` (# by default) in a 2D map made of rows"
+  "Returns positions of chars (# by default) in a 2D map made of rows."
   ([lines] (parse-2d-map-positions lines \#))
   ([lines char]
    (mapcat
@@ -249,8 +249,9 @@
     (map #(- % [x-min y-min]) points)))
 
 (defn outter-box [positions]
-  (let [[[x-min x-max] [y-min y-max]] (x-and-y-ranges positions)]
-    (box [(dec x-min) (dec y-min)] [(inc x-max) (inc y-max)])))
+  (let [[[x-min x-max] [y-min y-max]] (->> (x-and-y-ranges positions)
+                                           (map #(range-expand % 1)))]
+    (box [x-min y-min] [x-max y-max])))
 
 (defn find-min-steps-in-maze
   "`wall-positions` should be a collection of wall positions"
@@ -262,39 +263,29 @@
                       :neighbour-allowed? (not (walls neighbour-pos)))
         :nb-steps)))
 
+(defn print-to-matrix
+  "`paper is a map [x y] -> value`
+  See also [[print-to-lines]]."
+  ([paper &{:keys [xy-ranges padding background] :or {, xf identity, padding 0, background \space}}]
+   (if (empty? paper)
+     nil
+     (let [[x-range y-range] (map #(range-expand % padding)
+                                  (or xy-ranges (x-and-y-ranges (keys paper))))]
+       (mapv (fn [y]
+               (->> (mapv (fn [x]
+                            (get paper [x y] background))
+                          (apply range-inc x-range))))
+             (apply range-inc y-range))))))
+
 (defn print-to-lines
   "`paper is a map [x y] -> value`
   `xf` transforms values into printable chars."
-  ([paper] (print-to-lines paper identity))
-  ([paper xf]
-   (let [positions (keys paper)
-         [x-range y-range] (x-and-y-ranges positions)]
-     (print-to-lines paper xf x-range y-range)))
-  ([paper x-range y-range]
-   (print-to-lines paper identity x-range y-range))
-  ([paper xf x-range y-range]
-   (if (empty? paper)
-     nil
-     (map (fn [y] (->> (map (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) (apply range-inc x-range))
-                       str/join))
-          (apply range-inc y-range)))))
+  ([paper &{:keys [xy-ranges padding background] :or {, xf identity, padding 0, background \space} :as options}]
+   (->> (print-to-matrix paper options)
+        (map str/join))))
 
-(defn print-to-matrix
-  "`paper is a map [x y] -> value`
-  `xf` transforms values."
-  ([paper] (print-to-matrix paper identity))
-  ([paper xf]
-   (let [positions (keys paper)
-         [x-range y-range] (x-and-y-ranges positions)]
-     (print-to-matrix paper xf x-range y-range)))
-  ([paper x-range y-range]
-   (print-to-matrix paper identity x-range y-range))
-  ([paper xf x-range y-range]
-   (map (fn [y] (mapv (fn [x] (if-let [c (paper [x y])] (or (xf c) c) \space)) (apply range-inc x-range)))
-        (apply range-inc y-range))))
-
-(defn print [paper & args]
-  (run! println (apply print-to-lines paper args)))
+(defn print [paper &{:keys [xy-ranges padding background] :as options}]
+  (run! println (print-to-lines paper options)))
 
 (defn print-maze [wall-positions]
   (print (draw-points \█ wall-positions)))

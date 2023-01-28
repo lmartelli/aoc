@@ -11,7 +11,9 @@
 ;; part 1
 
 (defn printable-state [state]
-  (s2/print-to-lines  state {:empty \L :occupied \#}))
+  (->> state
+       (map-vals {:empty \L :occupied \#})
+       (s2/print-to-lines)))
 
 (defn print-state [state]
   (run! println (printable-state state)))
