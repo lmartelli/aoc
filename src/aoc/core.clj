@@ -232,6 +232,12 @@
 (defn letter? [^Character c]
   (Character/isLetter c))
 
+(defn upper-case? [^Character c]
+  (Character/isUpperCase c))
+
+(defn lower-case? [^Character c]
+  (Character/isLowerCase c))
+
 (defn digit [^Character c]
   (Character/digit c 10))
 
