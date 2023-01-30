@@ -111,3 +111,9 @@
           (= expected (bfs-path :start start :destinations destinations :neighbours graph))
         \a '(\b \c) '(\a \b)))
     ))
+
+(deftest a*-test
+  (testing "With no heuristic"
+    (are [G start end expected] (= expected (a* :start start :goal end :neighbours G :heuristic (constantly 0)))
+      {:a {:b 3}} :a :b  {:cost 3 :path [:a :b]}
+      {:a {:b 3 :c 1}, :b {:d 1} :c {:d 2}} :a :d {:cost 3 :path [:a :c :d]})))

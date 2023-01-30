@@ -1,7 +1,8 @@
 (ns aoc.algo
   (:require
-   [aoc.core :refer [remove-keys multimap multimap-invert map-vals]]
-   [clojure.set :refer [map-invert intersection]]))
+   [aoc.core :refer [remove-keys multimap multimap-invert map-vals with-default]]
+   [clojure.set :refer [map-invert intersection]]
+   [clojure.data.priority-map :refer [priority-map]]))
 
 (def ^:dynamic *debug* false)
 
@@ -111,6 +112,13 @@
     (if-let [prev (visited cur)]
       (recur prev (conj path prev))
       path)))
+
+(defn- build-path [dest predecessor]
+  (loop [cur dest
+         path nil]
+    (if (nil? cur)
+      path
+      (recur (predecessor cur) (conj path cur)))))
 
 (defn- min-pos [a b]
   (cond
@@ -285,7 +293,7 @@
     (if (= (count mm) (count bijection))
       bijection
       (let [new-unique-keys (merge
-                             (unique-mappings k->vs)
+                              (unique-mappings k->vs)
                              (map-invert (unique-mappings v->ks)))]
         (if (empty? new-unique-keys)
           nil
@@ -303,3 +311,24 @@
        multimap
        (map-vals (comp #(reduce intersection %) #(map set %)))
        resolve-bijection))
+
+(defn a* [&{:keys [start goal neighbours heuristic]}]
+  (loop [{:keys [open-set came-from g-score] :as state}
+         {:open-set (priority-map start (heuristic start))
+          :came-from {}
+          :g-score (with-default {start 0} ##Inf)}]
+    (let [[current] (peek open-set)]
+      (if (= goal current)
+        {:cost (g-score current)
+         :path (build-path goal came-from)}
+        (let [current-score (g-score current)
+              neighbours-score (->> (neighbours current)
+                                    (map (fn [[neighbour weight]]
+                                           [neighbour (+ current-score weight)]))
+                                    (filter (fn [[neighbour score]]
+                                              (< score (g-score neighbour)))))]
+          (recur
+            {:open-set (into (dissoc open-set current)
+                             (map (fn [[neighbour score]] [neighbour (+ score (heuristic neighbour))]) neighbours-score))
+             :g-score (into g-score neighbours-score)
+             :came-from (into came-from (map #(vector % current) (map first neighbours-score)))}))))))
