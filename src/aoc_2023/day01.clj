@@ -25,8 +25,8 @@
 
 (def spelled-digits
   (merge
-    (zipmap ["zero" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine"] (range 10))
-    (into {} (map (juxt str identity) (range 10)))))
+    (zipmap ["one" "two" "three" "four" "five" "six" "seven" "eight" "nine"] (range 1 10))
+    (into {} (map (juxt str identity) (range 1 10)))))
 
 (def first-digits-regex
   (re-pattern (str/join "|" (keys spelled-digits))))
