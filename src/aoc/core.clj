@@ -22,8 +22,7 @@
 (def aoc-dir (expand-home "~/.aoc"))
 
 (defn session []
-  (try (slurp (str aoc-dir "/session"))
-       (catch java.io.FileNotFoundException e nil)))
+  (slurp (str aoc-dir "/session")))
 
 (defn replace-chars
   ([s m] (apply str (replace m s)))
