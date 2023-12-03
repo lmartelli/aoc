@@ -1,20 +1,20 @@
-(ns aoc-2022.day07
+(ns aoc-2023.day07
   (:require
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
 
-(def-input-parser [lines]
-  lines)
+(defn puzzle-input [stream]
+  (puzzle-input-lines stream))
 
 ;; part 1
 
 (defpart part1 [input]
-  )
+  input)
 
 ;; part 2
 
 (defpart part2 [input]
-  nil)
+  input)
 
 ;; tests
 
