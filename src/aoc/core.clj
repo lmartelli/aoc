@@ -155,6 +155,18 @@
    #(re-seq-parse % regex f)
    lines))
 
+(defn re-seq-pos
+  "Gets :start, :end and :match (matched string) for all matches"
+  [re s]
+  (let [matcher (re-matcher re s)]
+    (take-while
+      some?
+      (repeatedly #(if (.find matcher)
+                     {:start (.start matcher)
+                      :end (.end matcher)
+                      :match (.group matcher)}
+                     nil)))))
+
 (defn split-lines
   "Splits lines by `regex` and applies `f` to the resulting items"
   [regex f lines]
