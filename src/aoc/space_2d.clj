@@ -199,7 +199,7 @@
   (draw-points paper ink (segment-points points)))
 
 (defn polygon-points [[vertex :as vertices]]
-  (rest (segment-points (concat vertices [vertex]))))
+  (drop-last (segment-points (concat vertices [vertex]))))
 
 (defn draw-polygon [paper ink vertices]
   (draw-points paper ink (polygon-points vertices)))
