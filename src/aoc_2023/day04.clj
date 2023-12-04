@@ -11,25 +11,43 @@
        (re-parse-lines
          #"Card *(\d+): *([\d ]+) *\| *([\d ]+)"
          (fn [c winning yours]
-           {:winning (parse-ints winning)
-            :yours (parse-ints yours)}))))
+           [(parse-int c)
+            {:winning (into #{} (parse-ints winning))
+             :yours (into #{} (parse-ints yours))}]))
+       (into {})))
 ;; part 1
 
+(defn count-matches [{:keys [winning yours]}]
+  (count (set/intersection winning yours)))
+
 (defpart part1 [cards]
-  (->> cards
-       (map (fn [{:keys [winning yours]}]
-              (set/intersection (into #{} winning) (into #{} yours))))
-       (remove empty?)
-       (map (comp #(expt 2 %) dec count))
+  (->> (vals cards)
+       (map count-matches)
+       (filter pos?)
+       (map (comp #(expt 2 %) dec))
        (reduce +)))
 
 ;; part 2
 
-(defpart part2 [input]
-  input)
+(def card-score
+  (memoize
+    (fn [n cards]
+      (let [m (count-matches (cards n))]
+        (if (zero? m)
+          1
+          (->> (range m)
+               (map #(card-score (+ 1 n %) cards))
+               (reduce +)
+               inc))))))
+
+(defpart part2 [cards]
+  (->> cards
+       keys
+       (map (fn [n] (card-score n cards)))
+       (reduce +)))
 
 ;; tests
 
 (deftest part1-test (part-test part1 13))
 
-(deftest part2-test (part-test part2 nil))
+(deftest part2-test (part-test part2 30))

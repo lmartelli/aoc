@@ -139,8 +139,10 @@
        ([] (~name (my-data)))
        (~args ~@body))))
 
-(defn re-parse [s regex f]
-  (apply f (rest (or (re-find regex s) (throw (Exception. (str "Regex " regex " does not match: ``" s "''")))))))
+(defn re-parse
+  ([s regex] (rest (or (re-find regex s) (throw (Exception. (str "Regex " regex " does not match: ``" s "''"))))))
+  ([s regex f]
+   (apply f (re-parse s regex))))
 
 (defn re-parse-lines [regex f lines]
   (map
