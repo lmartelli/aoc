@@ -18,14 +18,10 @@
 
 ;; tests
 
-(deftest part1-test
-  (test-with-lines
-    part1
-    [""]
-    nil))
+(deftest part1-test (part-test part1 nil))
 
-(deftest part2-test
-  (test-with-lines
-    part2
-    [""]
-    nil))
+;;(deftest part1-test (test-with-lines part1 [""] nil))
+
+(deftest part2-test (part-test part2 nil))
+
+;;(deftest part2-test (test-with-lines part2 [""] nil))
