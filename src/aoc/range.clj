@@ -75,7 +75,7 @@
         (is (= i (first slices)))
         ;; At most 2 ranges after intersection
         (is (<= (count slices) 3))
-        ;; ALl slices are disjoint
+        ;; All slices are disjoint
         (is (every? (fn [[a b]] (nil? (intersection a b))) (combo/combinations (remove nil? slices) 2)))
         ;; The union of all slices = a
         (is (= (expand a) (sort (mapcat expand (remove nil? slices)))))))))
