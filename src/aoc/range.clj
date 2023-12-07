@@ -49,10 +49,10 @@
   (testing "B ⊂ A or A ⊂ B"
     (are [a b expected] (and (= expected (intersection a b))
                              (= expected (intersection b a)))
-    [3 6] [3 6] [3 6]
-    [3 6] [3 7] [3 6]
-    [3 6] [2 6] [3 6]
-    [3 6] [2 7] [3 6]))
+      [3 6] [3 6] [3 6]
+      [3 6] [3 7] [3 6]
+      [3 6] [2 6] [3 6]
+      [3 6] [2 7] [3 6]))
   (testing "Partial overlap a"
     (are [a b expected] (and (= expected (intersection a b))
                              (= expected (intersection b a)))
@@ -60,11 +60,11 @@
 
 (deftest expand-test
   (doseq [offset (range -2 2)]
-  (are [min max expected] (= (map #(+ offset %) expected) (expand [(+ min offset) (+ max offset)]))
-    0 0 []
-    0 1 [0]
-    0 2 [0 1]
-    0 3 [0 1 2])))
+    (are [min max expected] (= (map #(+ offset %) expected) (expand [(+ min offset) (+ max offset)]))
+      0 0 []
+      0 1 [0]
+      0 2 [0 1]
+      0 3 [0 1 2])))
 
 (deftest slice-test
   (let [intervals (->> (combo/selections (range 4) 2) (filter #(apply < %)))]
