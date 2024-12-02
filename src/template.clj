@@ -1,4 +1,4 @@
-(ns aoc-2023.day07
+(ns aoc-2024.day07
   (:require
    [aoc.core :refer :all]
    [clojure.test :refer :all]))
