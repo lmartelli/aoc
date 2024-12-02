@@ -295,6 +295,7 @@
   (parse-binary (apply str bits)))
 
 (defn parse-ints
+  "Returns a vector of integers"
   ([s] (mapv parse-int (re-seq int-regex s)))
   ([s f] (apply f (parse-ints s))))
 
