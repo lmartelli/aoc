@@ -8,7 +8,7 @@
   (let [rows (puzzle-input-lines stream)
         input (->> (s2/parse-2d-map-positions rows \# \^)
                    (map-keys {\^ :start \# :obstacles}))]
-    {:start (first (input :start))
+    {:pos (first (input :start))
      :obstacles (set (input :obstacles))
      :width (count (first rows))
      :height (count rows)
@@ -26,8 +26,8 @@
   (and (< -1 x width)
        (< -1 y height)))
 
-(defn guard-iterations [{:keys [obstacles start dir]}]
-  (iterate #(step % obstacles) {:pos start :dir dir}))
+(defn guard-iterations [{:keys [obstacles pos dir]}]
+  (iterate #(step % obstacles) {:pos pos :dir dir}))
 
 (defn guard-path [input]
   (->> (guard-iterations input)
@@ -42,8 +42,8 @@
 
 ;; part 2
 
-(defn loops? [input]
-  (loop [visited #{}
+(defn loops? [input visited]
+  (loop [visited visited
          [current & more] (guard-iterations input)]
     (cond
       (visited current) true
@@ -52,11 +52,25 @@
                    more))))
 
 (defpart part2 [input]
-  (let [path (set (->> (guard-path input)
-                       (take-while #(in-area? input %))))]
-    (->> path
-         (filter #(loops? (update input :obstacles conj %)))
-         count)))
+  (count
+    (loop [visited #{}
+           visited-pos #{}
+           current {:pos (input :pos) :dir (input :dir)}
+           new-obstacles #{}]
+      (if (not (in-area? input (current :pos)))
+        new-obstacles
+        (let [next (step current (input :obstacles))]
+          (recur (conj visited current)
+                 (conj visited-pos (current :pos))
+                 next
+                 (if (and (not ((input :obstacles) (next :pos)))
+                          (not (visited-pos (next :pos)))
+                          (loops? (-> input
+                                      (update :obstacles conj (next :pos))
+                                      (merge current))
+                                  visited))
+                   (conj new-obstacles (next :pos))
+                   new-obstacles)))))))
 
 ;; tests
 
