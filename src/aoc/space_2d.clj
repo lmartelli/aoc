@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [+ -])
   (:require
    [clojure.core :as core]
-   [aoc.core :refer [signum min-max range-inc range-expand]]
+   [aoc.core :refer [signum min-max range-inc range-expand associate]]
    [aoc.algo :as algo]
    [clojure.math.numeric-tower :refer [round sqrt]]
    [clojure.string :as str]
@@ -60,7 +60,9 @@
             :when (= c char)]
         [x y]))
      (range)
-     lines)))
+     lines))
+  ([lines char & more]
+   (associate #(parse-2d-map-positions lines %) (conj more char))))
 
 (defn +
   ([[ax ay] [bx by]]
@@ -83,11 +85,11 @@
       tx
       (+ origin)))
 
-(defn rotate-left "Y axis points down"
+(defn rotate-left "Rotate left 90°.  axis points down"
   ([[x y]] [y (core/- x)])
   ([p center] (transform-relative p center rotate-left)))
 
-(defn rotate-right "Y axis points down"
+(defn rotate-right "Rotate right 90°. Y axis points down"
   ([[x y]] [(core/- y)  x])
   ([p center] (transform-relative p center rotate-right)))
 
@@ -154,10 +156,14 @@
 (def direction-fns-with-diags [north north-east east south-east south south-west west north-west])
 
 (def direction-vectors
-  {:north [0 -1]
-   :south [0 1]
-   :east [1 0]
-   :west [-1 0]
+  {:north [ 0 -1]
+   :up    [ 0 -1]
+   :south [ 0  1]
+   :down  [ 0  1]
+   :east  [ 1  0]
+   :right [ 1  0]
+   :west  [-1  0]
+   :left  [-1  0]
    :north-east [1 -1]
    :north-west [-1 -1]
    :south-east [1 1]
