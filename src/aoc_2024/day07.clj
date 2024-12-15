@@ -15,18 +15,18 @@
 
 ;; part 1
 
-(defn is-true-eqn? [{:keys [result] [n0 & ns] :numbers} operators]
-  (= result
-     (reduce
-       (fn [acc [n op]]
-         (op acc n))
-       n0
-       (map vector ns operators))))
+(defn reduce-step [eqn operator]
+  (update
+    eqn
+    :numbers
+    (fn [[n1 n2 & more]]
+      (conj more (operator n1 n2)))))
 
-(defn can-be-true? [eqn operators]
-  (some
-    #(is-true-eqn? eqn %)
-    (combo/selections operators (dec (count (eqn :numbers))))))
+(defn can-be-true? [{:keys [result] [n0 & ns] :numbers :as eqn} operators]
+  (cond
+    (empty? ns) (= result n0)
+    (> n0 result) false
+    :else (some #(can-be-true? (reduce-step eqn %) operators) operators)))
 
 (defn total-calibration [eqns operators]
   (->> eqns
