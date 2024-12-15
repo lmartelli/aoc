@@ -16,6 +16,23 @@
         x (range-inc x1 x2)]
     [x y]))
 
+(defn row-col-seq
+  "Generates a sequence of [row col] positions from a seq of seq (rows).
+  It is assumed that all rows have the same size"
+  [rows]
+  (for [y (range (count rows))
+        x (range (count (get rows 0)))]
+    [y x]))
+
+(defn pos-seq
+  "Generates a sequence of [x y] positions from a seq of seq (rows).
+  Y axis is pointing down.
+  It is assumed that all rows have the same size"
+  [rows]
+  (for [y (range (count rows))
+        x (range (count (get rows 0)))]
+    [x y]))
+
 (defn pos-and-values-seq
   "Generates a sequence of [[x y] value] from a seq of seq (rows).
   Y axis is pointing down."
@@ -160,6 +177,11 @@
    [(inc x) (inc y)] [(inc x) (dec y)]
    [(dec x) (inc y)] [(dec x) (dec y)]])
 
+(defn get-all
+  "Returns a seq of values at the given points."
+  [rows points]
+  (map #(get-in rows %) points))
+
 (defn segment-points [[start-pos & other :as points]]
   (lazy-seq
    (cond
@@ -301,6 +323,38 @@
       (m [x y]))))
 
 ;; Tests
+
+(deftest pos-seq-test
+  (are [rows expected] (= (set expected) (set (pos-seq rows)))
+    [] []
+    ["A"] [[0 0]]
+    ["AB"] [[0 0] [1 0]]
+    ["A"
+     "B"] [[0 0] [0 1]]
+    ["ABC"
+     "DEF"] [[0 0] [1 0] [2 0] [0 1] [1 1] [2 1]]))
+
+(deftest row-col-seq-test
+  (are [rows] (= (set (map reverse (pos-seq rows))) (set (row-col-seq rows)))
+    []
+    ["A"]
+    ["AB"]
+    ["A"
+     "B"] 
+    ["ABC"
+     "DEF"]))
+
+(deftest get-all-test
+  (let [rows ["ABCD"
+              "EFGH"
+              "IJKL"]]
+    (are [points expected] (= expected (get-all rows points))
+      [] []
+      [[-1 0]] [nil]
+      [[0 0]] [\A]
+      [[1 1]] [\F]
+      [[0 0] [1 1] [0 3]] [\A \F \D]
+      )))
 
 (deftest segment-points-test
   (are [points expected] (and (= expected (segment-points points))

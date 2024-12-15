@@ -2,12 +2,16 @@
   (:require
    [aoc.core :refer :all]
    [clojure.string :as str]
+   [aoc.space-2d :as s2]
    [clojure.test :refer :all]))
 
 (defn puzzle-input [stream]
   (vec (puzzle-input-lines stream)))
 
 ;; part 1
+
+(defn board-max-size [board]
+  (max (count board) (count (get board 0))))
 
 (defn rows [input]
   input)
@@ -16,18 +20,19 @@
   (apply map #(apply str %&) input))
 
 (defn diagonal-1 [input n]
-  (-> (map #(get-in input [%1 (+ n %2)]) (range) (range (count input)))
+  (-> (map #(get-in input [(+ 0 %) (+ n %)]) (range (board-max-size input)))
       str/join))
 
 (defn diagonals [input diag]
-  (let [n (max (count input) (count (get input 0)))]
-    (->> (map #(diag input %) (range (inc (- n)) n))
+  (let [width (count (get input 0))
+        height (count input)]
+    (->> (map #(diag input %) (range (inc (- height)) width))
          (filter #(not (empty? %))))))
 
 (defn diagonals-1 [input] (diagonals input diagonal-1))
 
 (defn diagonal-2 [input n]
-  (-> (map #(get-in input [%1 (+ n %2)]) (range) (reverse (range (count input))))
+  (-> (map #(get-in input [(- (dec (count input)) %) (+ n %)]) (range (board-max-size input)))
       str/join))
 
 (defn diagonals-2 [input] (diagonals input diagonal-2))
@@ -43,8 +48,22 @@
 
 ;; part 2
 
+(defn x-mas? [input pos]
+  (and (= \A (get-in input pos))
+       (apply
+         =
+         #{\M \S}
+         (map
+           #(->> (map (partial s2/+ pos) %)
+                 (s2/get-all input)
+                 set)
+           [[[-1 1] [1 -1]]
+            [[-1 -1] [1 1]]]))))
+
 (defpart part2 [input]
-  input)
+  (->> (s2/row-col-seq input)
+       (filter #(x-mas? input %))
+       count))
 
 ;; tests
 
@@ -101,10 +120,10 @@
     ["AB"] ["A" "B"]
     ["A" "B"] ["A" "B"]
     ["AB"
-     "CD"] ["A" "BC" "D"]
+     "CD"] ["A" "CB" "D"]
     ["ABCX"
      "DEFY"
-     "GHIZ"] ["A" "BD" "CEG" "XFH" "YI" "Z"]))
+     "GHIZ"] ["A" "DB" "GEC" "HFX" "IY" "Z"]))
 
 (deftest part1-test
   (part-test part1 18)
@@ -117,6 +136,11 @@
      ".X...."]
     4))
 
-(deftest part2-test (part-test part2 nil))
+(deftest get-matches-test
+  (are [line expected] (= expected (get-matches line))
+    "ABC" []
+    "MAS" [1]))
+
+(deftest part2-test (part-test part2 9))
 
 ;;(deftest part2-test (test-with-lines part2 [""] nil))
